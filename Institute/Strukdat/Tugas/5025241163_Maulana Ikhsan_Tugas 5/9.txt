@@ -1,0 +1,29 @@
+9. 
+Sequence : 7, 25, 42, 40, 33, 34, 39, 36
+Path : Valid
+| 7______
+|       |
+|       25_____
+|             |
+|         ____42
+|         |
+|        33___
+|            |
+|            34__
+|               |
+|              _39
+|              |
+|             36
+
+
+Sequence : 92, 22, 91, 24, 89, 20, 35, 36
+Path : Invalid
+It violate the rule at index 5
+
+Sequence : 95, 20, 90, 24, 92, 27, 30, 36
+Path : Invalid
+It violate the rule at index 4
+
+Sequence : 7, 46, 41, 21, 26, 39, 37, 24, 36
+Path : Invalid
+It violate the rule at index 7

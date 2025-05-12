@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Details</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Task Details</h1>
+        <h2>{{ task.title }}</h2>
+        <p><strong>Description:</strong> {{ task.description }}</p>
+        <p><strong>Subject:</strong> {{ task.subject }}</p>
+        <p><strong>Status:</strong> {{ task.status }}</p>
+        <p><strong>Tags:</strong> {{ task.tags }}</p>
+
+        <form action="{{ url_for('update_task', task_id=task.id) }}" method="POST">
+            <label for="status">Update Status:</label>
+            <select name="status" id="status">
+                <option value="Pending" {% if task.status == 'Pending' %}selected{% endif %}>Pending</option>
+                <option value="Completed" {% if task.status == 'Completed' %}selected{% endif %}>Completed</option>
+            </select>
+            <button type="submit">Update</button>
+        </form>
+
+        <form action="{{ url_for('delete_task', task_id=task.id) }}" method="POST">
+            <button type="submit">Delete Task</button>
+        </form>
+
+        <a href="{{ url_for('index') }}">Back to Task List</a>
+    </div>
+</body>
+</html>

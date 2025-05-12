@@ -1,0 +1,17 @@
+Show the contents of post for the expression (2 + 3) * (8 / 4) - 6.
+
+expression = (2+3)*(8/4)-6
+
+process :
+1.  postfix: 2                  stack:
+2.  postfix: 2                  stack: +
+3.  postfix: 2 3                stack: +
+4.  postfix: 2 3 +              stack: *
+5.  postfix: 2 3 + 8            stack: *
+6.  postfix: 2 3 + 8            stack: / *
+7.  postfix: 2 3 + 8 4          stack: / *
+8.  postfix: 2 3 + 8 4 / *      stack: -
+9.  postfix: 2 3 + 8 4 / * 6    stack: -
+10. postfix: 2 3 + 8 4 / * 6 -  stack:
+
+result = "2 3 + 8 4 / * 6 -"

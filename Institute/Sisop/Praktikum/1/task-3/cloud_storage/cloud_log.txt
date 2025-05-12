@@ -1,0 +1,25 @@
+2025/03/18 23:16:48 DOWNLOAD: ERROR User not logged in
+2025/03/20 08:00:32 REGISTER: ERROR
+2025/03/20 08:03:36 REGISTER: INFO
+2025/03/20 08:03:51 LOGIN: INFO User logged in successfully
+2025/03/20 08:07:56 DOWNLOAD: ERROR User not logged in
+2025/03/20 08:08:17 LOGIN: INFO User logged in successfully
+2025/03/20 08:08:24 DOWNLOAD: ERROR User not logged in
+2025/03/20 08:11:49 DOWNLOAD: ERROR User not logged in
+2025/03/20 08:12:12 LOGIN: INFO User logged in successfully
+2025/03/20 08:12:18 DOWNLOAD: INFO automate user login
+2025/03/20 08:12:20 DOWNLOAD: INFO Images done LOGIN:
+2025/03/20 08:16:33 LOGIN: ERROR
+2025/03/20 08:16:49 LOGIN: INFO User logged in successfully
+2025/03/20 08:16:54 DOWNLOAD: INFO automate user login
+2025/03/20 08:16:56 DOWNLOAD: INFO Images done LOGIN:
+2025/03/20 08:24:16 LOGIN: INFO User Ichan logged in successfully
+2025/03/20 08:24:22 DOWNLOAD: INFO automate user login
+2025/03/20 08:24:25 DOWNLOAD: INFO Images done Ichan
+2025/03/20 08:27:05 DOWNLOAD: INFO Images done Ichan
+2025/03/20 08:35:53 ARCHIVE: INFO Archived image Ichan to /Ichan/archive_08-20-03-2025.zip
+2025/03/20 08:37:20 ARCHIVE: INFO No images to archive for user Ichan
+2025/03/20 08:52:41 LOGIN: INFO User Ichan logged in successfully
+2025/03/20 08:52:49 DOWNLOAD: INFO automate user login
+2025/03/20 08:52:52 DOWNLOAD: INFO Images done Ichan
+2025/03/20 08:56:10 ARCHIVE: INFO No images to archive for user Ichan

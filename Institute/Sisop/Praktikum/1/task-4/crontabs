@@ -1,0 +1,8 @@
+*/5 * * * * /home/ubuntu/minute5_log.sh
+
+*/60 * * * * /home/ubuntu/agg_5min_to_hours.sh
+
+*/60 * * * * /home/ubuntu/uptime_monitor.sh
+
+00 00 * * * /home/ubuntu/cleanup_log.sh
+
