@@ -244,6 +244,7 @@ void menu() {
             }
             input = temp;
         } else if(ch == 13) { // enter
+            printf("\n");
             switch (input) {
                 case '1': case 'M' : tambah(); break;
                 case '2': case 'U' : ubah(); break;
