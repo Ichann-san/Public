@@ -5,8 +5,8 @@
 #include <conio.h>
 #include <ctype.h>
 
-#define data_file "../data/component.dat"
-#define data_indeks "../data/index.dat"
+#define data_file "../../data/component.dat"
+#define data_indeks "../../data/index.dat"
 #define data_maks 1000
 #define nama_length 26
 #define kode_length 7
@@ -29,6 +29,7 @@ int komponen_jumlah=0;
 
 int banding(const void *a, const void *b); //qsort wajib ini
 void file_error(const char *nama_file);
+void data_setup();
 void clearscreen();
 void load_index();
 void save_index();
@@ -52,6 +53,8 @@ int banding(const void *a, const void *b) {
 void file_error(const char *nama_file) {
     printf("%s file error or not found\n", nama_file);
 }
+
+void data_setup() {}
 
 void clearscreen() {
     #ifdef _WIN32
@@ -135,6 +138,9 @@ void ubah() {
             printf("Stock: "); scanf("%d", &komponen.stok);
             printf("Price: "); scanf("%lf", &komponen.harga);
             komponen.nama[strcspn(komponen.nama, "\n")] = '\0';
+            int len = strlen(komponen.nama);
+            for (int i = len; i < nama_length - 1; i++) { komponen.nama[i] = ' '; }
+            komponen.nama[nama_length - 1] = '\0';
 
             fseek(fdat, komponen_indeks[i].offset, SEEK_SET);
             fwrite(&komponen, sizeof(Barang), 1, fdat);
@@ -225,6 +231,7 @@ void keluar() {
 
 void menu() {
     char input= '1', temp ='1', clear;
+    int clears;
     printf("=== MENU ===\n");
     printf("1. Tambah data\n");
     printf("2. Ubah data\n");
@@ -254,7 +261,17 @@ void menu() {
                 case '6': case 'K' : keluar(); return;
                 default: printf("\nInput invalid"); break;
             }
-            printf("\nClear screen [y/n]: "); scanf(" %c", &clear);
+            printf("\nClear screen? (Y/N): ");
+            while (1) {
+                clears = _getch();
+                printf("%c", clears);
+                if (toupper(clears) == 'Y' || toupper(clears) == 'N') {
+                    clear = clears;
+                    break;
+                } else {
+                    printf("\b");
+                }
+            }
             if(toupper(clear) == 'Y') {
                 clearscreen();
                 printf("=== MENU ===\n");
