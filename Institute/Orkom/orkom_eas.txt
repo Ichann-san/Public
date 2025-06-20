@@ -1,0 +1,566 @@
+1. Bahaya (hazard) yang terjadi pada pipeline disebabkan karena adanya ketergantungan data antara instruksi dengan instruksi lainnya. Cara yang digunakan untuk menghindari bahaya ini adalah …..
+Select one:
+a. semua jawaban benar.
+b.menunda eksekusi.
+c.memberikan instruksi NOP (no-operation).
+d.menggunakan operand forwarding.
+
+
+2. Jika sebuah komputer memiliki spesifikasi memori 32-bit, maka jumlah ruang alamat memori pada komputer tersebut sebesar :
+Select one:
+a.65.536 lokasi
+b.16.777.216 lokasi
+c.18.446.744.073.709.551.616 lokasi
+d.4.294.967.296 lokasi
+
+
+3. Pada perintah Load R2, LOC terdapat unsur atau bagian ini, kecuali :
+Select one:
+a.Memory
+b.Hard disk
+c.Register
+d.CPU
+
+4. Pada konfigurasi DMA dengan separate I/O bus:
+Select one:
+a.Operasi CPU tertunda satu kali
+b.Operasi CPU tidak tertunda
+c.Operasi CPU tertunda tiga kali
+d.Operasi CPU tertunda dua kali
+
+5. Superscalar processor mempunyai ciri berikut kecuali .....
+Select one:
+a.Mempunyai lebih dari satu prosesor
+b.Dapat mengeksekusi lebih dari satu instruksi tiap siklus waktu
+c.Dapat menghasilkan lebih banyak throughput setiap siklus waktu
+d.Mempunyai lebih dari satu unit pipeline
+
+6. Karakteristik dari RISC adalah :
+Select one:
+a.instruksi dengan resiko tinggi
+b.multi word instruction
+c.Lebih banyak instruki yang tidak sederhana
+d.single word instruction
+
+7. Ada lima tahap yang dilakukan untuk mengeksekusi sebuah instruksi yaitu Fetch (F), Decode (D), Compute (C), Memory (M), dan Write (W). Jika setiap tahapnya membutuhkan satu clock cycle, berapa clock cycle untuk menyelesaikan instruksi-instruksi berikut ini agar hasilnya benar?
+
+Add R2, R3, #100
+Substract R9, R2, #30
+
+Select one:
+a.9
+b.7
+c.6
+d.8
+
+8. Berapa hasil perkalian bilangan biner A = 110011 dan B = 101100 menggunakan algoritma bit-pair recoding dimana A adalah bilangan yang dikalikan (multiplicand) dan B adalah pengali (multiplier)?
+Select one:
+a.260
+b.228
+c.280
+d.240
+
+9.  Hasil penambahan bilangan 5 bit komplemen2 : 10011 + 01100 adalah :
+Select one:
+a.15
+b.over flow
+c.- 1 (minus 1)
+d.- 15 (minus 15)
+
+10. Bila perkalian berikut digunakan algoritma Booth, maka pengalinya adalah .....
+
+     1 0 0 1 1 0 1 0
+     1 0 0 0 1 1 0 1
+     ---------------
+
+Select one:
+a.-1 0 0 -1 0 -1 +1 0
+b.-1 0 0 +1 0 -1 +1 0
+c.-1 0 0 -1 0 -1 +1 -1
+d.-1 0 0 +1 0 -1 +1 -1
+
+11. Hasil pengurangan bilangan 5 bit komplemen2 : 10011 - 01100 adalah :
+Select one:
+a.- 1 (minus 1)
+b.over flow
+c.7
+d.- 15 (minus 15)
+
+12. Hitung waktu eksekusi dari program yang memiliki total 400 instruksi, termasuk 100 instruksi
+loop yang dieksekusi 26 kali. Asumsikan bahwa akses memori utama membutuhkan waktu 10 mikro detik.
+Select one:
+a.30.000 mikro detik
+b.26.300 mikro detik
+c.75.000 mikro detik
+d.29.000 mikro detik
+
+13. Gambar berikut ini merupakan datapath sebuah prosesor yang digunakan untuk mengeksekusi instruksi RISC-style dengan lima tahap.
+
+
+
+Jika instruksi berikut ini:
+
+          add R3, R4, #1000
+akan dieksekusi menggunakan datapath model ini, maka input apa yang akan diberikan pada muxB dan muxY?
+Select one:
+a.muxB: 1 dan muxY: 0
+b.muxB: 1 dan muxY: 1
+c.muxB: 0 dan muxY: 1
+d.muxB: 0 dan muxY: 0
+
+14. KIN = 0 dan DOUT = 1 menunjukkan :
+Select one:
+a.CPU bisa mentransfer data dari keyboard
+b.CPU tidak bisa mentransfer data ke display output
+c.CPU tidak bisa mentransfer data dari keyboard
+d.CPU bisa mentransfer data ke display output
+
+15. Mana yang benar dari pernyataan berikut ini:
+Select one:
+a.Algoritma Booth digunakan untuk perkalian dan pembagian bilangan bertanda.
+b.Semua jawaban salah.
+c.Multiplier bit-paired recoding merupakan cara untuk melakukan pembagian cepat.
+d.Algoritma restoring division maupun non-restoring division merupakan algoritma yang digunakan untuk perkalian dan pembagian.
+
+16. Ada dua instruksi pipeline sebagai berikut : Add R2, R3, #100 dan Subtract R9, R2, #30. Ada ketergantungan data antara dua instruksi ini karena :
+Select one:
+a.Register R9 merupakan register tujuan dari instruksi ke-2
+b.Register R2 menjadi register tujuan untuk instruksi ke 2
+c.Tidak terjadi dependensi data
+d.Karena register R2 tidak membawa data dari instruksi pertama ke instruksi kedua
+
+17. Static RAM bisa lebih cepat dari DRAM, karena:
+Select one:
+a.memiliki lebih banyak komponen
+b.modul tidak membutuhkan refresh
+c.lebih mahal per kilobyte dari pada DRAM
+d.digunakan untuk memory Utama
+
+18. Apakah keuntungan Static RAM dibandingan dengan Dynamic RAM?
+Select one:
+a.Digunakan di cache memori dan CPU register sehingga lebih cepat.
+b.Waktu proses lebih lambat.
+c.Semua jawaban salah.
+d.Harganya lebih murah.
+
+19. Berikut ini terdapat beberapa pernyataan berkaitan dengan sistem komputer
+(1) Jika dalam 1 word terdiri dari 32-bit, maka setiap alamat memori dapat menampung data sebesar 4 byte.
+(2) Pada big endian, data yang beralamat paling kecil diletakkan mulai dari sebelah paling kanan.
+(3) Pada little endian, data yang beralamat paling kecil diletakkan mulai dari sebelah paling kanan.
+Manakah pernyataan yang benar
+Select one:
+a.1
+b.3
+c.2
+d.1 dan 3
+
+20. Berikut ini adalah bahaya (hazard) dalam sistem pipeline kecuali: .....
+Select one:
+a.Structural hazard
+b.Processor hazard
+c.Control hazard
+d.Data hazard
+
+21. Pada organisasi pipe line dikenal hal-hal berikut ini, kecuali :
+Select one:
+a.Tingkat pipeline dibatasi oleh tahap pipeline paling lambat
+b.Speed-up tidak ditentukan oleh waktu untuk "mengisi pipa"
+c.Pipelining tidak membantu latensi tugas tunggal, tetapi membantu throughput seluruh beban kerja
+d.Panjang tahapan pipa yang tidak seimbang mengurangi percepatan
+
+22. Berikut adalah salah satu tahapan untuk mengeksekusi instruksi Store R1,X(R3) kecuali :
+Select one:
+a.Fetch instruksi dan increment PC.
+b.Simpan isi register R1 ke memory lokasi X + [R3].
+c.Decode instruksi dan baca register R3.
+d.Hitung effective address X + [R3].
+
+23. Pada pembagian restoring berikut berapa isian selanjutnya?
+
+                   0 0 0 0 0     1 0 1 0
+                   0 0 0 1 1   
+shift           0 0 0 0 1     0 1 0 -
+subtract    1 1 1 0 1
+                   ---------
+                  1 1 1 1 0   
+                  0 0 0 1 1
+                  ---------
+                        ?                 ?
+
+Select one:
+a.0 0 0 0 1    0 1 0 1
+b.0 0 0 1 1    0 1 1 0
+c.0 0 0 0 1    0 1 0 0
+d.0 0 1 0 1    0 0 0 0
+
+
+24. Memperbesar space memory merupakan salah satu fungsi dari
+Select one:
+a.Secondary Memory
+b.L1 Cache Memory
+c.Virtual Memory
+d.L2 Cache Memory
+
+25. BUS terdiri dari 3 jalur dengan fungsi untuk membawa
+Select one:
+a.Data, alamat dan interrupts
+b.Interrupts, alamat dan sinyal kontrol
+c.Data, alamat dan sinyal kontrol
+d.Data, debugging dan sinyal control
+
+26. Pada perkalian biner berikut berapa isian selanjutnya?
+
+            1 0 1 0            0 1 0 1
+        C               A                     Q
+        0          0 0 0 0            0 1 0 1
+        0          1 0 1 0            0 1 0 1
+        0          0 1 0 1            0 0 1 0
+        ?               ?                       ?
+
+Select one:
+
+a.1      0 1 0 1      0 0 0 1
+
+b.0      0 0 1 0      1 0 0 1
+
+c.0      0 1 0 1      0 0 1 0
+
+d.0      1 1 0 1      0 0 1 0
+
+27. Proses berikut terjadi saat instruksi Call SUB :
+Select one:
+a.PC <- SUB ; Push PC
+b.PC <- [SUB]; Push PC
+c.Push PC ; PC <- [SUB]
+d.Push PC ; PC <- SUB
+
+28. Ada suatu instruksi dengan urutan sebagai berikut :
+Load R2, LOC2
+Load R3, LOC3
+Add R4, R2,R3
+Store R4, LOC4
+Artinya secara ringkas adalah seperti di bawah ini, kecuali :
+Select one:
+a.memindahkan isi lokasi LOC2 ke R2
+b.Lokasi LOC4 berisi hasil penjumlahan R2 dan R3
+c.setelah akhir eksekusi, R3 tidak akan berubah nilainya
+d.Eksekusi instruksi terakhir adalah memindahkan lokasi LOC4 ke R4
+
+29. Pada Two Way Set Associative Mapping terdapat cache sebesar 8 KByte yang dibagi menjadi beberapa block masing-masing sebesar 8 Byte. Bila memory sebesar 16 Mbyte, maka besar TAG, SET dan WORD adalah .....
+Select one:
+a.TAG = 12, SET = 9, WORD = 3
+b.TAG = 12, SET = 10, WORD = 2
+c.TAG = 11, SET = 10, WORD = 3
+d.TAG = 8, SET = 13, WORD = 3
+
+30. Berikut ini ada dalam CPU kecuali:
+Select one:
+a.Cache memory
+b.MAR, MDR, IO AR dan IO DR
+c.ALU, Control Unit
+d.PC, IR, Register
+
+31. Berikut ini tidak termasuk Embedded system kecuali :
+Select one:
+a.Server
+b.Grid computer
+c.Laptop
+d.Washing machine
+
+32. Penundaan proses yang dilakukan oleh Perangkat I/O terhadap prosesor dinamakan
+Select one:
+a.Debugging
+b.Polling
+c.Interrupts
+d.DMA
+
+
+33. Berikut adalah salah satu tahapan untuk mengeksekusi instruksi Load R2,8(R1) kecuali :
+Select one:
+a.Hitung effective address X + [R1].
+b.Transfer isi memory lokasi X + [R1] ke register R1.
+c.Fetch instruksi dan increment PC.
+d.Decode instruksi dan baca register R2.
+
+34. Salah satu fitur dasar komputer adalah kemampuannya untuk mentransfer data ke dan dari perangkat I/O. Untuk melakukan hal tersebut, ada tiga bus (jalur) yaitu address bus, data bus, dan control bus yang menghubungkan antara prosesor, memori, dan perlatan I/O. Jalur apa yang digunakan oleh prosesor untuk meminta operasi baca (read) atau tulis (write)?
+Select one:
+a.address bus.
+b.semua jalur digunakan.
+c.control bus.
+d.data bus.
+
+35. Instruksi Store R2,8(R1) adalah bentuk :
+Select one:
+a.RISC dan CISC
+b.Bukan RISC dan CISC
+c.CISC
+d.RISC
+
+
+36. Setiap instruksi pipe line idealnya terdapat 5 tahap namun boleh 4 tahap saja, yaitu selain :
+Select one:
+a.Decode
+b.Read
+c.Computer
+d.Instruction Fetch
+
+37. Dari gambar dibawah ini, step manakah yang bisa dihilangkan
+
+Select one:
+a.3
+b.1
+c.2
+d.4
+
+38. Pada pembagian nonrestoring berikut berapa isian selanjutnya?
+
+                   0 0 0 0 0     1 0 1 0
+                   0 0 0 1 1   
+shift              0 0 0 0 1      0 1 0  -
+subtract           1 1 1 0 1
+                   ---------
+                    ?                  ?
+
+Select one:
+a.1 1 1 1 0      0 0 0 0
+b.1 1 1 1 0      0 1 0 1
+c.1 1 1 0 1      0 1 0 0
+d.1 1 1 1 0      0 1 0 0
+
+39. Komputer memiliki memori dengan pengalamatan byte ukuran wordnya 32-bit sesuai dengan skema big-endian. Sebuah program membaca karakter ASCII yang dimasukkan pada keyboard dan menyimpannya di lokasi byte berturut-turut, mulai dari lokasi 1000. Tunjukkan isi dari 2 word memori di lokasi 1000 dan 1004 setelah kata "Surabaya” di ketikkan.
+Select one:
+a.53,75,72,60 dan 62, 61,79,60
+b.52,75,72,61 dan 62, 61,79,61
+c.53,75,72,61 dan 62,61,79,61
+d.54,75,72,60 dan 62, 61,79,60
+
+40. Bila tidak ada kendala, kecepatan sistem pipeline sebesar berapa kali kecepatan sistem tanpa pipeline?
+Select one:
+a.4 kali
+b.3 kali
+c.5 kali
+d.6 kali
+
+41. Berikut adalah salah satu tahapan dari proses Nonrestoring Division, kecuali ..... Catatan: M adalah bilangan yang dikalikan dan Q adalah pengali.
+Select one:
+a.Geser A dan Q satu bit, bila tanda A = 0, kurangkan M dari A.
+b.Bila hasil akhir tanda A = 1 kurangkan M dari A.
+c.Geser A dan Q satu bit, bila tanda A = 1 tambahkan M ke  A.
+d.Bila hasil akhir tanda A = 1 tambahkan M ke A
+
+42. Pemetaan Data dan instruksi dalam sebuah blok dari sebuah main memory ke dalam sebuah set line pada cache memory dinamakan
+Select one:
+a.K-way Set Associative Mapping
+b.Virtual Mapping
+c.Direct Mapping
+d.Full Associative Mapping
+
+43. With cache size, line size, and main memory size, define how many tag, line, and word bits are there for associative mapping function.
+
+Cache size: 1 bytes
+Line size: 1 bytes
+Memory size: 512 bytes
+Select one:
+a.tag=0,word=9
+b.tag=1,word=9
+c.tag=9,word=1
+d.tag=9,word=0
+
+44. Bila A=1000, hasil eksekusi Load R5, (A) adalah:
+Select one:
+a.R5 berisi 1000
+b.Lokasi memori 1000 berisi data R5
+c.R5 berisi data dari lokasi memori 1000
+d.R5 berisi data dari memori yang alamatnya ditunjukkan dari data lokasi memori 1000
+
+45. Pada sistem Input/Output manakah yang tidak benar?
+Select one:
+a.Konfigurasi DMA bisa single bus
+b.Pada program controlled, CPU terus menerus mencek kondisi peralatan I/O
+c.Ada tiga macam organisasi I/O yaitu Program controlled, Interrupt driven dan DMA
+d.Tidak ada hubungan antara DMA dan CPU
+
+46. Sinkronisasi antara CPU dan I/O salah satu diantaranya adalah
+Select one:
+a.Random
+b.Round robin
+c.Sequential
+d.Polling
+
+47. Instruksi Add R1,R3 adalah CISC style. Bentuk RISC style nya adalah :
+Select one:
+a.Add R1, R3, R3
+b.Add R1,R1,R3
+c.Add R1,R2,R3
+d.Add R3,R1,R3
+
+48. Instruksi Add R2,#2500 adalah bentuk :
+Select one:
+a.RISC dan CISC
+b.Bukan RISC dan CISC
+c.CISC
+d.RISC
+
+49. Berikut adalah salah satu tahapan untuk mengeksekusi instruksi Store R1,X(R3) kecuali :
+Select one:
+a.Fetch instruksi dan increment PC.
+b.Hitung effective address X + [R3].
+c.Simpan isi register R1 ke memory lokasi X + [R3].
+d.Decode instruksi dan baca register R3.
+
+50. Jika format little-endian digunakan untuk menyimpan suatu bilangan, maka bit bertanda (sign bit) bilangan tersebut disimpan di .....
+
+Select one:
+a.urutan byte yang paling rendah dari word tersebut
+b.semua jawaban salah
+c.diantara urutan byte yang lebih tinggi dan lebih rendah
+d.urutan byte yang paling tinggi dari word tersebut
+
+51. Based on the memory module organization using memory chips below, which memory chip numbers would be selected if we give the address bits of: 000000000000000101011
+
+Select one:
+a.4,8,12,16
+b.1,2,3,4
+c.13,14,15,16
+d.1,5,9,13
+
+52. With cache size, line size, and main memory size, define how many tag, line, and word bits are there for direct mapping function.
+
+Cache size: 2 bytes
+Line size: 2 bytes
+Memory size: 512 bytes
+Select one:
+a.tag=8,line=0,word=1
+b.tag=1,line=1,word=8
+c.tag=1,line=8,word=0
+d.tag=0,line=0,word=8
+
+53. Program utilitas yang digunakan untuk menempatkan kode objek ke dalam memori untuk dieksekusi disebut .....
+
+Select one:
+a.compiler
+b.assembler
+c.linker
+d.loader
+
+54. Bila kita ingin membuat memori 8M x 16 dari memori 1M x 8, maka dibutuhkan .....
+Select one:
+a.8 memori 1M x 8
+b.16 memori 1M x 8
+c.16 memori 1M x 8 dan 1 dekoder
+d.16 memori 1M x 8 dan 1 multiplekser
+
+55. Sebuah instruksi dan beberapa data disimpan dalam memori seperti gambar berikut ini:
+
+
+
+
+
+Jika diketahui isi R2=1004, perubahan apa yang terjadi setelah instruksi ini dieksekusi?
+
+
+
+Select one:
+a.PC = 800; R2 = 1004; isi alamat 1004 = 450
+b.PC = 800; R2 = 1008; isi alamat 1004 = 450
+c.PC = 804; R2 = 1008; isi alamat 1004 = 1450
+d.PC = 804; R2 = 1004; isi alamat 1004 = 450
+
+
+56. Bila R2=2000, hasil eksekusi Load R1, (R2)+ adalah :
+Select one:
+a.R1 berisi data dari lokasi memori 2000
+b.R1 berisi data dari memori lokasi 2000 dan R2=2004
+c.R1 berisi 2000
+d.Lokasi memori 2000 berisi data R1
+
+57. Pada sistem Direct Mapping terdapat memory sebesar 1 Kbyte dan cache sebesar 64 Byte yang dibagi menjadi beberapa block masing-masing sebesar 4 Byte. Memory block 120 akan ditransfer ke block berapa di cache?
+Select one:
+a.Block 2
+b.Block 8
+c.Block 6
+d.Block 4
+
+58. Ketika terjadi data hazards dalam pipeline, manakah dari cara berikut yang memiliki cycle time yang paling kecil?
+Select one:
+a.Branch Delayed
+b.Branch Prediction
+c.Forwarding
+d.Stalling
+
+59. Pengali dari perkalian yang menggunakan algoritma Booth adalah sebagai berikut: 0  +1  -1  0  +1  -1  0 Bila dibuat bit-pair recording maka pengalinya adalah .....
+Select one:
+a.0  -1  +1  -2
+b.0  +1  +1  -2
+c.0  +1  -1  -2
+d.0 -1 -1 -2
+
+60. Karakteristik dari CISC adalah
+Select one:
+a.Arithmetic dan logic operations yang hanya dapat dilakukan pada operand dalam processor registers
+b.Lebih sedikit instruksi dalam set instruksi, sebagai konsekuensi dari simple addressing modes
+c.Semua instruksi fitting di single word
+d.Lebih banyak instruksi kompleks
+
+
+ans(inorder 1-60)
+a
+d
+b
+b
+a
+d
+c
+c
+c
+b
+b
+d
+a
+c
+a
+b
+b
+a
+b
+b
+b
+b
+a
+c
+c
+b
+c
+d
+a
+b
+d
+c
+b
+c
+c
+b
+d
+d
+c
+c
+b
+a
+d
+c
+d
+d
+b
+c
+b
+d
+d
+a
+d
+c
+c
+b
+b
+c
+c
+d
