@@ -1,0 +1,34 @@
+.container {
+  display: flex;
+  gap: 20px;
+  width: auto;
+  flex-grow: 1;
+  flex-direction: column;
+  align-items: center;
+    height: 100vh;
+}
+
+.teks {
+  font-size: 16px;
+  color: #ffffff;
+  background-color: #333;
+  text-align: center;
+  width: auto;
+  height: auto;
+}
+
+.gambar {
+  width: auto;
+  height: auto;
+  background-color: #444;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.tombol {
+  width: auto;
+  height: auto;
+  background-color: #555;
+  padding: 20px;
+  box-sizing: border-box;
+}
