@@ -1,0 +1,117 @@
+/* Efek background canvas */
+#bg-effect canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -2;
+}
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f69cee;
+  color: white;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  border-radius: 1rem;
+  width: 90%;
+  max-width: 700px;
+  background-color: transparent;
+}
+
+.teks {
+  font-size: 3rem;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+  color: #7a6074;
+  text-align: center;
+}
+
+.teks {
+  font-family: "Roboto Flex", sans-serif; /* Font wajib */
+  font-variation-settings: 'wght' 400, 'opsz' 9; /* Nilai awal */
+  transition: font-variation-settings 0.1s ease;
+}
+
+.gambar img {
+  width: 300px;
+  height: auto;
+  max-width: 100%;
+  object-fit: contain;
+  background: none;
+  padding: 20px;
+  border-radius: 1rem;
+}
+
+.tombol {
+  background: none;
+  padding: 1rem 2rem;
+  margin-top: 1.5rem;
+  border-radius: 1rem;
+  display: flex;
+  gap: 2rem;
+}
+
+.tombol button {
+  margin: 0 10px;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 2rem;
+  cursor: pointer;
+  background: #7a6074;
+  background: -webkit-linear-gradient(rgba(160, 159, 160, 0.84) 0%, rgba(250,201,250,1) 100%);
+  color: #7a6074;
+  transition: 0.2s;
+}
+
+.tombol button:hover {
+  background: #f69cee;
+  background: -webkit-linear-gradient(rgba(250, 201, 250, 1) 0%, rgba(160,159,160,0.84) 100%);
+  color: #f69cee;
+}
+
+@media (max-width: 480px) {
+  .teks {
+    font-size: 1.5rem;
+  }
+
+  .gambar img {
+    width: 80%;
+  }
+
+  .tombol {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+.wrapper2 {
+    background: #f69cee;
+    background: -webkit-linear-gradient(rgba(219,175,219,0.7399334733893557) 0%, rgba(250,201,250,1) 100%);
+    background: linear-gradient(rgba(160, 159, 160, 0.74) 0%, rgba(250,201,250,1) 100%);
+    position: fixed;
+    /* top: 50%; */
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    /* margin-top: -400px; */
+    overflow: hidden;
+    opacity: 1;
+    z-index: -1;
+}
