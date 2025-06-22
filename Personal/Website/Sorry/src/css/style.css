@@ -1,4 +1,3 @@
-/* Efek background canvas */
 #bg-effect canvas {
   position: fixed;
   top: 0;
@@ -42,8 +41,8 @@ body {
 }
 
 .teks {
-  font-family: "Roboto Flex", sans-serif; /* Font wajib */
-  font-variation-settings: 'wght' 400, 'opsz' 9; /* Nilai awal */
+  font-family: "Roboto Flex", sans-serif;
+  font-variation-settings: 'wght' 400, 'opsz' 9;
   transition: font-variation-settings 0.1s ease;
 }
 
@@ -63,12 +62,16 @@ body {
   margin-top: 1.5rem;
   border-radius: 1rem;
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   gap: 2rem;
 }
 
 .tombol button {
   margin: 0 10px;
   padding: 0.6rem 1.2rem;
+  width: 60%;
   font-size: 1rem;
   font-weight: bold;
   border: none;
