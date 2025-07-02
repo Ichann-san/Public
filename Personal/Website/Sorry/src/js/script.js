@@ -3,7 +3,7 @@ const items = [
   "Maaf ya sayang...",
   "I'm sorry...",
   "Aku minta maaf ya sayang",
-  "Maukah sayang aku maafin aku",
+  "Miaw miaw miaw miaw",
   "Makasih ya udah maafin aku",
   "Yeayy hehe"
 ];
@@ -29,7 +29,7 @@ const lagu = document.getElementById("lagu");
 teks.textContent = items[current];
 gambarImg.src = gif[current+1];
 yesbtn.textContent = "Maafin";
-nobtn.textContent = "Emoh";
+nobtn.textContent = "mls";
 
 function playAudio() {
   if (current === 6) {
@@ -44,7 +44,7 @@ function updatebuttons() {
     playAudio();
   } else {
     yesbtn.textContent = "Maafin";
-    nobtn.textContent = "Emoh";
+    nobtn.textContent = "mls";
   }
 }
 
