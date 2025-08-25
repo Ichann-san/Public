@@ -1,5 +1,5 @@
-#PERTEMUAN 1
-##Kemampuan mengetik
+# PERTEMUAN 1
+## Kemampuan mengetik
 
 Kemampuan mengetik keyboard 10 jari
 Nama  : Maulana Ikhsan
@@ -10,3 +10,4 @@ WPM   : 58
 
 Deskripsi
 Sebenarnya saya ngetik 8 jari doang, 2 jari di tangan kiri nya susah gerak rada pasif gitu jadinya cuman 8 jari
+
