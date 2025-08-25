@@ -10,5 +10,3 @@ Kemampuan mengetik keyboard 10 jari
 
 Deskripsi
 Sebenarnya saya ngetik 8 jari doang, 2 jari di tangan kiri nya susah gerak rada pasif gitu jadinya cuman 8 jari
-
-
