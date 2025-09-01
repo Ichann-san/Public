@@ -1,4 +1,4 @@
-# PERTEMUAN 1
+# PERTEMUAN 2
 ## Website profil
 
 Membuat landing page website berupa profil.html yang berisi
