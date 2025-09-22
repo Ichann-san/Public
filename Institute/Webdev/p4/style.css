@@ -1,0 +1,86 @@
+/* Basic Reset and Font */
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    background-color: #fff;
+    color: #333;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 20px auto;
+}
+
+/* Header Styles */
+header h1 {
+    color: #398E3D; /* Green color from the image */
+    font-weight: 700;
+    font-size: 2.5em;
+    margin-bottom: 0;
+}
+
+header p {
+    font-size: 1.1em;
+    margin-top: 5px;
+    color: #555;
+}
+
+/* Main Content Styles */
+main h2 {
+    font-size: 1.8em;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 10px;
+    margin-top: 40px;
+    margin-bottom: 20px;
+}
+
+/* Portfolio Grid Layout */
+.portfolio-grid {
+    display: flex;
+    gap: 20px; /* Spacing between cards */
+    flex-wrap: wrap; /* Allows cards to wrap to the next line on smaller screens */
+}
+
+/* Card Styles */
+.card {
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    background-color: #fff;
+    overflow: hidden; /* Ensures image corners are clipped by border-radius */
+    flex: 1 1 250px; /* Flex properties: grow, shrink, basis */
+    min-width: 250px;
+    box-sizing: border-box; /* Includes padding and border in the element's total width and height */
+}
+
+.card img {
+    width: 100%;
+    height: auto;
+    display: block; /* Removes bottom space under the image */
+}
+
+.card-content {
+    padding: 15px;
+}
+
+.card-content h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 1.2em;
+}
+
+.card-content h3 a {
+    color: #4b0082; /* Purple color for the link */
+    text-decoration: none;
+}
+
+.card-content h3 a:hover {
+    text-decoration: underline;
+}
+
+.card-content p {
+    margin: 0;
+    font-size: 0.9em;
+    line-height: 1.5;
+    color: #555;
+}

@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     const navLinks = [
-        { name: 'Home', href: '#' },
-        { name: 'Courses', href: '#' },
+        { name: 'Home', href: '#home-section' },
+        { name: 'Courses', href: '#course-section' },
         { name: 'Dashboard', href: '#' },
         { name: 'Forum', href: '#' }
     ];
@@ -12,51 +12,51 @@ document.addEventListener('DOMContentLoaded', () => {
             title: "HTML Front end",
             desc: "Create the frame for web programming using HTML as the base",
             img: "https://placehold.co/600x400/8b5cf6/ffffff?text=HTML",
-            badgeClasses: "bg-violet-100 text-violet-700 hover:bg-violet-200"
+            badgeClasses: "bg-violet-100 text-violet-700 hover:bg-violet-200",
+            link: "../html/course/html.html"
         },
         {
             title: "Javascript",
             desc: "Utilize the javascript functionality to load logical function into the design of the web",
             img: "https://placehold.co/600x400/facc15/000000?text=JavaScript",
-            badgeClasses: "bg-yellow-100 text-yellow-700 hover:bg-yellow-200"
+            badgeClasses: "bg-yellow-100 text-yellow-700 hover:bg-yellow-200",
+            link: "../html/course/javascript.html"
         },
         {
             title: "CSS layout",
             desc: "interactiovely customize the web design using CSS on your own",
             img: "https://placehold.co/600x400/22c55e/ffffff?text=CSS",
-            badgeClasses: "bg-green-100 text-green-700 hover:bg-green-200"
+            badgeClasses: "bg-green-100 text-green-700 hover:bg-green-200",
+            link: "../html/course/css.html"
         },
         {
             title: "Competitive Programming",
             desc: "Master algorithms and data structures to excel in programming contests.",
             img: "https://placehold.co/600x400/636f1/ffffff?text=Algorithms",
-            badgeClasses: "bg-indigo-100 text-indigo-700 hover:bg-indigo-200"
+            badgeClasses: "bg-indigo-100 text-indigo-700 hover:bg-indigo-200",
+            link: "../html/course/cp.html"
         },
         {
             title: "Intro to Quantum Computing",
             desc: "Explore the fascinating world of quantum mechanics and its computational power.",
             img: "https://placehold.co/600x400/ec4899/ffffff?text=Quantum",
-            badgeClasses: "bg-pink-100 text-pink-700 hover:bg-pink-200"
+            badgeClasses: "bg-pink-100 text-pink-700 hover:bg-pink-200",
+            link: "../html/course/quantum.html"
         },
-        // {
-        //     title: "Full-Stack Web Development",
-        //     desc: "Learn to build modern, responsive web applications from front to back.",
-        //     img: "https://placehold.co/600x400/22c55e/ffffff?text=Web+Dev",
-        //     badgeClasses: "bg-green-100 text-green-700 hover:bg-green-200"
-        // },
         {
             title: "UI/UX Design Fundamentals",
             desc: "Create beautiful and intuitive user interfaces that users will love.",
             img: "https://placehold.co/600x400/f97316/ffffff?text=UI/UX",
-            badgeClasses: "bg-orange-100 text-orange-700 hover:bg-orange-200"
+            badgeClasses: "bg-orange-100 text-orange-700 hover:bg-orange-200",
+            link: "../html/course/uiux.html"
         },
         {
             title: "Data Science with Python",
             desc: "Analyze data, create visualizations, and build predictive models.",
             img: "https://placehold.co/600x400/0ea5e9/ffffff?text=Data",
-            badgeClasses: "bg-sky-100 text-sky-700 hover:bg-sky-200"
+            badgeClasses: "bg-sky-100 text-sky-700 hover:bg-sky-200",
+            link: "../html/course/datascience.html"
         }
-        
     ];
 
     const desktopNavContainer = document.getElementById('desktop-nav-links');
@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="p-6">
                     <h3 class="text-xl font-semibold mb-2 text-gray-900 dark:text-white">${course.title}</h3>
                     <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">${course.desc}</p>
-                    <a href="#" class="inline-block ${course.badgeClasses} font-medium px-4 py-2 rounded-full text-sm transition-colors">View Course</a>
+                    <a href="${course.link || '#'}" class="inline-block ${course.badgeClasses} font-medium px-4 py-2 rounded-full text-sm transition-colors">View Course</a>
                 </div>
             </div>
         `).join('');
