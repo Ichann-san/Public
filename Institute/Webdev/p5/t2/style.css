@@ -1,0 +1,72 @@
+/* CSS untuk styling halaman */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 40px;
+}
+
+.container {
+    max-width: 600px;
+    margin: auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+header {
+    background-color: #ff8fab; /* Warna pink */
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+header h3 {
+    margin: 0;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+.form-group input {
+    width: 95%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button {
+    background-color: #76ffc9; /* Warna hijau tosca */
+    color: #333;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    float: right;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+#hasil-pencarian {
+    margin-top: 60px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.hasil-item {
+    background-color: #76ffc9; /* Warna hijau tosca */
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}

@@ -1,0 +1,11 @@
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+.suggestion-item:hover {
+    background-color: #f0f4f8;
+}
+
+.error-message {
+    height: 1.25rem;
+}

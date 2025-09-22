@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pencarian Kode Pos</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h3>Kode Pos Indonesia</h3>
+        </header>
+
+        <form id="form-kodepos">
+            <div class="form-group">
+                <label for="provinsi">Provinsi</label>
+                <input type="text" id="provinsi" placeholder="Contoh: Jawa Timur">
+            </div>
+            <div class="form-group">
+                <label for="kabupaten-kota">Kabupaten/Kota</label>
+                <input type="text" id="kabupaten-kota" placeholder="Contoh: Surabaya">
+            </div>
+            <div class="form-group">
+                <label for="kecamatan">Kecamatan</label>
+                <input type="text" id="kecamatan" placeholder="Contoh: Sukolilo">
+            </div>
+            <button type="submit">Cari</button>
+        </form>
+
+        <div id="hasil-pencarian">
+            <h4>Hasil Pencarian</h4>
+            <div id="loading" style="display: none;">Mencari...</div>
+            <div id="output"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
