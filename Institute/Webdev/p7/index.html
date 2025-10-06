@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding-top: 40px;
+        }
+        .form-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .form-title {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #343a40;
+        }
+        .btn-submit {
+            background-color: #007bff;
+            color: white;
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
+        .btn-submit:hover {
+            background-color: #0069d9;
+        }
+        .message_box {
+            margin-top: 20px;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+    </style>
+    <title>Contact Form</title>
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <h2 class="form-title">Contact Us</h2>
+            
+            <form name="ContactForm" method="post" action="">
+                <div class="form-group">
+                    <label for="name">Name:</label>
+                    <input type="text" class="form-control" id="name" placeholder="Enter your name">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email Address:</label>
+                    <input type="email" class="form-control" id="email" placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label for="message">Message:</label>
+                    <textarea name="message" class="form-control" id="message" placeholder="Enter your message"></textarea>
+                </div>
+                <button type="submit" class="btn btn-submit">Submit</button>
+            </form>
+            <div class="message_box"></div>
+        </div>
+    </div>
+
+    <script src="js/jquery.min.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>
