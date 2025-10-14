@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kontak Kami - QuantumLeap Tasks</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="navbar">
+        <div class="container">
+            <a href="index.html" class="logo">QuantumLeap</a>
+            <nav>
+                <ul>
+                    <li><a href="product.html">Produk</a></li>
+                    <li><a href="benefits.html">Manfaat</a></li>
+                    <li><a href="testimonials.html">Testimoni</a></li>
+                    <li><a href="contact.html" class="btn btn-primary">Coba Gratis</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="section">
+            <div class="container">
+                <h1 class="section-title">Hubungi Kami</h1>
+                <p class="text-center subtitle">Ada pertanyaan atau ingin mendaftar? Isi formulir di bawah ini.</p>
+                <form class="contact-form-full">
+                    <div class="form-group">
+                        <label for="name">Nama Lengkap</label>
+                        <input type="text" id="name" required>
+                    </div>
+                     <div class="form-group">
+                        <label for="email">Alamat Email</label>
+                        <input type="email" id="email" required>
+                    </div>
+                     <div class="form-group">
+                        <label for="subject">Subjek</label>
+                        <select id="subject">
+                            <option>Pertanyaan Umum</option>
+                            <option>Dukungan Teknis</option>
+                            <option>Pendaftaran Enterprise</option>
+                            <option>Klaim Promo Mahasiswa</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Pesan Anda</label>
+                        <textarea id="message" rows="5" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Kirim Pesan</button>
+                </form>
+                <div class="text-center" style="margin-top: 2rem;">
+                    <a href="index.html" class="btn btn-secondary">&larr; Kembali ke Beranda</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 QuantumLeap Inc. Semua Hak Cipta Dilindungi.</p>
+        </div>
+    </footer>
+</body>
+</html>
