@@ -1,3 +1,4 @@
+#include <iostream>
 #include <cstdio>
 #include <vector>
 #include <algorithm>
@@ -96,6 +97,8 @@ void solve(){
 }
 
 int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);  
     int n=getnum<int>();
     while(n--) solve();
     return 0;
