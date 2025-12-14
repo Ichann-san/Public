@@ -1,0 +1,10 @@
+CREATE TABLE `siswa` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `nis` VARCHAR(11) NOT NULL,
+  `nama` VARCHAR(50) NOT NULL,
+  `jenis_kelamin` VARCHAR(10) NOT NULL,
+  `telp` VARCHAR(15) NOT NULL,
+  `alamat` TEXT NOT NULL,
+  `foto` VARCHAR(200) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
