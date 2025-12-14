@@ -337,5 +337,8 @@ CREATE TABLE `siswa` (
 4. **Hapus file fisik** saat menghapus/mengubah data untuk menghemat storage
 
 ---
+<img width="2816" height="1536" alt="Gemini_Generated_Image_4zvtnl4zvtnl4zvt" src="https://github.com/user-attachments/assets/03c7e53f-294a-4934-a822-10c4a3d6b5ec" />
+
+
 
 *Dokumentasi ini dibuat untuk keperluan pembelajaran pengembangan web dengan PHP dan MySQL.*
