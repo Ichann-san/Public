@@ -44,7 +44,8 @@ int pred(char c){
 }
 
 string clear(string s){
-    while(int i=0 < s.length() && s[i]=='0') i++;
+    int i=0;
+    while(i<s.length() && s[i]=='0') i++;
     if(i == s.length()) return "0";
     else return s.substr(i);
 }
@@ -157,8 +158,8 @@ string bagi(string s1, string s2){
     else if(s1[0]!='-' && s2[0]=='-') return "-"+bagi(s1, s2.substr(1));
 
 
-    string temp, res;
-    int temp, res, count;
+    string temp="", res="";
+    int count;
     for(int i=0; i<s1.length(); i++){
         temp += s1[i];
         temp = clear(temp);
@@ -182,7 +183,6 @@ string modulo(string s1, string s2){
 
     string temp = "", res = "";
     int count = 0;
-
     for(int i=0; i<s1.length(); i++){
         temp += s1[i];
         temp = clear(temp);
@@ -231,8 +231,8 @@ string count_ops(string s){
                     case '-': ops_res = kurang(temp1, temp2); break;
                     case '+': ops_res = tambah(temp1, temp2); break;
                     case '*': ops_res = kali(temp1, temp2); break;
-                    // case '/': ops_res = bagi(temp1, temp2); break;
-                    // case '%': ops_res = modulo(temp1, temp2); break;
+                    case '/': ops_res = bagi(temp1, temp2); break;
+                    case '%': ops_res = modulo(temp1, temp2); break;
                 }
                 res.push(ops_res);
             } 
