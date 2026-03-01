@@ -1,8 +1,4 @@
 #include<bits/stdc++.h>
-#include<stack>
-#include<list>
-#include<vector>
-#include<string>
 using namespace std;
 
 string kurang(string s1, string s2);
