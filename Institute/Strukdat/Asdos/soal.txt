@@ -1,0 +1,62 @@
+ULTIMATE INTEGER CALCULATOR
+
+Deskripsi soal :
+Singkatnya, bikin kalkulator yang bisa mengimplementasikan operasi aritmetika (*, /, +, -, %)
+
+Format input
+Baris pertama berisi sebuah bilangan bulat N, yang menyatakan jumlah ekspresi aritmetika yang akan diberikan.
+N baris berikutnya masing-masing berisi sebuah string S yang merepresentasikan ekspresi aritmetika. String ini dijamin tidak mengandung spasi.
+
+Format output
+Untuk setiap baris ekspresi, cetak hasil evaluasinya dalam satu baris baru.
+
+Constraint
+- 1 <= N <= 100
+- 3 <= len(S) <= 100
+- String S hanya terdiri dari karakter angka (0-9) dan operator (+, -, *, /, %)
+- String S pasti diawali dan diakhiri dengan sebuah angka
+- Operasi dievaluasi berdasarkan aturan presedensi matematika standar
+- Untuk n/0 atau n%0 cetak "undefined"
+
+Contoh input :
+7
+1+2
+2*3
+1+2*3
+1+2*3/4-5%6
+2/0
+0*3
+65435467*76546
+
+Contoh output :
+3
+6
+7
+-3
+undefined
+0
+5008823256982
+
+
+Saran implementasi(biar bisa AC ga kena WA, TLE ama RTE) :
+1. Simpan max 3 linkedlist, jadi nanti penyimpanan angka nya dinamis dalam bentuk linkedlist
+2. Kerjain operasi menggunakan postfix/prefix stack(recommended biar parsing nya gampang)
+3. Pastiin linkedlist nya bisa handle minus
+
+
+
+Contoh testcases jahat :
+
+12
+99999999999999999999999999999999999999999999999999*999999999999999999999999999999999999999999999999
+100000000000000000000000000000000000000000000000-99999999999999999999999999999999999999999999999999
+1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000/1
+1234567890123456789012345678901234567890123456789012345678901234567890%9999999999999999999999999999
+9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9
+888888888888888888888888*777777777777777777777777/888888888888888888888888/777777777777777777777777
+0-99999999999999999999999999999999999*99999999999999999999999999999999999*9999999999999999999999999
+1/0
+0/0
+0-0
+0+0
+0%0
