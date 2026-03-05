@@ -1,0 +1,33 @@
+10
+Mondstadt
+Venti Jean Diluc Decarabian Andrius Albedo Klee Mona Eula Kaeya end
+Liyue
+Zhongli Guizhong Marchosius Xiao Ganyu HuTao Yelan Shenhe Ningguang Keqing end
+Inazuma
+Raiden Makoto Miko Sasayuri Chiyo Saiguu Ayaka Kazuha Kokomi Itto end
+Sumeru
+Nahida Rukkhadevata Deshret NabuMalikata Alhaitham Cyno Nilou Wanderer Tighnari Faruzan end
+Fontaine
+Furina Neuvillette Egeria Remus Cassiodor Navia Wriothesley Lyney Arlecchino Clorinde end
+Natlan
+Mavuika Xbalanque Tenoch Kinich Mualani Xilonen Chasca Citlali Iansan Ororon end
+Snezhnaya
+Tsaritsa Pierro Dottore Columbina Capitano Pantalone Sandrone Tartaglia Pulcinella Signora end
+Nod-Krai
+Lauma Linnea Nefer Flins Zibai Aino Ineffa Escoffier Skirk Snegurochka end
+Khaenriah
+Dainsleif Rhinedottir Durin Anfortas Halfdan Irmin Chlothar Vedrfolnir Perinheri Hroptatyr end
+Celestia
+Asmoday Phanes Istaroth Astaroth ShadeOfLife ShadeOfDeath Ronova Rerir Paimon Sustainer end
+11
+Lauma Lauma 10
+Lauma Linnea 1
+Lauma Snegurochka 1
+Deshret Wanderer 10
+Venti Zhongli 10
+Kaeya Dainsleif 10
+Decarabian Phanes 10
+Rukkhadevata Tsaritsa 5
+Alice Rhinedottir 10
+Snegurochka Hroptatyr 10
+NabuMalikata Egeria 10

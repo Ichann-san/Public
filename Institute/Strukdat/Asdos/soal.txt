@@ -1,62 +1,80 @@
-ULTIMATE INTEGER CALCULATOR
+Dodocommunication 2.0
 
-Deskripsi soal :
-Singkatnya, bikin kalkulator yang bisa mengimplementasikan operasi aritmetika (*, /, +, -, %)
+DESKRIPSI MASALAH:
+Lisa sedang mengembangkan Dodocommunication Device menjadi versi 2.0. Alat ini sekarang menggunakan resonansi Vision sebagai antena pengantar sinyal percakapan antar dua orang. 
 
-Format input
-Baris pertama berisi sebuah bilangan bulat N, yang menyatakan jumlah ekspresi aritmetika yang akan diberikan.
-N baris berikutnya masing-masing berisi sebuah string S yang merepresentasikan ekspresi aritmetika. String ini dijamin tidak mengandung spasi.
+Berikut adalah topologi dan cara kerja jaringan Dodocommunication 2.0:
+1. Jaringan Lokal (Satu Region): Para pengguna Vision di suatu region terhubung secara berantai membentuk lingkaran (Circular Ring). Sinyal dapat menjalar ke dua arah (kiri atau kanan) untuk mencari rute terpendek antar pengguna Vision.
+2. Jaringan Global (Antar Region): Jika target berada di region lain, sinyal akan dikirim menuju waypoint pusat yaitu "Tree of Life" di region asal.
+3. Transmisi Irminsul: Tree of Life dari seluruh penjuru Teyvat terhubung langsung dengan Irminsul, membentuk lingkaran raksasa (Circular Ring) dua arah. Sinyal akan memutari Irminsul menuju Tree of Life di region target, lalu diteruskan ke Vision target.
+4. Setiap kali sinyal berpindah tangan (transmisi/hop), kekuatannya akan melemah. Sinyal memiliki batas timeout selama K detik untuk setiap panggilan.
 
-Format output
-Untuk setiap baris ekspresi, cetak hasil evaluasinya dalam satu baris baru.
+Karena kamu sangatlah gabut, maka simulasikanlah sistem kerja dari Dodocommunication 2.0 ini!
 
-Constraint
-- 1 <= N <= 100
-- 3 <= len(S) <= 100
-- String S hanya terdiri dari karakter angka (0-9) dan operator (+, -, *, /, %)
-- String S pasti diawali dan diakhiri dengan sebuah angka
-- Operasi dievaluasi berdasarkan aturan presedensi matematika standar
-- Untuk n/0 atau n%0 cetak "undefined"
 
-Contoh input :
-7
-1+2
-2*3
-1+2*3
-1+2*3/4-5%6
-2/0
-0*3
-65435467*76546
+FORMAT INPUT:
+- Baris pertama berisi sebuah bilangan bulat N — jumlah region di Teyvat.
+- Diikuti oleh N blok input, di mana setiap blok terdiri dari:
+  - Sebuah string yang merupakan nama Region (sekaligus penanda Tree of Life).
+  - Deretan string nama-nama pengguna Vision di region tersebut, dipisahkan oleh spasi. Input daftar karakter di sebuah region selalu diakhiri dengan string "end".
+- Setelah semua blok region selesai, terdapat sebuah bilangan bulat Q — jumlah pengujian panggilan.
+- Q baris berikutnya masing-masing berisi tiga buah variabel yang dipisahkan spasi: A (string), B (string), dan K (integer). A adalah nama pengirim, B adalah nama penerima, dan K adalah Waktu timeout untuk panggilan tersebut.
 
-Contoh output :
+FORMAT OUTPUT:
+Untuk setiap uji coba komunikasi:
+- Jika rute terpendek (jumlah transmisi) <= K, cetak: "Connected on [jumlah transmisi] second"
+- Jika rute terpendek (jumlah transmisi) > K, atau salah satu karakter tidak ditemukan di database, cetak: "Signal lost"
+
+BATASAN (CONSTRAINTS):
+- 1 <= N <= 10
+- 1 <= Q <= 1.000
+- 1 <= K <= 10.000
+- Total pengguna Vision secara keseluruhan tidak akan melebihi 100.000 karakter.
+- Semua nama region dan karakter hanya terdiri dari huruf alfabet dan dijamin unik.
+
+CONTOH INPUT:
+4
+Mondstadt
+Amber Kaeya Diluc Venti Barbara Eula end
+Liyue
+Xiangling Zhongli Keqing Ningguang Ganyu end
+Inazuma
+Ayaka Thoma Yoimiya Raiden Yae end
+Sumeru
+Nahida Alhaitham Cyno Nilou Tighnari end
 3
-6
-7
--3
-undefined
-0
-5008823256982
+Amber Zhongli 3
+Kaeya Barbara 5
+Nahida Ganyu 10
+
+CONTOH OUTPUT:
+Signal lost
+Connected on 3 second
+Connected on 4 second
+
+PENJELASAN CONTOH:
+- Query 1 (Amber ke Zhongli, Maks 3): 
+  Rute terpendek: Amber -> Tree Mondstadt -> Tree Liyue -> Xiangling -> Zhongli. 
+  Total transmisi = 4 hop. Karena 4 > 3, komunikasi gagal (Signal lost).
+  
+- Query 2 (Kaeya ke Barbara, Maks 5): 
+  Satu region, sehingga sinyal mem-bypass Tree of Life. Rute melingkar terpendeknya (mundur): Kaeya -> Diluc -> Venti -> Barbara. 
+  Total transmisi = 3 hop. Karena 3 <= 5, komunikasi sukses (Connected on 3 second).
+  
+- Query 3 (Nahida ke Ganyu, Maks 10): 
+  Beda region. Rute terpendek memutar ke belakang saat di Liyue: Nahida -> Tree Sumeru -> Tree Liyue -> Ganyu. 
+  Total transmisi = 4 hop. Karena 4 <= 10, komunikasi sukses (Connected on 4 second).
 
 
-Saran implementasi(biar bisa AC ga kena WA, TLE ama RTE) :
-1. Simpan max 3 linkedlist, jadi nanti penyimpanan angka nya dinamis dalam bentuk linkedlist
-2. Kerjain operasi menggunakan postfix/prefix stack(recommended biar parsing nya gampang)
-3. Pastiin linkedlist nya bisa handle minus
-
-
-
-Contoh testcases jahat :
-
-12
-99999999999999999999999999999999999999999999999999*999999999999999999999999999999999999999999999999
-100000000000000000000000000000000000000000000000-99999999999999999999999999999999999999999999999999
-1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000/1
-1234567890123456789012345678901234567890123456789012345678901234567890%9999999999999999999999999999
-9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9/9
-888888888888888888888888*777777777777777777777777/888888888888888888888888/777777777777777777777777
-0-99999999999999999999999999999999999*99999999999999999999999999999999999*9999999999999999999999999
-1/0
-0/0
-0-0
-0+0
-0%0
+NOTES:
+Saat ini, diketahui terdapat 10 region di teyvat yaitu
+1. Mondstat
+2. Liyue
+3. Inazuma
+4. Sumeru
+5. Fontaine
+6. Natlan
+7. Nod-Krai
+8. Snezhnaya
+9. Khaenriah
+10. Celestia

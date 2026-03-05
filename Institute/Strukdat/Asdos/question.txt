@@ -1,0 +1,78 @@
+Dodocommunication 2.0
+
+PROBLEM DESCRIPTION:
+Lisa is upgrading the Dodocommunication Device to version 2.0. This device now uses Vision resonance as an antenna to transmit conversation signals between two people.
+
+Here is the topology and mechanism of the Dodocommunication 2.0 network:
+1. Local Network (Single Region): Vision holders in a region are connected sequentially, forming a Circular Ring. Signals can travel in both directions (left or right) to find the shortest route between Vision holders.
+2. Global Network (Inter-Region): If the target is in a different region, the signal will be sent to the central waypoint, the "Tree of Life," in the origin region.
+3. Irminsul Transmission: The Trees of Life from all over Teyvat are directly connected to Irminsul, forming a giant bi-directional Circular Ring. The signal will circle Irminsul to reach the target region's Tree of Life, and then be forwarded to the target Vision.
+4. Every time the signal changes hands (transmission/hop), its strength degrades. The signal has a timeout limit of K seconds for each call (where 1 hop takes 1 second).
+
+Since you have a lot of free time on your hands, simulate how the Dodocommunication 2.0 system works!
+
+INPUT FORMAT:
+- The first line contains an integer N — the number of regions in Teyvat.
+- Followed by N blocks of input, where each block consists of:
+  - A string representing the Region's name (which also acts as the Tree of Life indicator).
+  - A sequence of strings representing the names of Vision holders in that region, separated by spaces. The list of characters in a region always ends with the string "end".
+- After all region blocks, there is an integer Q — the number of communication test queries.
+- The next Q lines each contain three variables separated by spaces: A (string), B (string), and K (integer). A is the sender's name, B is the receiver's name, and K is the timeout duration for that call.
+
+OUTPUT FORMAT:
+For each communication test:
+- If the shortest route (number of transmissions) <= K, print: "Connected on [number of transmissions] second"
+- If the shortest route (number of transmissions) > K, or if either character is not found in the database, print: "Signal lost"
+
+CONSTRAINTS:
+- 1 <= N <= 10
+- 1 <= Q <= 1,000
+- 1 <= K <= 10,000
+- The total number of Vision users overall will not exceed 100,000 characters.
+- All region and character names consist only of alphabetic characters and are guaranteed to be unique.
+
+EXAMPLE INPUT:
+4
+Mondstadt
+Amber Kaeya Diluc Venti Barbara Eula end
+Liyue
+Xiangling Zhongli Keqing Ningguang Ganyu end
+Inazuma
+Ayaka Thoma Yoimiya Raiden Yae end
+Sumeru
+Nahida Alhaitham Cyno Nilou Tighnari end
+3
+Amber Zhongli 3
+Kaeya Barbara 5
+Nahida Ganyu 10
+
+EXAMPLE OUTPUT:
+Signal lost
+Connected on 3 second
+Connected on 4 second
+
+EXAMPLE EXPLANATION:
+- Query 1 (Amber to Zhongli, Max 3): 
+  Shortest route: Amber -> Tree Mondstadt -> Tree Liyue -> Xiangling -> Zhongli. 
+  Total transmission = 4 hops. Since 4 > 3, communication fails (Signal lost).
+  
+- Query 2 (Kaeya to Barbara, Max 5): 
+  Same region, so the signal bypasses the Tree of Life. The shortest circular route (backward) is: Kaeya -> Diluc -> Venti -> Barbara. 
+  Total transmission = 3 hops. Since 3 <= 5, communication succeeds (Connected on 3 second).
+  
+- Query 3 (Nahida to Ganyu, Max 10): 
+  Different regions. The shortest route wraps backward while in Liyue: Nahida -> Tree Sumeru -> Tree Liyue -> Ganyu. 
+  Total transmission = 4 hops. Since 4 <= 10, communication succeeds (Connected on 4 second).
+
+NOTES:
+Currently, it is known that there are 10 regions in Teyvat:
+1. Mondstadt
+2. Liyue
+3. Inazuma
+4. Sumeru
+5. Fontaine
+6. Natlan
+7. Nod-Krai
+8. Snezhnaya
+9. Khaenriah
+10. Celestia

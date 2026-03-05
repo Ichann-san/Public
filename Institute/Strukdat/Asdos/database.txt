@@ -1,0 +1,29 @@
+Mondstadt
+Albedo Amber Barbara Bennett Diluc Diona Eula Fischl Jean Kaeya Klee Lisa Mika Mona Noelle Razor Rosaria Sucrose Venti Varka Alice Decarabian Andrius Dvalin Timmie Wagner Huffman Godwin Gloria Flora Donna end
+
+Liyue
+Baizhu Beidou Chongyun Gaming Ganyu HuTao Keqing Ningguang Qiqi Sethos Shenhe Xiangling Xianyun Xiao Xingqiu Xinyan Yanfei Yaoyao Yelan YunJin Zhongli Guizhong Marchosius Ping MoonCarver MountainShaper Bosacius Menogias Bonanus Indarias Changsheng Yinger ChefMao Jiangxue SmileyYanxiao end
+
+Inazuma
+Ayaka Ayato Chiori Gorou Heizou Itto Kazuha Kirara Kokomi Raiden Sara Sayu Shinobu Thoma Yae Yoimiya Makoto Saiguu Chiyo Sasayuri Ruu Teppei Kazari Orobashi Kapatcir Taroumaru end
+
+Sumeru
+Alhaitham Candace Collei Cyno Dehya Dori Faruzan Layla Nahida Nilou Tighnari Wanderer Rukkhadevata Deshret NabuMalikata Apep Liloupar Jeht Jebrael Azar Dunyarzad Rahman Aravishnay end
+
+Fontaine
+Arlecchino Charlotte Chevreuse Clorinde Emilie Freminet Furina Lynette Lyney Navia Neuvillette Sigewinne Wriothesley Egeria Remus Cassiodor Alain Rene Jakob MaryAnn Carter Melus Focalors Idyia end
+
+Natlan
+Chasca Citlali Iansan Kachina Kinich Mavuika Mualani Ororon Xilonen Xbalanque Tenoch Tupac Wayob end
+
+Snezhnaya
+Tartaglia Tsaritsa Pierro Dottore Columbina Capitano Pantalone Sandrone Pulcinella Signora Teucer Tonia Anthon Ekaterina Viktor end
+
+Nod-Krai
+Aino Flins Ineffa Lauma Linnea Nefer Zibai Illuga Skirk Escoffier Rerir Helka Aamu Adieta Alvo Asimu Edenyo Grzymislawa Snegurochka end
+
+Khaenriah
+Dainsleif Rhinedottir Anfortas Halfdan Irmin Chlothar Vedrfolnir Perinheri Hroptatyr Surtalogi Durin end
+
+Celestia
+Asmoday Phanes Istaroth Astaroth ShadeOfLife ShadeOfDeath Ronova Paimon end
