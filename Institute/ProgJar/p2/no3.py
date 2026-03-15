@@ -1,20 +1,21 @@
-import socket
+import socket  # Import the socket module
 import unittest
 from io import StringIO
 from unittest.mock import patch, MagicMock
 
 def client_program():
+    # Target address and port as specified in the test case
     host = '127.0.0.1'
     port = 12345
 
-    # Create socket
+    # Create socket (IPv4, TCP)
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     
     # Connect to server
     client_socket.connect((host, port))
 
     # Sending message
-    message = b'Welcome into this client-server-client sending message program!'
+    message = 'Welcome into this client-server-client sending message program!'.encode()
     client_socket.send(message)
     print(f"Sending to server: {message.decode()}")
 
@@ -24,7 +25,6 @@ def client_program():
 
     # Close the socket
     client_socket.close()
-
 class TestClient(unittest.TestCase):
     @patch('socket.socket')
     def test_client_program(self, mock_socket):

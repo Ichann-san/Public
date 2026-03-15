@@ -3,42 +3,39 @@ import unittest
 from io import StringIO
 from unittest.mock import patch, MagicMock
 
+# Server functionality
 def handle_client_connection(client_socket, addr):
     """Handle a single client connection."""
     print(f"Got a connection from {addr}")
-
-    # Receiving message
-    data = client_socket.recv(1024)
     
-    if data:
-        message = data.decode('utf-8')
-        print(f"Received from client: {message}")
-        print(f"Sending back to client: {message}")
+    # send message
+    client_socket.send(b'Hello, Client!')
 
-    # Sending back the message
-    client_socket.send(data)
-
-    # Close the socket
+    # close socket
     client_socket.close()
 
 def start_server():
     """Start the server and listen for incoming connections."""
     # create socket
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    
+    # define the address
+    host = '127.0.0.1'        # Localhost
+    port = 12345        # Port to listen on
+    
+    # bind to address
+    server_socket.bind((host,port))
 
-    # define addre
-    host = '127.0.0.1'
-    port = 12345
-
-    # bind address to socket
-    server_socket.bind((host, port))
     # listen
     server_socket.listen(1)
     print(f"Listening on {host}:{port} ...")
+    
     try:
         while True:
-            # accept connection from client
+            # accept connection
             client_socket, addr = server_socket.accept()
+
+            # handle client connection 
             handle_client_connection(client_socket, addr)
     except KeyboardInterrupt:
         print("Server shutting down.")
@@ -46,6 +43,16 @@ def start_server():
         # close socket
         server_socket.close()
 
+
+class ExitLoopException(Exception):
+    pass
+
+# A 'null' stream that discards anything written to it
+class NullWriter(StringIO):
+    def write(self, txt):
+        pass
+
+# Unit test for server
 class TestServer(unittest.TestCase):
     @patch('socket.socket')
     def test_handle_client_connection(self, mock_socket):
@@ -53,17 +60,11 @@ class TestServer(unittest.TestCase):
         print('Test handle_client_connection ...')
         mock_client_socket = MagicMock()
         mock_addr = ('127.0.0.1', 12345)
-
-        mock_client_socket.recv.return_value = b'Welcome into this client-server-client sending message program!'
-        
         handle_client_connection(mock_client_socket, mock_addr)
         
-        mock_client_socket.recv.assert_called_with(1024)
-        print(f"recv called with: {mock_client_socket.recv.call_args}")
-        
-        mock_client_socket.send.assert_called_with(b'Welcome into this client-server-client sending message program!')
+        mock_client_socket.send.assert_called_with(b'Hello, Client!')
         print(f"send called with: {mock_client_socket.send.call_args}")
-
+        
         mock_client_socket.close.assert_called_once()
         print(f"close called with: {mock_client_socket.close.call_args}")
 
@@ -76,27 +77,28 @@ class TestServer(unittest.TestCase):
         mock_addr = ('127.0.0.1', 12345)
     
         mock_socket.return_value = mock_server_socket
-        mock_server_socket.accept.side_effect = [(mock_client_socket, mock_addr), KeyboardInterrupt]
+        # Use ExitLoopException to exit the loop after simulating a single client connection
+        mock_server_socket.accept.side_effect = [(mock_client_socket, mock_addr), ExitLoopException]
         
-        mock_client_socket.recv.return_value = b'Welcome into this client-server-client sending message program!'
-        
+        # Run start_server and catch the custom ExitLoopException to exit the test cleanly
         try:
             start_server()
             
-        except KeyboardInterrupt:
-            pass
+            # Ensure the loop was exited due to the ExitLoopException
+            mock_server_socket.accept.assert_called()
+            
+        except ExitLoopException:
+            pass  # Loop exited as expected
     
         print(f"accept called with: {mock_server_socket.accept.call_args}")
 
+        # Assertions to verify the server setup
         mock_server_socket.bind.assert_called_once_with(('127.0.0.1', 12345))
         print(f"bind called with: {mock_server_socket.bind.call_args}")
 
         mock_server_socket.listen.assert_called_once_with(1)
         print(f"listen called with: {mock_server_socket.listen.call_args}")
 
-class NullWriter(StringIO):
-    def write(self, txt):
-        pass
 
 if __name__ == '__main__':
     # Run unittest with a custom runner that suppresses output
@@ -104,5 +106,5 @@ if __name__ == '__main__':
     runner = unittest.TextTestRunner(stream=NullWriter())
     unittest.main(testRunner=runner, exit=False)
 
-    # Uncomment this if you want to run the server program, not running the unit test
+    # Uncomment this if you want to run the client program, not running the unit test
     # start_server()

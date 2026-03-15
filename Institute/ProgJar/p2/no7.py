@@ -14,8 +14,9 @@ def client_program():
     # connect to server
     client_socket.connect((host,port))
 
-    # send message
-    client_socket.send(b'Hello, Server!')
+    # receive message
+    message = client_socket.recv(1024)
+    print(f"Received from server: {message.decode()}")
 
     # close socket
     client_socket.close()
@@ -24,25 +25,25 @@ def client_program():
 class TestClient(unittest.TestCase):
     @patch('socket.socket')  # Mock the socket object
     def test_client_program(self, mock_socket):
-        # Create a mock socket instance
         mock_socket_instance = MagicMock()
         mock_socket.return_value = mock_socket_instance
 
-        # Call the function under test
-        client_program()
+        # Mock the server's response to "Hello, Client!"
+        mock_socket_instance.recv.return_value = b'Hello, Client!'
 
-        # Assert that connect was called with the right address
-        mock_socket_instance.connect.assert_called_once_with(('127.0.0.1', 12345))
+        client_program()  # Run the client program
+
+        # Verify connection to the correct server and port
+        mock_socket_instance.connect.assert_called_with(('127.0.0.1', 12345))
         print(f"connect called with: {mock_socket_instance.connect.call_args}")
 
-        # Assert that send was called with the right message
-        mock_socket_instance.send.assert_called_once_with(b'Hello, Server!')
-        print(f"send called with: {mock_socket_instance.send.call_args}")
+        # Verify the client receives a message
+        mock_socket_instance.recv.assert_called_with(1024)
+        print(f"recv called with: {mock_socket_instance.recv.call_args}")
 
-        # Assert that close was called
+        # Verify the client closes the socket after receiving the message
         mock_socket_instance.close.assert_called_once()
         print(f"close called with: {mock_socket_instance.close.call_args}")
-
 
 # A 'null' stream that discards anything written to it
 class NullWriter(StringIO):

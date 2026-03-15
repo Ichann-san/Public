@@ -46,8 +46,7 @@ string solve(const list<Region>& teyvat, int total_regions) {
     string source, destination;
     cin >> source >> destination >> maks;
 
-    Location src = search(teyvat, source);
-    Location dst = search(teyvat, destination);
+    Location src = search(teyvat, source), dst = search(teyvat, destination);
     if (!src.found || !dst.found) return "Signal lost";
 
     if (src.region_idx == dst.region_idx) jarak = get_distance(src.pos, dst.pos, src.ring_size - 1);

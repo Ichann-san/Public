@@ -25,7 +25,7 @@ def start_server():
     port = 12345
 
     # bind
-    server_socket.bind((host, port))
+    server_socket.bind((host,port))
 
     # listen
     server_socket.listen(1)
@@ -43,7 +43,6 @@ def start_server():
     finally:
         # close socket
         server_socket.close()
-
 
 class ExitLoopException(Exception):
     pass
