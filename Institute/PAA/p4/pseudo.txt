@@ -1,0 +1,50 @@
+GLOBAL DECLARATION
+    dp : array[0..254] of integer
+
+PROCEDURE print(n : 128-bit integer)
+    s : array[0..44] of character
+    len, i : integer
+
+    if n = 0 then
+        print("0\n")
+        return
+    
+    len <- 0
+    while n > 0 do
+        s[len] <- character of (n mod 10)
+        n <- n div 10
+        len <- len + 1
+    
+    for i <- len - 1 downto 0 do
+        print(s[i])
+        
+    print("\n")
+
+PROCEDURE solve()
+    n, r : integer
+    q, ans : 128-bit integer
+
+    while (read input n) is successful do
+        r <- n mod 50
+        q <- n div 50
+
+        ans <- 0
+        ans <- ans + 1 * dp[r]       * (q-1) * (q-2) * (q-3) * (q-4)
+        ans <- ans - 4 * dp[r+50]    * q     * (q-2) * (q-3) * (q-4)
+        ans <- ans + 6 * dp[r+100]   * q     * (q-1) * (q-3) * (q-4)
+        ans <- ans - 4 * dp[r+150]   * q     * (q-1) * (q-2) * (q-4)
+        ans <- ans + 1 * dp[r+200]   * q     * (q-1) * (q-2) * (q-3)
+        
+        print(ans div 24)
+
+MAIN PROGRAM
+    dp[0] <- 1
+    coins : array[0..4] of integer <- [1, 5, 10, 25, 50]
+    i, j, c : integer
+
+    for i <- 0 to 4 do
+        c <- coins[i]
+        for j <- c to 250 do
+            dp[j] <- dp[j] + dp[j - c]
+            
+    solve()
