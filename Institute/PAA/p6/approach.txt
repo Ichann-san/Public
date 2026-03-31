@@ -1,0 +1,16 @@
+/*
+ * Circular Garland Coloring — Chromatic Polynomial of Cycle C_n
+ *
+ * Derivation via Inclusion-Exclusion:
+ *   Let A_{i,j} = set of colourings where adjacent lamps i,j share a colour.
+ *   |A_{i1,j1} ∩ ... ∩ A_{ir,jr}| = k^(n-r) if r < n, or k if r = n.
+ *
+ *   By inclusion-exclusion:
+ *     f(n,k) = Σ_{r=0}^{n-1} (-1)^r * C(n,r) * k^(n-r) + (-1)^n * C(n,n) * k
+ *
+ *   Adding and subtracting (-1)^n simplifies to:
+ *     f(n,k) = Σ_{r=0}^{n} (-1)^r * C(n,r) * k^(n-r) + (-1)^n * (k-1)
+ *            = (k-1)^n + (-1)^n * (k-1)        [by binomial theorem]
+ *
+ * Complexity: O(log n) time via recursive fast exponentiation, O(log n) stack space
+ */
