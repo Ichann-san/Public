@@ -21,16 +21,16 @@ ll modulo(string num, ll a) {
 }
 
 void solve(){
-    char tmpn[1002], tmpk[1002];
-    scanf("%s %s", tmpn, tmpk);
-    string n(tmpn), k(tmpk);
+    char n[1002], k[1002];
+    scanf("%s %s", n, k);
 
-    ll ans, mod = 1000000007LL;
+    ll ans, len = 0, mod = 1000000007LL;
     ll K = modulo(k, mod), N = modulo(n, mod-1);
+    while (n[len]) len++;
 
-    if (n == "1") ans = K;
+    if (n[0]=='1' && len==1) ans = K;
     else {
-        ll sign = ((n.back() - '0') & 1) ? -1 : 1, temp = (K - 1 + mod) % mod;
+        ll sign = ((n[len-1] - '0') & 1) ? -1 : 1, temp = (K - 1 + mod) % mod;
         ll nexp = mod_pow(temp, N, mod);
         ans = (nexp + sign*temp + mod)% mod;
     }
