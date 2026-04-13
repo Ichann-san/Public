@@ -1,79 +1,87 @@
+-- Active: 1761461509284@@127.0.0.1@3306@pertemuan7
 -- Active: 1761461509284@@127.0.0.1@3306@pertemuan6
-CREATE TABLE customers (
-    ID INT PRIMARY KEY,
-    NAME VARCHAR(50),
-    AGE INT,
-    ADDRESS VARCHAR(100),
-    SALARY DECIMAL(10, 2)
+CREATE DATABASE pertemuan7;
+
+-- ddl dml
+CREATE TABLE DataPasien (
+    IDPasien VARCHAR(10) PRIMARY KEY,
+    NoKtp VARCHAR(20),
+    Nama_Pasien VARCHAR(50)
 );
 
-INSERT INTO customers (`ID`, `NAME`, `AGE`, `ADDRESS`, `SALARY`) VALUES
-(1, 'Ramesh', 32, 'Ahmedabad', 2000.00),
-(2, 'Khilan', 25, 'Delhi', 1500.00),
-(3, 'kaushik', 23, 'Kota', 2000.00),
-(4, 'Chaitali', 25, 'Mumbai', 6500.00),
-(5, 'Hardik', 27, 'Bhopal', 8500.00),
-(6, 'Komal', 22, 'MP', 4500.00);
-
-CREATE VIEW HighSalaryCustomers AS
-SELECT NAME, SALARY, AGE
-FROM customers
-WHERE SALARY > 2000.00;
-
-CREATE VIEW SalaryPercentageView AS
-SELECT 
-    NAME, 
-    (SALARY / (SELECT SUM(SALARY) FROM customers)) * 100 AS Percentage
-FROM customers
-ORDER BY Percentage DESC;
-
-CREATE TABLE salary_log (
-    IDLog INT AUTO_INCREMENT PRIMARY KEY,
-    date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    previous_salary DECIMAL(10,2),
-    next_salary DECIMAL(10,2)
+CREATE TABLE Dokter (
+    NID VARCHAR(10) PRIMARY KEY,
+    KodePoli VARCHAR(10),
+    Nama VARCHAR(50)
 );
 
-DELIMITER //
-CREATE TRIGGER AfterSalaryUpdate
-AFTER UPDATE ON customers
-FOR EACH ROW
-BEGIN
-    IF OLD.SALARY <> NEW.SALARY THEN
-        INSERT INTO salary_log (date, previous_salary, next_salary)
-        VALUES (NOW(), OLD.SALARY, NEW.SALARY);
-    END IF;
-END; //
-DELIMITER ;
+CREATE TABLE Poli (
+    KodePoli VARCHAR(10) PRIMARY KEY,
+    NamaPoli VARCHAR(50)
+);
 
-DELIMITER //
-CREATE TRIGGER BeforeInsertSalary
-BEFORE INSERT ON customers
-FOR EACH ROW
-BEGIN
-    IF NEW.SALARY > 8500 THEN
-        SET NEW.SALARY = 8500;
-    ELSEIF NEW.SALARY < 1500 THEN
-        SET NEW.SALARY = 1500;
-    END IF;
-END; //
-DELIMITER ;
+CREATE TABLE Pemeriksaan (
+    IDPeriksa VARCHAR(10) PRIMARY KEY,
+    NID VARCHAR(10),
+    IDPasien VARCHAR(10),
+    TglPeriksa VARCHAR(20),
+    Diagnosa VARCHAR(50)
+);
 
-DELIMITER //
-CREATE TRIGGER BeforeUpdateSalary
-BEFORE UPDATE ON customers
-FOR EACH ROW
-BEGIN
-    IF NEW.SALARY > 8500 THEN
-        SET NEW.SALARY = 8500;
-    ELSEIF NEW.SALARY < 1500 THEN
-        SET NEW.SALARY = 1500;
-    END IF;
-END; //
-DELIMITER ;
+-- data insert
+INSERT INTO DataPasien VALUES
+('PS00006', '3507254111940001', 'Lidra Trifidya'),
+('PS00007', '3606125204940003', 'Yutika Amelia Effendi');
 
-INSERT INTO customers (ID, NAME, AGE, ADDRESS, SALARY) 
-VALUES (7, 'Anton', 24, 'Bandung', 1000.00);
+INSERT INTO Dokter VALUES
+('D009', 'P01', 'Dr. Budikusnaedi'),
+('D010', 'P02', 'Dr. Hariyanto Kusuma'),
+('D011', 'P02', 'Dr. Sri Herianti'),
+('D012', 'P03', 'Drg. Elvin Purwantari');
 
-INSERT INTO customers (ID, NAME, AGE, ADDRESS, SALARY) 
-VALUES (8, 'Siti', 29, 'Surabaya', 10000.00);
+INSERT INTO Poli VALUES
+('P01', 'Bedah Umum'),
+('P02', 'Mulut'),
+('P03', 'THT');
+
+INSERT INTO Pemeriksaan VALUES
+('C001', 'D009', 'PS00006', '01-Jan-15', 'Radang Usus Buntu'),
+('C002', 'D010', 'PS00007', '02-Jan-15', 'Gigi Berlubang'),
+('C003', 'D011', 'PS00007', '10-Feb-15', 'Flu'),
+('C004', 'D009', 'PS00007', '02-May-15', 'Radang Usus Buntu');
+
+-- abstract table
+CREATE TABLE R (A INT, B INT);
+CREATE TABLE S (B INT, C INT);
+CREATE TABLE R2 (B INT, C INT);
+
+-- table data
+INSERT INTO R VALUES (1, 2), (5, 6), (1, 2);
+INSERT INTO S VALUES (3, 4), (7, 8);
+INSERT INTO R2 VALUES (5, 6), (7, 8), (9, 10);
+
+SELECT IDPasien, TglPeriksa FROM Pemeriksaan
+WHERE Diagnosa = 'Gigi Berlubang' OR Diagnosa = 'Flu';
+
+SELECT dp.NoKtp, dp.Nama_Pasien FROM DataPasien dp
+JOIN Pemeriksaan p ON dp.IDPasien = p.IDPasien
+WHERE p.TglPeriksa LIKE '%May%';
+
+SELECT  dp.Nama_Pasien, d.Nama AS Nama_Dokter, pl.NamaPoli, p.TglPeriksa FROM Pemeriksaan p
+JOIN DataPasien dp ON p.IDPasien = dp.IDPasien
+JOIN Dokter d ON p.NID = d.NID
+JOIN Poli pl ON d.KodePoli = pl.KodePoli
+WHERE d.Nama = 'Dr. Budikusnaedi';
+
+SELECT DISTINCT A, B FROM R WHERE (A * B) > 5;
+
+SELECT DISTINCT C FROM R2;
+
+SELECT DISTINCT R.A, R.B, S.B AS S_B, S.C FROM R CROSS JOIN S;
+
+SELECT DISTINCT R.A, R.B, R2.B AS R2_B, R2.C FROM R
+JOIN R2 ON R.B < R2.C;
+
+SELECT DISTINCT S.C FROM R
+NATURAL JOIN R2
+NATURAL JOIN S;
