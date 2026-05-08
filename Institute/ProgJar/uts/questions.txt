@@ -1,0 +1,301 @@
+questions
+
+q1
+HTTP Basic Authentication
+
+Description: Write a Python program using the socket module that creates a Basic
+ Authentication header and makes an authenticated GET request.
+Your task is to implement the following functions:
+1. build_basic_auth(username: str, password: str) -> str: This function creates
+an HTTP Basic Authentication header value. Encode credentials as base64 in the f
+ormat 'Basic <base64(username:password)>'.
+2. get_with_basic_auth() -> int: This function creates a socket, connects to 'ht
+tpbin.org' on port 80, sends a GET request to '/basic-auth/user/password' with t
+he Authorization header using build_basic_auth('user', 'password'), and returns
+the HTTP status code.
+Input: None.
+Output (without unit test): The HTTP status code.
+Output (with unit test):
+Testing build_basic_auth ...
+test attribute passed: Basic dXNlcjpwYXNzd29yZA== is equal to Basic dXNlcjpwYXNz
+d29yZA==
+Testing get_with_basic_auth ...
+connect called with: call(('httpbin.org', 80))
+send called with: call(b'GET /basic-auth/user/password HTTP/1.1\r\nHost: httpbin
+.org\r\nAuthorization: Basic dXNlcjpwYXNzd29yZA==\r\nConnection: close\r\n\r\n')
+recv called with: call(4096)
+test attribute passed: 200 is equal to 200
+ 
+
+
+
+q2
+HTTP Basic Authentication
+
+Description: Write a Python program using the socket module that creates a Basic
+ Authentication header and makes an authenticated GET request.
+Your task is to implement the following functions:
+1. build_basic_auth(username: str, password: str) -> str: This function creates
+an HTTP Basic Authentication header value. Encode credentials as base64 in the f
+ormat 'Basic <base64(username:password)>'.
+2. get_with_basic_auth() -> int: This function creates a socket, connects to 'ht
+tpbin.org' on port 80, sends a GET request to '/basic-auth/user/password' with t
+he Authorization header using build_basic_auth('user', 'password'), and returns
+the HTTP status code.
+Input: None.
+Output (without unit test): The HTTP status code.
+Output (with unit test):
+Testing build_basic_auth ...
+test attribute passed: Basic dXNlcjpwYXNzd29yZA== is equal to Basic dXNlcjpwYXNz
+d29yZA==
+Testing get_with_basic_auth ...
+connect called with: call(('httpbin.org', 80))
+send called with: call(b'GET /basic-auth/user/password HTTP/1.1\r\nHost: httpbin
+.org\r\nAuthorization: Basic dXNlcjpwYXNzd29yZA==\r\nConnection: close\r\n\r\n')
+recv called with: call(4096)
+test attribute passed: 200 is equal to 200
+ 
+
+
+q3
+HTTP Basic Authentication
+
+Description: Write a Python program using the socket module that creates a Basic
+ Authentication header and makes an authenticated GET request.
+Your task is to implement the following functions:
+1. build_basic_auth(username: str, password: str) -> str: This function creates
+an HTTP Basic Authentication header value. Encode credentials as base64 in the f
+ormat 'Basic <base64(username:password)>'.
+2. get_with_basic_auth() -> int: This function creates a socket, connects to 'ht
+tpbin.org' on port 80, sends a GET request to '/basic-auth/user/password' with t
+he Authorization header using build_basic_auth('user', 'password'), and returns
+the HTTP status code.
+Input: None.
+Output (without unit test): The HTTP status code.
+Output (with unit test):
+Testing build_basic_auth ...
+test attribute passed: Basic dXNlcjpwYXNzd29yZA== is equal to Basic dXNlcjpwYXNz
+d29yZA==
+Testing get_with_basic_auth ...
+connect called with: call(('httpbin.org', 80))
+send called with: call(b'GET /basic-auth/user/password HTTP/1.1\r\nHost: httpbin
+.org\r\nAuthorization: Basic dXNlcjpwYXNzd29yZA==\r\nConnection: close\r\n\r\n')
+recv called with: call(4096)
+test attribute passed: 200 is equal to 200
+ 
+
+
+
+q4
+HTTP Basic Authentication
+
+Description: Write a Python program using the socket module that creates a Basic
+ Authentication header and makes an authenticated GET request.
+Your task is to implement the following functions:
+1. build_basic_auth(username: str, password: str) -> str: This function creates
+an HTTP Basic Authentication header value. Encode credentials as base64 in the f
+ormat 'Basic <base64(username:password)>'.
+2. get_with_basic_auth() -> int: This function creates a socket, connects to 'ht
+tpbin.org' on port 80, sends a GET request to '/basic-auth/user/password' with t
+he Authorization header using build_basic_auth('user', 'password'), and returns
+the HTTP status code.
+Input: None.
+Output (without unit test): The HTTP status code.
+Output (with unit test):
+Testing build_basic_auth ...
+test attribute passed: Basic dXNlcjpwYXNzd29yZA== is equal to Basic dXNlcjpwYXNz
+d29yZA==
+Testing get_with_basic_auth ...
+connect called with: call(('httpbin.org', 80))
+send called with: call(b'GET /basic-auth/user/password HTTP/1.1\r\nHost: httpbin
+.org\r\nAuthorization: Basic dXNlcjpwYXNzd29yZA==\r\nConnection: close\r\n\r\n')
+recv called with: call(4096)
+test attribute passed: 200 is equal to 200
+ 
+
+
+q5
+HTTP Basic Authentication
+
+Description: Write a Python program using the socket module that creates a Basic
+ Authentication header and makes an authenticated GET request.
+Your task is to implement the following functions:
+1. build_basic_auth(username: str, password: str) -> str: This function creates
+an HTTP Basic Authentication header value. Encode credentials as base64 in the f
+ormat 'Basic <base64(username:password)>'.
+2. get_with_basic_auth() -> int: This function creates a socket, connects to 'ht
+tpbin.org' on port 80, sends a GET request to '/basic-auth/user/password' with t
+he Authorization header using build_basic_auth('user', 'password'), and returns
+the HTTP status code.
+Input: None.
+Output (without unit test): The HTTP status code.
+Output (with unit test):
+Testing build_basic_auth ...
+test attribute passed: Basic dXNlcjpwYXNzd29yZA== is equal to Basic dXNlcjpwYXNz
+d29yZA==
+Testing get_with_basic_auth ...
+connect called with: call(('httpbin.org', 80))
+send called with: call(b'GET /basic-auth/user/password HTTP/1.1\r\nHost: httpbin
+.org\r\nAuthorization: Basic dXNlcjpwYXNzd29yZA==\r\nConnection: close\r\n\r\n')
+recv called with: call(4096)
+test attribute passed: 200 is equal to 200
+ 
+
+
+
+q6
+HTTP Basic Authentication
+
+Description: Write a Python program using the socket module that creates a Basic
+ Authentication header and makes an authenticated GET request.
+Your task is to implement the following functions:
+1. build_basic_auth(username: str, password: str) -> str: This function creates
+an HTTP Basic Authentication header value. Encode credentials as base64 in the f
+ormat 'Basic <base64(username:password)>'.
+2. get_with_basic_auth() -> int: This function creates a socket, connects to 'ht
+tpbin.org' on port 80, sends a GET request to '/basic-auth/user/password' with t
+he Authorization header using build_basic_auth('user', 'password'), and returns
+the HTTP status code.
+Input: None.
+Output (without unit test): The HTTP status code.
+Output (with unit test):
+Testing build_basic_auth ...
+test attribute passed: Basic dXNlcjpwYXNzd29yZA== is equal to Basic dXNlcjpwYXNz
+d29yZA==
+Testing get_with_basic_auth ...
+connect called with: call(('httpbin.org', 80))
+send called with: call(b'GET /basic-auth/user/password HTTP/1.1\r\nHost: httpbin
+.org\r\nAuthorization: Basic dXNlcjpwYXNzd29yZA==\r\nConnection: close\r\n\r\n')
+recv called with: call(4096)
+test attribute passed: 200 is equal to 200
+ 
+
+
+
+q7
+HTTP Basic Authentication
+
+Description: Write a Python program using the socket module that creates a Basic
+ Authentication header and makes an authenticated GET request.
+Your task is to implement the following functions:
+1. build_basic_auth(username: str, password: str) -> str: This function creates
+an HTTP Basic Authentication header value. Encode credentials as base64 in the f
+ormat 'Basic <base64(username:password)>'.
+2. get_with_basic_auth() -> int: This function creates a socket, connects to 'ht
+tpbin.org' on port 80, sends a GET request to '/basic-auth/user/password' with t
+he Authorization header using build_basic_auth('user', 'password'), and returns
+the HTTP status code.
+Input: None.
+Output (without unit test): The HTTP status code.
+Output (with unit test):
+Testing build_basic_auth ...
+test attribute passed: Basic dXNlcjpwYXNzd29yZA== is equal to Basic dXNlcjpwYXNz
+d29yZA==
+Testing get_with_basic_auth ...
+connect called with: call(('httpbin.org', 80))
+send called with: call(b'GET /basic-auth/user/password HTTP/1.1\r\nHost: httpbin
+.org\r\nAuthorization: Basic dXNlcjpwYXNzd29yZA==\r\nConnection: close\r\n\r\n')
+recv called with: call(4096)
+test attribute passed: 200 is equal to 200
+ 
+
+
+
+q8
+HTTP Basic Authentication
+
+Description: Write a Python program using the socket module that creates a Basic
+ Authentication header and makes an authenticated GET request.
+Your task is to implement the following functions:
+1. build_basic_auth(username: str, password: str) -> str: This function creates
+an HTTP Basic Authentication header value. Encode credentials as base64 in the f
+ormat 'Basic <base64(username:password)>'.
+2. get_with_basic_auth() -> int: This function creates a socket, connects to 'ht
+tpbin.org' on port 80, sends a GET request to '/basic-auth/user/password' with t
+he Authorization header using build_basic_auth('user', 'password'), and returns
+the HTTP status code.
+Input: None.
+Output (without unit test): The HTTP status code.
+Output (with unit test):
+Testing build_basic_auth ...
+test attribute passed: Basic dXNlcjpwYXNzd29yZA== is equal to Basic dXNlcjpwYXNz
+d29yZA==
+Testing get_with_basic_auth ...
+connect called with: call(('httpbin.org', 80))
+send called with: call(b'GET /basic-auth/user/password HTTP/1.1\r\nHost: httpbin
+.org\r\nAuthorization: Basic dXNlcjpwYXNzd29yZA==\r\nConnection: close\r\n\r\n')
+recv called with: call(4096)
+test attribute passed: 200 is equal to 200
+ 
+
+
+q9
+HTTP Server POST Handler
+
+Description: Write a Python program using the socket module that creates an HTTP
+ server capable of handling both GET and POST requests.
+Your task is to implement the following functions:
+1. create_server() -> socket.socket: This function creates a TCP socket, sets SO
+_REUSEADDR, binds to ('localhost', 8080), listens with backlog 5, and returns th
+e socket.
+2. parse_request(data: str) -> tuple: This function parses the raw HTTP request
+and returns a tuple (method, path, body) where body is the request body for POST
+ requests (empty string for GET).
+3. serve() -> None: This function runs the server using select, parses the reque
+st using parse_request, returns the method and path as JSON response, and handle
+s KeyboardInterrupt.
+Input: None.
+Output (without unit test): The server handles GET and POST requests.
+Output (with unit test):
+Testing create_server ...
+bind called with: call(('localhost', 8080))
+listen called with: call(5)
+Testing parse_request ...
+test attribute passed: GET is equal to GET
+test attribute passed: /index.html is equal to /index.html
+test attribute passed: is equal to
+test attribute passed: POST is equal to POST
+test attribute passed: /submit is equal to /submit
+test attribute passed: name=Alice is equal to name=Alice
+Testing serve ...
+accept called with: call()
+test attribute listen passed: True is True
+test attribute accept passed: True is True
+test attribute close passed: True is True
+ 
+
+
+
+q10
+HTTP Server POST Handler
+
+Description: Write a Python program using the socket module that creates an HTTP
+ server capable of handling both GET and POST requests.
+Your task is to implement the following functions:
+1. create_server() -> socket.socket: This function creates a TCP socket, sets SO
+_REUSEADDR, binds to ('localhost', 8080), listens with backlog 5, and returns th
+e socket.
+2. parse_request(data: str) -> tuple: This function parses the raw HTTP request
+and returns a tuple (method, path, body) where body is the request body for POST
+ requests (empty string for GET).
+3. serve() -> None: This function runs the server using select, parses the reque
+st using parse_request, returns the method and path as JSON response, and handle
+s KeyboardInterrupt.
+Input: None.
+Output (without unit test): The server handles GET and POST requests.
+Output (with unit test):
+Testing create_server ...
+bind called with: call(('localhost', 8080))
+listen called with: call(5)
+Testing parse_request ...
+test attribute passed: GET is equal to GET
+test attribute passed: /index.html is equal to /index.html
+test attribute passed: is equal to
+test attribute passed: POST is equal to POST
+test attribute passed: /submit is equal to /submit
+test attribute passed: name=Alice is equal to name=Alice
+Testing serve ...
+accept called with: call()
+test attribute listen passed: True is True
+test attribute accept passed: True is True
+test attribute close passed: True is True
