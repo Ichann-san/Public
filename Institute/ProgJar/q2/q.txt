@@ -1,0 +1,380 @@
+no.1
+Chat Server with XML
+Problem Description
+You are required to implement a simple chat server that
+listens for incoming connections from clients, receives
+messages with XML serialization, and logs the details of each
+message. The server should handle multiple clients using nonblocking sockets and the select module. Your task is to write
+the necessary code to implement this functionality. Consult
+the skeleton for information details.
+Input
+The server will not take any input from the standard input. It
+will receive messages from clients over a socket connection.
+Requirements
+Implement the Message class with the following methods:
+ - __init__(self, username, text, timestamp): Initializes
+the message with the given username, text, and timestamp.
+ - serialize(self): Serializes the message into a JSONencoded byte string.
+ - deserialize(serialized_message): A static method that
+deserializes the given JSON-encoded byte string back into a
+Message object.
+Implement the main function that:
+ - Sets up a server socket listening on localhost port
+12345.
+ - Uses the select module to handle multiple client
+connections.
+ - Accepts incoming client connections and receives
+messages.
+ - Deserializes each received message and logs its details
+(username, text, timestamp).
+Output (with unit test)
+test attribute passed: Received message: found in log messages
+test attribute passed: Username: Alice found in log messages
+test attribute passed: Text: Hello, World! found in log
+messages
+
+
+no.2
+zlib compression in HTTP Server (Client)
+Description
+In this problem, you need to implement an HTTP server that
+supports zlib compression using Python's built-in libraries.
+The server should handle GET requests to the /status endpoint
+and return a JSON response. When the client includes AcceptEncoding: deflate in the request headers, the server must
+compress the response using zlib compression.
+Your task is to create both:
+1. An HTTP server that listens on localhost:8080 and handles
+compression
+2. An HTTP client that can connect to the server and
+decompress responses
+Client Requirements:
+• Connect to localhost:8080
+• Send GET request to /status with Accept-Encoding: deflate
+• Receive response in 1024-byte chunks
+• Extract headers and body from HTTP response
+• Decompress body using zlib when Content-Encoding: deflate
+is present
+• Parse the decompressed JSON data
+• Display headers, compressed body bytes, and parsed JSON
+object
+Input
+The programs should not require any command-line input. Both
+server and client should be implemented as standalone Python
+scripts that can be executed directly.
+Output (without unit test)
+Client Output:
+== HEADERS ==
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Encoding: deflate
+Content-Length: 46
+== BODY ==
+b'x\x9c\xabV\xcaK\xccMU\xb2RP\xca\xad\x0cN-*K-R\xd2QP*.I,)-
+\x06\x89\xe6\xe7\xe5d\xe6\xa5*\xd5\x02\x00\n\xeb\r0'
+== JSON OBJECT ==
+{'name': 'myServer', 'status': 'online'}
+Output (with unit test)
+When running the unit tests for both server and client
+implementations, the expected output should show successful
+test assertions:
+Client Test Output:
+ Client connects to localhost:8080
+ Client sends correct HTTP request with deflate encoding
+ Client receives response data in 1024-byte chunks
+ Client closes connection after receiving response
+ Client correctly extracts headers from response
+ Client correctly extracts and decompresses zlib data
+ Client correctly parses decompressed JSON data
+
+
+no.3
+zlib compression in HTTP Server (Server)
+Description
+In this problem, you need to implement an HTTP server that
+supports zlib compression using Python's built-in libraries.
+The server should handle GET requests to the /status endpoint
+and return a JSON response. When the client includes AcceptEncoding: deflate in the request headers, the server must
+compress the response using zlib compression.
+Your task is to create both:
+1. An HTTP server that listens on localhost:8080 and handles
+compression
+2. An HTTP client that can connect to the server and
+decompress responses
+Server Requirements:
+• Listen on localhost port 8080
+• Accept only one client connection at a time
+• Receive up to 4096 bytes from each client
+• Handle GET requests to /status endpoint
+• Return JSON object: {"name": "myServer", "status":
+"online"} (use json library)
+• Apply zlib compression using zlib.compress when AcceptEncoding: deflate is present in request headers
+• Return 404 for any other endpoints
+• Close client connection after each request
+Input
+The programs should not require any command-line input. Both
+server and client should be implemented as standalone Python
+scripts that can be executed directly.
+Output (without unit test)
+Server Output:
+Server listening on ('localhost', 8080)
+Connection from ('127.0.0.1', 54172)
+Request header: ['GET /status HTTP/1.1', 'Host: localhost',
+'Accept-Encoding: deflate', 'Connection: close', '', '']
+Server shutting down...
+Output (with unit test)
+When running the unit tests for both server and client
+implementations, the expected output should show successful
+test assertions:
+Server Test Output:
+ Server listening on port 8080
+ Server receives 4096 bytes from client
+ Sent correct JSON response without compression
+ HTTP response includes deflate compression header
+ zlib compression and decompression works correctly
+
+
+no.4
+Packet Loss (Client)
+Description:
+Write a Python program that simulates UDP-based communication
+between a client and a server. The client sends a string one
+character at a time, with each character sent in a separate
+UDP packet.
+The server listens on IP address 127.0.0.1 and port 9876, and
+receives each character and rebuilds the original string until
+it receives the special end-of-message character ('\0'). For
+simulation purposes, the server intentionally drops every 10th
+packet to mimic packet loss.
+Once the full message is received, the server sends the
+reconstructed string back to the client. The client must then
+compare this received message to the original string and
+detect which characters were lost during transmission.
+Message sent by the client:
+K^sXjF@WeuQ{=nZrGMdVYtc#]Pk|a?o>Rb&Lq(ASz$Tw}iC+MJ*<!gHEhBfNUO
+dy
+Input:
+None (all parameters are hard-coded or passed in run mode)
+Output (without unit test):
+Connected to server on port 9876
+Received from server:
+^sXjF@Weu{=nZrGMdVtc#]Pk|a?>Rb&Lq(AS$Tw}iC+MJ<!gHEhBfNOdy
+Lost characters:
+KQYoz*U
+Connection closed.
+Output (with unit test):
+ Used UDP socket
+ All sendto() calls used correct server address
+ Output matched expected lost characters
+ test_send_packet_udp passed all checks
+
+
+no.5
+Packet Loss (Server)
+Description:
+Write a Python program that simulates UDP-based communication
+between a client and a server. The client sends a string one
+character at a time, with each character sent in a separate
+UDP packet.
+The server listens on IP address 127.0.0.1 and port 9876, and
+receives each character and rebuilds the original string until
+it receives the special end-of-message character ('\0'). For
+simulation purposes, the server intentionally drops every 10th
+packet to mimic packet loss.
+Once the full message is received, the server sends the
+reconstructed string back to the client. The client must then
+compare this received message to the original string and
+detect which characters were lost during transmission.
+Message sent by the client:
+K^sXjF@WeuQ{=nZrGMdVYtc#]Pk|a?o>Rb&Lq(ASz$Tw}iC+MJ*<!gHEhBfNUO
+dy
+Input:
+None (all parameters are hard-coded or passed in run mode)
+Output (without unit test):
+UDP server listening on 127.0.0.1:9876...
+[Server] Dropping packet index 0: 'K'
+[Server] Keeping packet index 1: '^'
+[Server] Keeping packet index 2: 's'
+[Server] Keeping packet index 3: 'X'
+[Server] Keeping packet index 4: 'j'
+[Server] Keeping packet index 5: 'F'
+[Server] Keeping packet index 6: '@'
+[Server] Keeping packet index 7: 'W'
+[Server] Keeping packet index 8: 'e'
+[Server] Keeping packet index 9: 'u'
+[Server] Dropping packet index 10: 'Q'
+[Server] Keeping packet index 11: '{'
+[Server] Keeping packet index 12: '='
+[Server] Keeping packet index 13: 'n'
+[Server] Keeping packet index 14: 'Z'
+[Server] Keeping packet index 15: 'r'
+[Server] Keeping packet index 16: 'G'
+[Server] Keeping packet index 17: 'M'
+[Server] Keeping packet index 18: 'd'
+[Server] Keeping packet index 19: 'V'
+[Server] Dropping packet index 20: 'Y'
+[Server] Keeping packet index 21: 't'
+[Server] Keeping packet index 22: 'c'
+[Server] Keeping packet index 23: '#'
+[Server] Keeping packet index 24: ']'
+[Server] Keeping packet index 25: 'P'
+[Server] Keeping packet index 26: 'k'
+[Server] Keeping packet index 27: '|'
+[Server] Keeping packet index 28: 'a'
+[Server] Keeping packet index 29: '?'
+[Server] Dropping packet index 30: 'o'
+[Server] Keeping packet index 31: '>'
+[Server] Keeping packet index 32: 'R'
+[Server] Keeping packet index 33: 'b'
+[Server] Keeping packet index 34: '&'
+[Server] Keeping packet index 35: 'L'
+[Server] Keeping packet index 36: 'q'
+[Server] Keeping packet index 37: '('
+[Server] Keeping packet index 38: 'A'
+[Server] Keeping packet index 39: 'S'
+[Server] Dropping packet index 40: 'z'
+[Server] Keeping packet index 41: '$'
+[Server] Keeping packet index 42: 'T'
+[Server] Keeping packet index 43: 'w'
+[Server] Keeping packet index 44: '}'
+[Server] Keeping packet index 45: 'i'
+[Server] Keeping packet index 46: 'C'
+[Server] Keeping packet index 47: '+'
+[Server] Keeping packet index 48: 'M'
+[Server] Keeping packet index 49: 'J'
+[Server] Dropping packet index 50: '*'
+[Server] Keeping packet index 51: '<'
+[Server] Keeping packet index 52: '!'
+[Server] Keeping packet index 53: 'g'
+[Server] Keeping packet index 54: 'H'
+[Server] Keeping packet index 55: 'E'
+[Server] Keeping packet index 56: 'h'
+[Server] Keeping packet index 57: 'B'
+[Server] Keeping packet index 58: 'f'
+[Server] Keeping packet index 59: 'N'
+[Server] Dropping packet index 60: 'U'
+[Server] Keeping packet index 61: 'O'
+[Server] Keeping packet index 62: 'd'
+[Server] Keeping packet index 63: 'y'
+[Server] End-of-transmission signal received.
+[Server] Sent response to ('127.0.0.1', 50062)
+Output (with unit test):
+ Used UDP socket
+ Bound to address (127.0.0.1, 9876)
+ Printed expected dropped/kept packet logs
+ Sent correct response message back to client
+ test_udp_packet_drop_logic passed all checks
+
+
+no.6
+FTP Name Listing with ftplib
+
+Problem Description
+Implement `list_names(host, username, password, directory)` that:
+- Connects to `host`, logs in with `username` / `password`.
+- Calls `nlst(directory)` and returns the list of names.
+- Prints each name on its own line, prefixed by `name: `.
+- On failure prints `Failed to list directory: <error_message>` and returns `[]`
+.
+- Always calls `quit()`.
+
+Output (with unit test)
+login called with call('hudan', '123')
+nlst called with call('/srv')
+quit called with call()
+name: a.txt
+name: b.txt
+name: c.txt
+login called with call('hudan', '123')
+nlst called with call('/srv')
+quit called with call()
+ 
+
+
+ no.7
+ FTP Change Directory with ftplib
+
+Problem Description
+Implement `change_directory(host, username, password, directory)` that connects
+to
+an FTP server and changes its working directory.
+Specification
+- Connect to `host`, log in with `username` / `password`.
+- Call `cwd(directory)`.
+- On success: `Changed directory to '<directory>' successfully.`
+- On failure: `Failed to change directory: <error_message>`.
+- Always call `quit()`.
+
+Output (with unit test)
+Failed to change directory: nope
+login called with call('hudan', '123')
+cwd called with call('/srv/data')
+quit called with call()
+Changed directory to '/srv/data' successfully.
+login called with call('hudan', '123')
+cwd called with call('/srv/data')
+quit called with call()
+ 
+
+
+no.8
+INI Configuration Client
+
+Background
+You will implement a TCP client that builds a configuration using `configparser`
+,
+serializes it into INI text, and sends it to a server.
+Problem Description
+Implement:
+- `build_config()` that returns a `configparser.ConfigParser` containing a
+ `[server]` section with `host = localhost` and `port = 8080`.
+- `serialize_config(cfg)` that returns the INI text for `cfg` using
+ `cfg.write(buf)`.
+- `main()` that builds the config, serializes it, opens a TCP connection to
+ `localhost:5500`, and sends the encoded INI bytes.
+
+Output (with unit test)
+Sent INI config to localhost:5500
+test attribute passed: localhost is equal to localhost
+test attribute passed: 8080 is equal to 8080 
+
+
+no.9
+INI Configuration Server
+
+Background
+You will implement a TCP server that accepts an INI configuration from a client,
+parses it with `configparser`, and prints each key/value pair.
+Problem Description
+Implement:
+- `parse_config(text)` that returns a `configparser.ConfigParser` with `text`
+ loaded via `read_string`.
+- `handle_once(server_socket)` that accepts one connection, reads up to 4096
+ bytes, parses the INI, prints `<section>.<key> = <value>` for every entry,
+ and returns the parser.
+- `main()` that binds to `('localhost', 5501)`, listens, and calls
+ `handle_once`.
+
+Output (with unit test)
+server.host = localhost
+server.port = 8080
+test attribute passed: localhost is equal to localhost 
+
+
+no.10
+UDP Broadcast Sender
+
+Background
+You will implement a UDP broadcast sender that emits a single datagram to the
+limited broadcast address `255.255.255.255`.
+Problem Description
+Implement:
+- `send_broadcast(port, message)` that creates an `AF_INET / SOCK_DGRAM` socket,
+ enables `SO_BROADCAST` with `setsockopt`, sends `message` (UTF-8 encoded) to
+ `('255.255.255.255', port)`, and closes the socket via a `with` block.
+- `main()` that calls `send_broadcast(9999, 'HELLO')` and prints
+ `Broadcast sent: HELLO on port 9999`.
+
+Output (with unit test)
+Broadcast sent: HELLO on port 9999
+test attribute passed: HELLO is equal to HELLO
+test attribute passed: ('255.255.255.255', 9999) is equal to ('255.255.255.255', 9999)
