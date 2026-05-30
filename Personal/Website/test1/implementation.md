@@ -1,7 +1,7 @@
 # CSmile Bali — WordPress + Elementor 3.35.0 Build Guide
 
 > **Source**: `index.html` + `style.css` (scraped from csmilebali.webflow.io)  
-> **Target**: WordPress 6.x + Elementor 3.35.0 + Elementor Pro 3.35.0  
+> **Target**: WordPress 7.0 + Elementor 3.35.0 + Elementor Pro 3.35.0  
 > **Theme**: Hello Elementor (blank)  
 > **Reference files**: `index.html` (structure), `style.css` (exact values), `scripts.js` (interactions)
 
@@ -22,7 +22,7 @@
 
 ### 1.1 WordPress + Theme
 
-1. Install WordPress 6.x
+1. Install WordPress 7.0
 2. Install **Hello Elementor** theme (activate it)
 3. Install **Elementor 3.35.0** + **Elementor Pro 3.35.0**
 
@@ -715,7 +715,9 @@ selector .services-badge-el span {
 
 ---
 
-### S5 — In-House Lab
+### S5 — In-House Lab (`made-section`)
+
+> **HTML ref**: `<section class="made-section">` → `made-with-main-block` → heading + marquee + premium materials
 
 #### Section
 
@@ -724,16 +726,18 @@ selector .services-badge-el span {
 | **Layout** | Content Width | Full Width |
 | **Style** | Background | `#fbfbfb` |
 | **Advanced** | Padding | `70px` top/bottom, `0` left/right |
+| **Advanced** | CSS Classes | `made-section` |
 
-#### Container 1 — Heading
+#### Container 1 — Heading (`made-heading-block`)
 
 | Tab | Property | Value |
 |-----|----------|-------|
-| **Layout** | Content Width | Boxed, `1920px` |
+| **Layout** | Content Width | Boxed, `940px` (matches `main-container`) |
 | **Layout** | Direction | Column |
 | **Layout** | Align | Center |
 | **Layout** | Gap | `20px` |
 | **Advanced** | Padding | `0 50px` left/right |
+| **Advanced** | CSS Classes | `made-heading-block` |
 
 **Widget — Heading (H2)**
 
@@ -743,8 +747,11 @@ selector .services-badge-el span {
 | **Content** | Tag | H2 |
 | **Content** | Alignment | Center |
 | **Style** | Typography | Cal Sans, `35px`, weight `400`, line-height `160%` |
+| **Style** | CSS Classes | `section-heading _40px-desktop` |
 
-#### Container 2 — Marquee (full width)
+> The original has a hidden sub-heading (`section-sub-heading hide` class with text "Our in-house dental laboratory ensures precision and aesthetic excellence in every restoration from design to delivery."). Skip in Elementor — it was hidden in the original.
+
+#### Container 2 — Marquee (`made-main-marquee-block`, full width)
 
 | Tab | Property | Value |
 |-----|----------|-------|
@@ -756,26 +763,35 @@ selector .services-badge-el span {
 
 **Widget — HTML (marquee)**
 
+Use an HTML widget with the duplicated track for infinite scrolling:
+
 ```html
-<div class="lab-marquee-track">
-  <img src="[lab_image_1_url]" alt="Lab 1" class="marquee-img">
-  <img src="[lab_image_2_url]" alt="Lab 2" class="marquee-img">
-  <img src="[lab_image_3_url]" alt="Lab 3" class="marquee-img">
-  <img src="[lab_image_1_url]" alt="Lab 1" class="marquee-img">
-  <img src="[lab_image_2_url]" alt="Lab 2" class="marquee-img">
-  <img src="[lab_image_3_url]" alt="Lab 3" class="marquee-img">
+<div class="made-main-marquee-block">
+  <div class="made-marquee lab-marquee-track">
+    <img src="[lab_image_1_url]" alt="dental treatment" class="image-marquee">
+    <img src="[lab_image_2_url]" alt="Dental technician working in clinic's lab" class="image-marquee">
+    <img src="[lab_image_3_url]" alt="Dental restoration being crafted" class="image-marquee">
+  </div>
+  <div class="made-marquee lab-marquee-track">
+    <img src="[lab_image_1_url]" alt="dental treatment" class="image-marquee">
+    <img src="[lab_image_2_url]" alt="Dental technician working in clinic's lab" class="image-marquee">
+    <img src="[lab_image_3_url]" alt="Dental restoration being crafted" class="image-marquee">
+  </div>
 </div>
 ```
 
-#### Container 3 — Premium Materials (3 features)
+> **Images**: Upload the 3 lab images from the original (Copy of Lab 3, Copy of Lab 8, to be used lap pic). The track is duplicated for seamless infinite looping.
+
+#### Container 3 — Premium Materials (`premium-materials-main-block`, 3 features)
 
 | Tab | Property | Value |
 |-----|----------|-------|
-| **Layout** | Content Width | Boxed, `1920px` |
+| **Layout** | Content Width | Boxed, `940px` |
 | **Layout** | Direction | Row |
 | **Layout** | Justify | Space Between |
 | **Layout** | Align | Center |
 | **Advanced** | Padding | `0 50px` left/right |
+| **Advanced** | CSS Classes | `premium-materials-main-block` |
 
 **Each Feature Block (×3)** — nested Container:
 
@@ -783,16 +799,25 @@ selector .services-badge-el span {
 |-----|----------|-------|
 | **Layout** | Direction | Column |
 | **Layout** | Align | Start |
-| **Layout** | Gap | `30px` |
-| **Advanced** | CSS Classes | `premium-feature-block` |
+| **Layout** | Gap | `0px` |
+| **Advanced** | CSS Classes | `premium-material-hover-block` |
 
-Inside each feature:
-- **Container (icon + text)** — Direction: Row, Gap: `16px`, Align: Start
-  - Image (icon, `28px`, in `step-icon-circle` class reuse)
-  - Container (text) — Direction: Column
-    - Heading: Cal Sans, `20px`, line-height `160%`
-    - Text: Hanken Grotesk, `18px`, `#4d4d4d`, line-height `160%`
-- **Spacer or Divider** — for hover bar (handled by CSS)
+Inside each feature (matching original structure: `steps-content-main-block premium-materials-content-block`):
+- **Container (icon + text)** — Direction: Row, Gap: `16px`, Align: Start, CSS Classes: `steps-content-main-block premium-materials-content-block`
+  - **Container** (icon circle, CSS Classes: `steps-image-block`):
+    - Image: `biotech (2).png` (⚠️ all 3 features use the SAME icon), `28px`, in circle
+  - **Container** (text, CSS Classes: `steps-content-block`):
+    - Heading: CSS Classes `steps-image-heading _20px`
+    - Text: CSS Classes `steps-image-paragraph _18px`
+- **Spacer/Divider** — An empty div for the hover progress bar, CSS Classes: `premium-material-div`
+
+> ⚠️ **Important**: The original uses a **separate div element** (`premium-material-div`) for the gold hover bar, NOT a CSS `::after` pseudo-element. This div is animated on hover via Webflow IX2 (width 0% → 100%). In Elementor, create this as an **empty div inside an HTML widget** or a **Spacer** with custom styling.
+
+**Feature Contents (exact from index.html):**
+
+1. **Premium Materials** — "We use the highest quality dental materials"
+2. **Precision Crafting** — "Every restoration is meticulously crafted"
+3. **In-House Control** — "Complete quality control from design to delivery"
 
 #### Section Custom CSS
 
@@ -800,9 +825,11 @@ Inside each feature:
 /* Marquee animation */
 selector .lab-marquee-wrapper {
   overflow: hidden;
-  max-width: 1920px;
-  margin-left: auto;
-  margin-right: auto;
+  width: 100%;
+}
+selector .made-main-marquee-block {
+  display: flex;
+  overflow: hidden;
 }
 selector .lab-marquee-track {
   display: flex;
@@ -812,7 +839,7 @@ selector .lab-marquee-track {
 selector .lab-marquee-track:hover {
   animation-play-state: paused;
 }
-selector .marquee-img {
+selector .image-marquee {
   max-height: 400px;
   flex-shrink: 0;
 }
@@ -820,26 +847,22 @@ selector .marquee-img {
   0%   { transform: translateX(0); }
   100% { transform: translateX(-50%); }
 }
-/* Premium feature hover bar */
-selector .premium-feature-block {
+/* Premium feature hover bar — uses a real div, not pseudo-element */
+selector .premium-material-hover-block {
   position: relative;
-  padding-bottom: 10px;
+  cursor: pointer;
 }
-selector .premium-feature-block::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 0%;
+selector .premium-material-div {
   height: 3px;
   background-color: #e5b283;
+  width: 0%;
   transition: width 0.4s ease;
 }
-selector .premium-feature-block:hover::after {
+selector .premium-material-hover-block:hover .premium-material-div {
   width: 100%;
 }
 /* Icon circle (reuse) */
-selector .step-icon-circle {
+selector .steps-image-block {
   background-color: #ffece6;
   border-radius: 100px;
   min-width: 60px;
@@ -852,34 +875,41 @@ selector .step-icon-circle {
 }
 /* Responsive */
 @media (max-width: 991px) {
-  selector .elementor-container:last-child {
+  selector .premium-materials-main-block {
     flex-direction: column;
   }
 }
 @media (min-width: 1920px) {
-  selector .marquee-img { max-height: 548px; }
+  selector .image-marquee { max-height: 548px; }
 }
 @media (max-width: 479px) {
-  selector .marquee-img { max-height: 280px; }
+  selector .image-marquee { max-height: 280px; }
 }
 ```
 
 ---
 
-### S6 — Before/After
+### S6 — Before/After (`before-after-section`)
+
+> **HTML ref**: `<section class="before-after-section">` — This is the most complex section. The original has TWO layouts:
+> 1. A **mobile layout** (`before-after-phone-main-block`) with stacked `bas-wrapper absolute` sliders + thumbnail navigation
+> 2. A **desktop layout** (`before-after-left-block`) using Webflow Tabs (`w-tabs`) with 6 tab panes, each containing a before/after slider
+>
+> Each slider uses **two systems**: Flowbase `fb-before-after` (clip-path based) AND `udesly-before-after-slider` (BeerSlider JS). For WordPress, we simplify to ONE before/after approach.
 
 #### Section
 
 | Tab | Property | Value |
 |-----|----------|-------|
-| **Layout** | Content Width | Boxed, `1920px` |
+| **Layout** | Content Width | Boxed, `940px` |
 | **Style** | Background Type | Image |
 | **Style** | Image URL | Upload `Frame 5653.avif` background |
 | **Style** | Position | Center Center |
 | **Style** | Size | Auto |
 | **Advanced** | Padding | `168px` top/bottom, `50px` left/right |
+| **Advanced** | CSS Classes | `before-after-section` |
 
-#### Container (flex row)
+#### Container (flex row — `before-after-main-block`)
 
 | Tab | Property | Value |
 |-----|----------|-------|
@@ -887,36 +917,44 @@ selector .step-icon-circle {
 | **Layout** | Justify | Center |
 | **Layout** | Align | Center |
 | **Layout** | Gap | `30px` |
+| **Advanced** | CSS Classes | `before-after-main-block` |
 
-#### Left Column — Before/After Slider
+#### Left Column — Before/After Slider + Thumbnails (`div-block-12`)
 
-This requires a plugin. Use **Before After Image Slider for Elementor** or implement with custom HTML.
+> **WordPress approach**: Use an **HTML widget** with custom before/after slider code (BeerSlider pattern from the original). The original has **6 before/after pairs** switchable via tab thumbnails.
 
-**Plugin Widget Configuration:**
+**Option A — Use "Before After Image Slider" plugin for Elementor:**
 
-| Setting | Value |
-|---------|-------|
-| Before Image | Upload "before" dental photo |
-| After Image | Upload "after" dental photo |
-| Handle Color | `#ffffff` |
-| Handle Width | `42px` |
-| Handle Style | Circle / Rounded (`border-radius: 8px`) |
-| Line Color | `#ffffff` |
-| Line Width | `2px` |
-| Border | `5px solid #cdcdcd` |
-| Border Radius | `12px` |
-| Width | `100%` |
-| Max Width | `771px` |
-| Height | `536px` |
+Install a before/after slider plugin. Set up 6 image pairs. Use thumbnails below to switch between pairs via custom JS.
 
-**Below slider** — thumbnail navigation (use Image Gallery or manual Image widgets):
-- 6 thumbnail images in a row
-- Default size: `50px` × `60px`, border: `2px solid #848484`, border-radius: `5px`
-- Active: `90px` × `100px`, border-color: `#fc5f2b`
+**Option B — Custom HTML widget (closer to original):**
 
-> For tab-switching behavior: use **Elementor Pro Tabs widget** with each tab containing a different before/after pair, or handle via custom JS.
+Use an HTML widget to embed the BeerSlider code from the original `index.html`. Each tab pane contains a slider. The thumbnails switch visibility.
 
-#### Right Column — Text
+**The 6 Before/After image pairs (from index.html):**
+
+| # | Before Image | After Image |
+|---|-------------|-------------|
+| 1 | `WhatsApp Image 2025-11-04 at 09.24.03.avif` | `WhatsApp Image 2025-11-04 at 09.24.06.avif` |
+| 2 | `IMG_3812.avif` | `IMG_38112.avif` (After) / `IMG_3811 (1).avif` (BeerSlider right) |
+| 3 | `gh.avif` (BeerSlider left) / `5B17FF65...` (fb slider) | `jkl.avif` (BeerSlider right) / `4B85E361...` (fb slider) |
+| 4 | `IMG_3794 (1).avif` | `IMG_3795.avif` |
+| 5 | Composite pair (reused images from pair 1) | Composite pair |
+| 6 | `WhatsApp Image 2025-10-20 at 04.48.15 (1).avif` | `WhatsApp Image 2025-10-20 at 04.48.18 - Copy (2).avif` |
+
+**Thumbnail navigation** — 6 thumbnail images in a row below the slider:
+
+| Tab | Property | Value |
+|-----|----------|-------|
+| **Advanced** | CSS Classes | `before-after-button-main-block` |
+
+Each thumbnail: `tab_nav_block width` class, contains an image (`tab_nav_image`).
+- Default: small size, `border: 2px solid #848484`, `border-radius: 5px`
+- Active (`.tab1` or selected): larger size, `border-color: #fc5f2b`
+
+#### Right Column — Text (`before-after-left-block` text side)
+
+> Note: In the original HTML, the text heading is **not visible** in the main `before-after-main-block`. The heading "Stop Dreaming, Start Smiling!" and "Real-Life Transformations." appear to be hidden or positioned differently. Check the style.css for visibility. If visible, include:
 
 | Tab | Property | Value |
 |-----|----------|-------|
@@ -964,25 +1002,38 @@ This requires a plugin. Use **Before After Image Slider for Elementor** or imple
   selector .elementor-widget-text-editor { font-size: 24px; }
 }
 /* Tab thumbnails */
-selector .ba-thumb {
+selector .tab_nav_block {
+  display: inline-block;
+  overflow: hidden;
+  cursor: pointer;
+}
+selector .tab_nav_block .tab_nav_image {
   width: 50px;
   height: 60px;
   border: 2px solid #848484;
   border-radius: 5px;
-  overflow: hidden;
-  cursor: pointer;
   object-fit: cover;
 }
-selector .ba-thumb.active {
+selector .tab_nav_block.tab1 .tab_nav_image,
+selector .tab_nav_block.active .tab_nav_image {
   width: 90px;
   height: 100px;
   border-color: #fc5f2b;
+}
+/* BeerSlider (if using custom HTML approach) */
+selector .bas-wrapper {
+  position: relative;
+  overflow: hidden;
+  border: 5px solid #cdcdcd;
+  border-radius: 12px;
 }
 ```
 
 ---
 
-### S7 — Video Testimonials
+### S7 — Video Testimonials (`slider-section-main`)
+
+> **HTML ref**: `<section class="slider-section-main">` → uses Swiper.js (NOT Elementor Media Carousel). 6 slides (3 unique videos × 2 for looping). Each slide is a `background-video-3` (Webflow background video).
 
 #### Section
 
@@ -991,6 +1042,7 @@ selector .ba-thumb.active {
 | **Layout** | Content Width | Full Width |
 | **Style** | Background | `#ffffff` |
 | **Advanced** | Padding | `133px` top/bottom, `0` left/right |
+| **Advanced** | CSS Classes | `slider-section-main` |
 
 #### Container 1 — Heading
 
@@ -1007,51 +1059,104 @@ selector .ba-thumb.active {
 | **Content** | Alignment | Center |
 | **Style** | Typography | Cal Sans, `35px`, weight `400`, line-height `160%` |
 
-#### Container 2 — Video Carousel
+#### Container 2 — Video Carousel (Swiper.js)
 
-Use **Elementor Pro Media Carousel** or a custom HTML embed with Swiper.js:
+> **Approach**: Use an **HTML widget** to embed Swiper.js directly (same as original). The original loads Swiper from CDN: `https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js` and CSS: `https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css`
 
-| Tab | Property | Value |
-|-----|----------|-------|
-| **Advanced** | Max Width | `960px` |
-| **Advanced** | Min Height | `500px` |
-| **Advanced** | Margin | `0 auto` (centered) |
-| **Advanced** | CSS Classes | `video-carousel-wrapper` |
+**Widget — HTML (Swiper embed)**
 
-**Carousel Settings** (if using Elementor Media Carousel):
-- Slides to Show: `3` (desktop), `2` (tablet), `1` (mobile)
-- Slides to Scroll: `1`
-- Navigation: Arrows
-- Autoplay: Yes
-- Loop: Yes
-- Effect: Coverflow or Slide
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+<div class="swrper_component">
+  <div class="slider_slider-wrapper">
+    <div class="swiper-container">
+      <div class="swiper-wrapper">
+        <!-- Slide 1 -->
+        <div class="swiper-slide">
+          <video autoplay loop muted playsinline style="width:100%;height:100%;object-fit:cover;border-radius:10px;">
+            <source src="[video_1_mp4_url]" type="video/mp4">
+          </video>
+        </div>
+        <!-- Slide 2 -->
+        <div class="swiper-slide">
+          <video autoplay loop muted playsinline style="width:100%;height:100%;object-fit:cover;border-radius:10px;">
+            <source src="[video_2_mp4_url]" type="video/mp4">
+          </video>
+        </div>
+        <!-- Slide 3 -->
+        <div class="swiper-slide">
+          <video autoplay loop muted playsinline style="width:100%;height:100%;object-fit:cover;border-radius:10px;">
+            <source src="[video_3_mp4_url]" type="video/mp4">
+          </video>
+        </div>
+        <!-- Slides 4-6: duplicates of 1-3 for seamless loop -->
+        <div class="swiper-slide">
+          <video autoplay loop muted playsinline style="width:100%;height:100%;object-fit:cover;border-radius:10px;">
+            <source src="[video_1_mp4_url]" type="video/mp4">
+          </video>
+        </div>
+        <div class="swiper-slide">
+          <video autoplay loop muted playsinline style="width:100%;height:100%;object-fit:cover;border-radius:10px;">
+            <source src="[video_2_mp4_url]" type="video/mp4">
+          </video>
+        </div>
+        <div class="swiper-slide">
+          <video autoplay loop muted playsinline style="width:100%;height:100%;object-fit:cover;border-radius:10px;">
+            <source src="[video_3_mp4_url]" type="video/mp4">
+          </video>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script>
+new Swiper(".swiper-container", {
+  loop: true,
+  speed: 800,
+  slidesPerView: 3,
+  spaceBetween: 0,
+  grabCursor: true,
+  simulateTouch: true,
+  threshold: 5,
+  touchAngle: 45,
+  breakpoints: {
+    0:   { slidesPerView: 1, centeredSlides: false },
+    480: { slidesPerView: 2, centeredSlides: false },
+    768: { slidesPerView: 3, centeredSlides: true },
+  },
+});
+</script>
+```
 
-**Each Slide** — Video Background widget or Video embed:
-
-| Property | Value |
-|----------|-------|
-| Width | `388px` max |
-| Height | `450px` |
-| Border Radius | `10px` |
+> **Video files (3 unique)**: Upload the 3 MP4 videos from the original to WordPress Media Library. The original has `the first video`, `for the middle`, and `the last one` videos.
 
 #### Section Custom CSS
 
 ```css
-/* Center slide emphasis */
-selector .swiper-slide-active {
-  transform: scale(1);
-  opacity: 1;
+/* Swiper slide styling */
+selector .swiper-slide {
+  width: 320px;
+  height: 450px;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: transform 0.5s ease, opacity 0.5s ease;
+}
+selector .swiper-slide video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 selector .swiper-slide:not(.swiper-slide-active) {
   transform: scale(0.85);
   opacity: 0.6;
-  transition: transform 0.3s, opacity 0.3s;
 }
-/* Mobile slide size */
+selector .swiper-slide-active {
+  transform: scale(1);
+  opacity: 1;
+}
 @media (max-width: 479px) {
-  selector .swiper-slide {
-    width: 320px;
-  }
+  selector .swiper-slide { width: 320px; }
 }
 @media (max-width: 991px) {
   selector { padding-top: 20px; }
@@ -1064,7 +1169,9 @@ selector .swiper-slide:not(.swiper-slide-active) {
 
 ---
 
-### S8 — Process (Smile Journey)
+### S8 — Process / Smile Journey (`smile-section`)
+
+> **HTML ref**: `<section id="process" class="smile-section">` → uses numbered timer images (timer_1.png through timer_5.png), NOT colored `<span>` text for numbering.
 
 #### Section
 
@@ -1077,17 +1184,18 @@ selector .swiper-slide:not(.swiper-slide-active) {
 | **Style** | Size | Cover (`100% 100%`) |
 | **Advanced** | Padding | `70px` top/bottom |
 | **Advanced** | CSS ID | `process` |
+| **Advanced** | CSS Classes | `smile-section` |
 
-#### Container (inner)
+#### Container (inner — `smile-main-block`)
 
 | Tab | Property | Value |
 |-----|----------|-------|
-| **Layout** | Content Width | Boxed, `1746px` |
+| **Layout** | Content Width | Boxed, `940px` |
 | **Layout** | Direction | Column |
 | **Layout** | Align | Center |
 | **Layout** | Gap | `60px` |
 
-#### Widget — Heading
+#### Widget — Heading (`smile-heading-block`)
 
 | Tab | Property | Value |
 |-----|----------|-------|
@@ -1096,14 +1204,17 @@ selector .swiper-slide:not(.swiper-slide-active) {
 | **Content** | Alignment | Center |
 | **Style** | Typography | Cal Sans, `35px`, weight `400`, line-height `160%` |
 | **Style** | Text Color | `#ffffff` |
+| **Advanced** | CSS Classes | `section-heading normal` |
 
-#### Cards Grid Container
+#### Cards Grid Container (`smile-contents-main-block`)
 
 | Tab | Property | Value |
 |-----|----------|-------|
 | **Advanced** | CSS Classes | `smile-grid` |
 
-#### Each Process Card (×5) — nested Container
+#### Each Process Card (×5) — nested Container (`smile-content-block`)
+
+> ⚠️ **Key difference from previous implementation**: Each card does NOT use `<span style="color:#fc5f2b">01.</span>` inside the heading. Instead, each card has a **numbered timer image** (`timer_1.png` through `timer_5.png`) displayed next to the heading text.
 
 | Tab | Property | Value |
 |-----|----------|-------|
@@ -1113,23 +1224,28 @@ selector .swiper-slide:not(.swiper-slide-active) {
 | **Style** | Background | `#ffffff` |
 | **Style** | Border Radius | `24px` |
 | **Advanced** | Padding | `20px 30px` |
+| **Advanced** | CSS Classes | `smile-content-block` |
 
 Inside each card:
-- **Heading** (step number+title): Cal Sans, `24px`, line-height `144%`, color `#181818`
-  - For the step number portion, use `<span style="color:#fc5f2b">01.</span>` inside the heading
-- **Text Editor** (description): Hanken Grotesk, `14.5px`, line-height `160%`, color `#4d4d4d`
+- **Container** (`div-block-5`) — Direction: Row, Align: Center, Gap: `8px`
+  - **Image** (`image-4`): numbered timer icon, width `auto`
+  - **Heading** (`smile-heading`): Cal Sans, `24px`, line-height `144%`, color `#181818`
+- **Text Editor** (`smile-subheading`): Hanken Grotesk, `14.5px`, line-height `160%`, color `#4d4d4d`
 
-**Cards:**
-1. Start Your Online Consultation.
-2. Receive Your Treatment Plan & Quote
-3. First Day at the Clinic
-4. Begin Your Treatment Journey
-5. Follow-Up & Aftercare
+**Cards (exact content from index.html):**
+
+| # | Timer Image | Title | Description |
+|---|------------|-------|-------------|
+| 1 | `timer_1.png` | Start Your Online Consultation. | Share your dental concerns and smile goals through our simple online form or WhatsApp. |
+| 2 | `timer_2.png` | Receive Your Treatment Plan & Quote | Get a personalised treatment plan and an all-inclusive package options tailored to your needs. |
+| 3 | `timer_3.png` | First Day at the Clinic | Meet our expert team, tour our modern facility, complete your scans, and finalise your treatment plan. |
+| 4 | `4g_mobiledata.png` | Begin Your Treatment Journey | Experience world-class dental care with advanced technology and premium materials. |
+| 5 | `timer_5_shutter.png` | Follow-Up & Aftercare | We stay connected after your treatment to ensure smooth recovery and long-lasting results. |
 
 #### Section Custom CSS
 
 ```css
-/* Grid layout: 4 columns, cards 1-4 span 2, card 5 spans middle */
+/* Grid layout: first 4 cards span 2 columns each (2 per row), card 5 spans middle */
 selector .smile-grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -1161,7 +1277,9 @@ selector .smile-grid > :nth-child(5) {
 
 ---
 
-### S9 — Reviews (Testimonials)
+### S9 — Reviews / Testimonials (`testimonials-sections`)
+
+> **HTML ref**: `<section id="reviews" class="testimonials-sections">` — Uses TWO scrolling marquee rows. Row 1 scrolls left, Row 2 (`.second-testimonials`) scrolls right. Each row contains **13 review cards** duplicated (26 total per row for seamless loop). All reviewer data is real Google review data.
 
 #### Section
 
@@ -1170,12 +1288,14 @@ selector .smile-grid > :nth-child(5) {
 | **Layout** | Content Width | Full Width |
 | **Style** | Background | `#ffffff` |
 | **Advanced** | Padding | `70px` top/bottom |
+| **Advanced** | CSS ID | `reviews` |
+| **Advanced** | CSS Classes | `testimonials-sections` |
 
 #### Container
 
 | Tab | Property | Value |
 |-----|----------|-------|
-| **Layout** | Content Width | Full Width, `1920px` max |
+| **Layout** | Content Width | Full Width |
 | **Layout** | Direction | Column |
 | **Layout** | Gap | `60px` |
 
@@ -1188,25 +1308,69 @@ selector .smile-grid > :nth-child(5) {
 | **Content** | Alignment | Center |
 | **Style** | Typography | Cal Sans, `35px`, weight `400`, line-height `160%` |
 
-#### Testimonial Rows — use HTML widget or Elementor Testimonial Carousel
+#### Testimonial Rows — Custom HTML widget
 
-The original uses two scrolling marquee rows (row 1 scrolls left, row 2 scrolls right). Best approach: **Custom HTML widget** with CSS animation.
+> **Approach**: Use a single **HTML widget** containing the full marquee markup. This matches the original which uses Webflow IX2 `transform: translate3d()` animation. In Elementor, we drive this via CSS `@keyframes`.
 
-**Each Review Card HTML structure** (repeated, with data for each patient):
+**Each Review Card HTML structure** (matching original class names):
 
 ```html
-<div class="review-card">
-  <div class="review-header">
-    <div class="review-author">
-      <img src="[avatar]" class="review-avatar" alt="[name]">
-      <div>
-        <div class="review-name">[Name]</div>
-        <div class="review-country">[Country]</div>
+<div class="testimonial-main-content-block">
+  <div class="testimonial-heading-blocks">
+    <div class="author-info-block">
+      <img src="[avatar_url]" class="author-image" alt="reviewer image">
+      <div class="author-info">
+        <div class="author-name">[Name]</div>
+        <div class="author-state">[Country/Level]</div>
       </div>
     </div>
-    <img src="[stars_image]" class="review-stars" alt="5 stars">
+    <img src="[stars_image_url]" class="rating" alt="rating">
   </div>
-  <div class="review-text">[Review text...]</div>
+  <div class="testimonial-description">[Review text...]</div>
+</div>
+```
+
+**Reviewer data (13 reviewers, exact from index.html):**
+
+| # | Name | Country/Level | Review (abbreviated) |
+|---|------|--------------|---------------------|
+| 1 | **jmmy B.** | Local Guide Level 5 | I'm so happy I found this place! Living abroad... best dental experience I've ever had. |
+| 2 | Jazmyn Tursina | Local Guide Level 3 | I had such a great experience here for my dental spa treatment!... |
+| 3 | Masna Sidabuta | Local Guide Level 2 | We had a wonderful experience at CS Dental with Dr. Theresa... |
+| 4 | Josie Dillon | United States | Couldn't not remember this place more! amazing for English speaking visitors... |
+| 5 | Devi Satyarani | United States | Got my braces here, every staff was so wonderful and kind. |
+| 6 | Alice Copeland | United States | The team at CS Dental were amazing! The office is welcoming... |
+| 7 | Avril W | United States | Best dentist in the island! Staff is very welcoming... |
+| 8 | Ryan Jusuf | United States | The dentist is very friendly and professional... |
+| 9 | Anna Rall | United States | The best dental service all over Bali. Super friendly doctors... |
+| 10 | Vanessa Alessandro | United States | I had a great experience at CS Dental Bali... |
+| 11 | nick theo | United States | Been in Bali for 2 years now and CS Dental Bali is by far the best... |
+| 12 | elly Wagener | United States | Best service eva! They even squeezed me in on the tight schedule... |
+| 13 | Cinnamon Dorn | United States | Fantastic dental clinic. Highly recommended, gentle and caring. |
+
+> Embed the **full review text** from `index.html` — do NOT abbreviate. Each reviewer has an avatar image to upload.
+
+**Row structure:**
+
+```html
+<!-- Row 1: scrolls LEFT -->
+<div class="testimonial-first-marquee-main-block">
+  <div class="testimonial-first-marquee-block">
+    <!-- All 13 review cards here -->
+  </div>
+  <div class="testimonial-first-marquee-block">
+    <!-- Duplicate of all 13 review cards for seamless loop -->
+  </div>
+</div>
+
+<!-- Row 2: scrolls RIGHT -->
+<div class="testimonial-first-marquee-main-block second-testimonials">
+  <div class="testimonial-first-marquee-block testimonial-second-marquee-block">
+    <!-- All 13 review cards here -->
+  </div>
+  <div class="testimonial-first-marquee-block testimonial-second-marquee-block">
+    <!-- Duplicate of all 13 review cards -->
+  </div>
 </div>
 ```
 
@@ -1214,7 +1378,7 @@ The original uses two scrolling marquee rows (row 1 scrolls left, row 2 scrolls 
 
 ```css
 /* Review card */
-selector .review-card {
+selector .testimonial-main-content-block {
   border: 1px solid #d9d9d9;
   border-radius: 12px;
   max-width: 730px;
@@ -1226,33 +1390,33 @@ selector .review-card {
   gap: 16px;
   flex-shrink: 0;
 }
-selector .review-header {
+selector .testimonial-heading-blocks {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   width: 100%;
 }
-selector .review-author {
+selector .author-info-block {
   display: flex;
   gap: 12px;
   align-items: center;
 }
-selector .review-avatar {
+selector .author-image {
   width: 42px;
   border-radius: 50%;
 }
-selector .review-name {
+selector .author-name {
   font-family: 'Cal Sans', sans-serif;
   font-size: 32px;
   line-height: 160%;
 }
-selector .review-country {
+selector .author-state {
   color: #d78e4b;
   font-family: 'Hanken Grotesk', sans-serif;
   font-size: 18px;
   line-height: 160%;
 }
-selector .review-text {
+selector .testimonial-description {
   color: #574f48;
   font-family: 'Hanken Grotesk', sans-serif;
   font-size: 16px;
@@ -1260,19 +1424,19 @@ selector .review-text {
   overflow: auto;
 }
 /* Marquee rows */
-selector .testimonial-row {
+selector .testimonial-first-marquee-main-block {
   display: flex;
   overflow: hidden;
 }
-selector .testimonial-track {
+selector .testimonial-first-marquee-block {
   display: flex;
   flex: none;
   animation: reviewScrollLeft 40s linear infinite;
 }
-selector .testimonial-row.reverse .testimonial-track {
+selector .testimonial-first-marquee-main-block.second-testimonials .testimonial-first-marquee-block {
   animation: reviewScrollRight 40s linear infinite;
 }
-selector .testimonial-row:hover .testimonial-track {
+selector .testimonial-first-marquee-main-block:hover .testimonial-first-marquee-block {
   animation-play-state: paused;
 }
 @keyframes reviewScrollLeft {
@@ -1285,13 +1449,13 @@ selector .testimonial-row:hover .testimonial-track {
 }
 /* Mobile card sizing */
 @media (max-width: 479px) {
-  selector .review-card {
+  selector .testimonial-main-content-block {
     max-width: 360px;
     padding: 15px;
     border-radius: 8px;
   }
-  selector .review-name { font-size: 22px; }
-  selector .review-country, selector .review-text { font-size: 14px; }
+  selector .author-name { font-size: 22px; }
+  selector .author-state, selector .testimonial-description { font-size: 14px; }
 }
 @media (min-width: 1920px) {
   selector { padding-top: 120px; padding-bottom: 120px; }
@@ -1300,7 +1464,9 @@ selector .testimonial-row:hover .testimonial-track {
 
 ---
 
-### S10 — Contact Form
+### S10 — Contact Form (`contact-section`)
+
+> **HTML ref**: `<section id="contact" class="contact-section">` — The form is a **custom Webflow form** (NOT Elementor Pro Form widget). It has a custom country code dropdown with flag icons, phone input with digits-only restriction, and UTM tracking hidden fields. The form's glassmorphic styling is embedded inline.
 
 #### Section
 
@@ -1313,8 +1479,9 @@ selector .testimonial-row:hover .testimonial-track {
 | **Style** | Size | Cover (`100% 100%`) |
 | **Advanced** | Padding | `70px` top/bottom, `20px` left/right |
 | **Advanced** | CSS ID | `contact` |
+| **Advanced** | CSS Classes | `contact-section` |
 
-#### Container (flex row)
+#### Container (flex row — `contact-main-block`)
 
 | Tab | Property | Value |
 |-----|----------|-------|
@@ -1324,7 +1491,7 @@ selector .testimonial-row:hover .testimonial-track {
 | **Layout** | Align | Center |
 | **Layout** | Gap | `70px` |
 
-#### Left Column — nested Container
+#### Left Column — Form side (`contact-left-block`)
 
 | Tab | Property | Value |
 |-----|----------|-------|
@@ -1349,25 +1516,40 @@ selector .testimonial-row:hover .testimonial-track {
 | **Style** | Typography | Hanken Grotesk, `20px`, line-height `160%` |
 | **Style** | Text Color | `#ffffff` |
 
-**Widget 3 — Form (Elementor Pro)**
+**Widget 3 — Form**
+
+> ⚠️ **Two options depending on how close you want to match:**
+
+**Option A — Use Elementor Pro Form widget (simpler, some differences):**
 
 | Tab | Property | Value |
 |-----|----------|-------|
-| **Content** | Fields | First Name (text, required), Last Name (text, req), Email (email, req), WhatsApp Number (tel, req), Treatment (select, req: Dental Implants/Crowns/Hollywood Smile/Veneers/Invisalign/Other), Dental Needs (textarea, optional) |
+| **Content** | Fields | Full Name (text, required), Email Address (email, req), WhatsApp Number (tel, req), Tell us about your dental needs (textarea, optional) |
 | **Content** | Submit Text | `Get Your Free Consultation` |
 | **Style** | Label Color | `#ffffff` |
-| **Style** | Label Typography | Hanken Grotesk, `16px`, weight `400` |
+| **Style** | Label Typography | Cal Sans, `16px`, weight `400` |
 | **Style** | Input BG | `#ffffff` |
-| **Style** | Input Border Radius | `8px` |
+| **Style** | Input Border | `1px solid #d1d1d1` |
+| **Style** | Input Border Radius | `12px` |
 | **Style** | Input Typography | Hanken Grotesk, `14px`, line-height `160%` |
-| **Style** | Button BG | `#ff4d00` |
-| **Style** | Button Border Radius | `10px` |
-| **Style** | Button Typography | Cal Sans, `20px`, line-height `160%` |
+| **Style** | Button BG | `#ff5a1f` |
+| **Style** | Button Hover BG | `#ff743a` |
+| **Style** | Button Border Radius | `14px` |
+| **Style** | Button Typography | Cal Sans, `16px`, weight `600` |
 | **Style** | Button Color | `#ffffff` |
-| **Style** | Button Padding | `6px 0` |
-| **Advanced** | CSS Classes | `glassmorphic-form` |
+| **Style** | Button Padding | `16px` |
+| **Advanced** | CSS Classes | `consult-form` |
 
-#### Right Column — nested Container
+> Note: The original has a **Treatment select dropdown** field but it has `class="hide"` — it's hidden in the live version. Skip this field or add and hide via CSS.
+
+**Option B — Custom HTML form (closer to original):**
+
+Use an HTML widget and paste the form markup from the original, including the country code dropdown with flag images and the custom JS. This requires the `consult-form` CSS (already in the original's inline styles). Add the form CSS to the section's Custom CSS.
+
+**Below the form (footnote):**
+- Text: "We reply within 24 hours. Your information is private and secure." — Hanken Grotesk, `12px`, white, centered, opacity `0.9`
+
+#### Right Column — Image (`contact-right-block`)
 
 | Tab | Property | Value |
 |-----|----------|-------|
@@ -1377,34 +1559,85 @@ selector .testimonial-row:hover .testimonial-track {
 
 | Tab | Property | Value |
 |-----|----------|-------|
-| **Content** | Image | Smiling woman photo |
+| **Content** | Image | Upload `Frame 5605.avif` (smiling person) |
 | **Style** | Width | `100%` |
 | **Style** | Border Radius | `20px` |
+| **Advanced** | CSS Classes | `contact-image` |
 
 #### Section Custom CSS
 
 ```css
 /* Glassmorphic form container */
-selector .glassmorphic-form {
-  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.05));
-  backdrop-filter: blur(100px);
-  -webkit-backdrop-filter: blur(100px);
-  background-color: rgba(255,255,255,0.35);
-  border: 1px solid rgba(255,255,255,0.5);
+selector .consult-form {
+  background: linear-gradient(135deg, #7fb2c6, #9fb5bf);
   border-radius: 20px;
-  padding: 40px;
+  padding: 32px;
+  max-width: 600px;
 }
-/* Required asterisk color */
-selector .elementor-mark-required .elementor-field-label:after {
-  color: #ff1a1a !important;
+/* Form labels */
+selector .field-label {
+  font-family: 'Cal Sans', sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 14px;
+  color: #ffffff;
+  display: block;
+  margin: 14px 0 6px;
 }
-/* Textarea */
-selector textarea.elementor-field-textual {
-  border-radius: 8px;
-  min-height: 110px;
-  padding: 15px 16px;
+selector .text-span, selector .text-span-2 {
+  color: #ff1a1a;
+}
+/* Form inputs */
+selector .text-field,
+selector .textarea {
+  border: 1px solid #d1d1d1;
+  border-radius: 12px;
+  padding: 14px 16px;
   font-family: 'Hanken Grotesk', sans-serif;
   font-size: 14px;
+  line-height: 1.4;
+  background-color: #ffffff;
+  color: #000;
+  width: 100%;
+}
+selector .text-field:focus,
+selector .textarea:focus {
+  border-color: #ff5a1f;
+  box-shadow: 0 0 0 2px rgba(255, 90, 31, 0.2);
+  outline: none;
+}
+selector .textarea {
+  min-height: 120px;
+  resize: none;
+}
+/* Submit button */
+selector .submit-button {
+  background: #ff5a1f;
+  border-radius: 14px;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  width: 100%;
+  margin-top: 18px;
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+}
+selector .submit-button:hover {
+  background: #ff743a;
+}
+/* Footnote */
+selector .text-block-39 {
+  font-family: 'Hanken Grotesk', sans-serif;
+  font-size: 12px;
+  opacity: 0.9;
+  margin-top: 12px;
+  color: #ffffff;
+  text-align: center;
+}
+/* Required asterisk color (if using Elementor Pro Form) */
+selector .elementor-mark-required .elementor-field-label:after {
+  color: #ff1a1a !important;
 }
 /* Tablet: stack */
 @media (max-width: 991px) {
@@ -1413,8 +1646,9 @@ selector textarea.elementor-field-textual {
   }
 }
 @media (max-width: 479px) {
-  selector .glassmorphic-form {
-    padding: 20px;
+  selector .consult-form {
+    padding: 24px;
+    border-radius: 16px;
   }
 }
 @media (min-width: 1920px) {
@@ -1424,17 +1658,20 @@ selector textarea.elementor-field-textual {
 
 ---
 
-### S11 — Who We Are
+### S11 — Who We Are (`who-section`)
+
+> **HTML ref**: `<section class="who-section">` → `who-main-block` → heading + 4-cell bento grid (Our Story, clinic photo, image slider with **5 slides**, Our Vision).
 
 #### Section
 
 | Tab | Property | Value |
 |-----|----------|-------|
-| **Layout** | Content Width | Boxed, `1476px` |
+| **Layout** | Content Width | Boxed, `940px` |
 | **Style** | Background | `#ffffff` |
 | **Advanced** | Padding | `60px` top/bottom, `20px` left/right |
+| **Advanced** | CSS Classes | `who-section` |
 
-#### Container 1 — Heading
+#### Container 1 — Heading (`who-heading-block`)
 
 | Tab | Property | Value |
 |-----|----------|-------|
@@ -1450,18 +1687,19 @@ selector textarea.elementor-field-textual {
 | Tab | Property | Value |
 |-----|----------|-------|
 | **Content** | Title | `Who We Are` |
-| **Content** | Tag | H2 |
+| **Content** | Tag | DIV (the original uses `<div class="who-heading">`, not `<h2>`) |
 | **Content** | Alignment | Center |
 | **Style** | Typography | Cal Sans, `60px`, weight `400` |
+| **Advanced** | CSS Classes | `who-heading` |
 
-#### Container 2 — Bento Grid
+#### Container 2 — Bento Grid (`who-main-content-section`)
 
 | Tab | Property | Value |
 |-----|----------|-------|
 | **Advanced** | CSS Classes | `who-grid` |
 | **Advanced** | Margin | `40px 0 0 0` (top gap) |
 
-**Grid Cell 1 (Row 1 Left) — Our Story** — Container
+**Grid Cell 1 (Row 1 Left) — Our Story** (`who-content-block`)
 
 | Tab | Property | Value |
 |-----|----------|-------|
@@ -1474,28 +1712,49 @@ selector textarea.elementor-field-textual {
 | **Advanced** | Padding | `29.5px 48px` |
 
 Inside:
-- Heading: `Our Story`, Cal Sans, `35px`, line-height `160%`
-- Text: Hanken Grotesk, `16px`, line-height `160%`, max-width `450px`, gap `16px` between paragraphs
+- **Heading** (`who-content-heading`): `Our Story`, Cal Sans, `35px`, line-height `160%`
+- **Container** (`who-subtext-block`): Direction: Column, Gap: `16px`
+  - **Text 1**: "Founded by the visionary Drg. Cindy Saconk in 2008, CSmile Dental Clinic was born from a commitment to blend unparalleled craftsmanship with patient centered care."
+  - **Text 2**: "From its very inception, CSmile has aimed to elevate the standards of dental excellence in Bali, combining cutting edge technology with the warmth and hospitality that the island is known for."
+  - Style: Hanken Grotesk, `16px`, line-height `160%`
 
-**Grid Cell 2 (Row 1 Right) — Clinic Photo** — Container
-
-| Tab | Property | Value |
-|-----|----------|-------|
-| **Style** | Border Radius | `20px` |
-| **Advanced** | Overflow | Hidden |
-
-Inside: Image widget — 100% width, object-fit cover, 100% height
-
-**Grid Cell 3 (Row 2 Left) — Image Slider** — Container
+**Grid Cell 2 (Row 1 Right) — Clinic Photo** (`who-image-block`)
 
 | Tab | Property | Value |
 |-----|----------|-------|
 | **Style** | Border Radius | `20px` |
 | **Advanced** | Overflow | Hidden |
 
-Inside: **Image Carousel** (Elementor Pro) — autoplay, loop, max-height `440px`, dots visible
+Inside: Image widget — `Untitled design (1) 1.avif`, 100% width, object-fit cover
 
-**Grid Cell 4 (Row 2 Right) — Our Vision** — Same structure as Our Story cell
+**Grid Cell 3 (Row 2 Left) — Image Slider** (`who-image-block`)
+
+| Tab | Property | Value |
+|-----|----------|-------|
+| **Style** | Border Radius | `20px` |
+| **Advanced** | Overflow | Hidden |
+
+Inside: **Image Carousel** (Elementor Pro) — **5 slides**, numbered dots, arrow navigation
+
+**5 slider images (from index.html):**
+1. `DSC00128 (1).avif`
+2. `DSC00137 (2) (1).avif`
+3. `566284635_2173452333486445_6345457196528964642_n.avif`
+4. `WhatsApp Image 2025-10-21 at 17.11.20.avif`
+5. `WhatsApp Image 2025-09-16 at 19.15.15_d1ceef67.avif`
+
+Carousel settings: autoplay off (original has `data-autoplay="false"`), arrows visible, dot navigation (numbered), duration `500ms`, infinite loop.
+
+**Grid Cell 4 (Row 2 Right) — Our Vision** (`who-content-block`)
+
+Same structure as Our Story cell.
+
+Inside:
+- **Heading**: `Our Vision`, Cal Sans, `35px`, line-height `160%`
+- **Container** (`who-subtext-block`): Direction: Column, Gap: `16px`
+  - **Text 1**: "At CSmile Bali Clinics, our vision is to shape the future of modern dentistry by combining innovation, precision, and trust."
+  - **Text 2**: "We aspire to be the first choice for patients worldwide who seek excellence in both health and aesthetics."
+  - **Text 3**: "By uniting advanced technology with personalized care, we create smiles that go beyond treatment to inspire confidence and joy."
 
 #### Section Custom CSS
 
@@ -1515,7 +1774,7 @@ selector .who-grid {
 }
 @media (min-width: 1920px) {
   selector { padding: 98px 20px; }
-  selector .elementor-heading-title { font-size: 60px; }
+  selector .who-heading { font-size: 60px; }
 }
 @media (max-width: 479px) {
   selector { padding: 40px 0; }
@@ -1529,17 +1788,20 @@ selector .who-grid {
 
 ---
 
-### S12 — Licensed
+### S12 — Licensed (`licensed-section`)
+
+> **HTML ref**: `<section class="licensed-section">` → `licensed-container` → `licensed-main-block` → heading + 4 card grid
 
 #### Section
 
 | Tab | Property | Value |
 |-----|----------|-------|
-| **Layout** | Content Width | Boxed, `1920px` |
+| **Layout** | Content Width | Boxed, `940px` |
 | **Style** | Background | `#ffffff` |
 | **Advanced** | Padding | `80px` top/bottom, `50px` left/right |
+| **Advanced** | CSS Classes | `licensed-section` |
 
-#### Container 1 — Heading Block
+#### Container 1 — Heading Block (`licensed-heading-block`)
 
 | Tab | Property | Value |
 |-----|----------|-------|
@@ -1555,24 +1817,28 @@ selector .who-grid {
 | **Content** | Tag | H2 |
 | **Content** | Alignment | Center |
 | **Style** | Typography | Cal Sans, `35px`, weight `400`, line-height `160%` |
+| **Advanced** | CSS Classes | `section-heading _40px-desktop` |
 
 **Widget 2 — Text Editor**
 
 | Tab | Property | Value |
 |-----|----------|-------|
-| **Content** | Text | `Government Authorities and Recognized Institutions — Indonesia` |
+| **Content** | Text | `Government Authorities and Recognized Institutions - Indonesia` |
 | **Content** | Alignment | Center |
 | **Style** | Typography | Hanken Grotesk, `20px`, line-height `160%` |
 | **Style** | Text Color | `#574f48` |
+| **Advanced** | CSS Classes | `text-block-33` |
 
-#### Container 2 — Card Grid
+> ⚠️ Note: The original uses a dash `-` not an em-dash `—`. Match exactly.
+
+#### Container 2 — Card Grid (`licensed-card-main-block`)
 
 | Tab | Property | Value |
 |-----|----------|-------|
 | **Advanced** | CSS Classes | `licensed-grid` |
 | **Advanced** | Margin | `40px 0 0 0` |
 
-#### Each Licensed Card (×4) — Container
+#### Each Licensed Card (×4) — Container (`licensed-card-block`)
 
 | Tab | Property | Value |
 |-----|----------|-------|
@@ -1586,14 +1852,19 @@ selector .who-grid {
 | **Advanced** | Padding | `40px 0` top/bottom |
 
 Inside:
-- **Image**: institution logo, max-height `150px`, centered
-- **Text**: institution name, Hanken Grotesk, `11px`, line-height `160%`, center, max-width `253px`
+- **Image** (`licensed-image`): institution logo, max-height `150px`, centered
+- **Text** (`licensed-card-text`): Hanken Grotesk, `11px`, line-height `160%`, center, max-width `253px`
 
-**Cards:**
-1. PDGI
-2. Kementerian Kesehatan Republik Indonesia
-3. Kemenparekraf
-4. Dinas Kesehatan Provinsi Bali
+**Cards (exact from index.html):**
+
+| # | Logo File | Text |
+|---|----------|------|
+| 1 | `Copy of Certificates 1.avif` | Persatuan DokterGigi Indonesia(PDGI) Indonesian Dental Association |
+| 2 | `Layer_1.avif` | KementerianKesehatan RepublikIndonesis(RI) Ministry of HealthRepublic Indonesia |
+| 3 | `Copy of Certificates 3.avif` | Kementerian Pariwisatadan Ekonomi Kreatif (Kemenparekraf) Ministry of Tourism and Creative Economy |
+| 4 | `Copy of Certificates 4.avif` | Dinas KesehatanProvinsi Bali Ball ProvincialHealth Office |
+
+> ⚠️ The text has odd line breaks/spacing from the original HTML. Keep as-is for accuracy or clean up the spacing while preserving the same content.
 
 #### Section Custom CSS
 
@@ -1624,7 +1895,9 @@ selector .licensed-grid {
 
 ---
 
-### S13 — Footer
+### S13 — Footer (`footer`)
+
+> **HTML ref**: `<section class="footer">` → `footer-container` → `footer-main-block` → top 3-col row + bottom bar
 
 **Location**: Elementor → Templates → Theme Builder → Footer → Add New
 
@@ -1636,45 +1909,58 @@ selector .licensed-grid {
 | **Style** | Background Type | Gradient |
 | **Style** | Gradient | `#497ca2` (top) → `#1b2e3c` (bottom), Linear, 0° (bottom-to-top) |
 | **Advanced** | Padding | `0` all |
+| **Advanced** | CSS Classes | `footer` |
 
-#### Container 1 — Footer Content
+#### Container 1 — Footer Content (`footer-main-block`)
 
 | Tab | Property | Value |
 |-----|----------|-------|
-| **Layout** | Content Width | Boxed, `1360px` |
+| **Layout** | Content Width | Boxed, `940px` |
 | **Layout** | Direction | Column |
 | **Layout** | Gap | `48px` |
 | **Advanced** | Padding | `50px` top, `26px` bottom, `20px` left/right |
 
-#### Top Row — Container (3 columns)
+#### Top Row — Container `footer-top` (3 columns)
 
 | Tab | Property | Value |
 |-----|----------|-------|
 | **Layout** | Direction | Row |
 | **Layout** | Justify | Space Between |
 | **Layout** | Align | Start |
+| **Advanced** | CSS Classes | `footer-top` |
 
-**Left Column** (Container, max-width `300px`, direction: column, gap: `16px`, padding: `10px`):
+**Left Column** (`footer-top-left`, max-width `300px`, direction: column, gap: `16px`, padding: `10px`):
 
-- Image: Logo, max-width `220px`
-- Text: Tagline, Hanken Grotesk, `16px`, white, line-height `150%`
-- Text: "Follow us on:", Cal Sans, line-height `162%`, white
-- Container (social icons): Direction: Row, Gap: `16px`
-  - Image ×2: Facebook + Instagram icons
+- **Image** (Logo): `image 21 1 (1)-Picsart-AiImageEnhancer.avif`, max-width `220px`, link to `/`
+- **Text** (`footer-text`): "Your trusted partner for world-class dental care in the heart of Bali.", Hanken Grotesk, `16px`, white, line-height `150%`
+- **Text** (`footer-social-heading`): "Follow us on :", Cal Sans, line-height `162%`, white
+- **Container** (`footer-social-div`, direction: Row, gap: `16px`):
+  - Image link: Facebook icon → `https://www.facebook.com/profile.php?id=61582604070021`
+  - Image link: Instagram icon → `https://www.instagram.com/csmilebali/`
 
-**Middle Column** (Container, direction: column, gap: `8px`, padding: `10px`):
+**Middle Column** (`footer-top-middle`, direction: column, gap: `8px`, padding: `10px`):
 
-- Heading: `Quick Links`, Cal Sans, `18px`, white, line-height `155%`, padding-bottom `8px`
-- Text links ×4: Hanken Grotesk, `16px`, white, line-height `150%`, no underline
+- **Heading** (`footer-link-heading`): `Quick Links`, Cal Sans, `18px`, white, line-height `155%`, padding-bottom `8px`
+- **Link**: Treatments → `/#treatments`
+- **Link**: Consultation → `#`
+- **Link**: Reviews → `/#reviews`
+- **Link**: Contact → `/contact`
+- Style: Hanken Grotesk, `16px`, white, line-height `150%`, no underline
 
-**Right Column** (Container, direction: column, gap: `8px`, padding: `10px`):
+**Right Column** (`footer-top-right`, direction: column, gap: `8px`, padding: `10px`):
 
-- Heading: `Contact`, Cal Sans, `18px`, white, line-height `155%`, padding-bottom `8px`
-- Container ×3 (each contact item): Direction: Row, Gap: `12px`, Align: Start
-  - Image: icon (phone/email/location), padding `4px`
-  - Text: contact info, Hanken Grotesk, white, line-height `150%`
+- **Heading** (`footer-link-heading`): `Contact`, Cal Sans, `18px`, white, line-height `155%`, padding-bottom `8px`
+- **Container** (`footer-div`, direction: Row, gap: `12px`, align: Start):
+  - Image: phone icon (`Icon (2).png`)
+  - Link: `+62 813 3786 031` → `tel:+628133786031`
+- **Container** (`footer-div`):
+  - Image: email icon (`Icon (3).png`)
+  - Link: `info@csmilebali.com` → `mailto:info@csmilebali.com`
+- **Container** (`footer-div`):
+  - Image: location icon (`Icon (4).png`)
+  - Link: `Jl. Bypass Ngurah Rai, Kuta, Kec. Kuta, Kabupaten Badung, Bali 80361, Indonesia` → `https://maps.app.goo.gl/Gshvb1CQnD3N3RHn7` (target: `_blank`)
 
-#### Bottom Bar — Container
+#### Bottom Bar — Container (`footer-bottom`)
 
 | Tab | Property | Value |
 |-----|----------|-------|
@@ -1684,7 +1970,9 @@ selector .licensed-grid {
 | **Style** | Border Color | `#ffffff` |
 | **Advanced** | Padding | `18px` top/bottom |
 
-- Text: `© 2025 CSmile Bali. All rights reserved.`, center, Hanken Grotesk, `16px`, white
+- **Text** (`text-block-36`): `2025 CSmile Bali. All rights reserved.`, center, Hanken Grotesk, `16px`, white
+
+> Note: The original uses "2025" not "© 2025".
 
 #### Section Custom CSS
 
@@ -1702,15 +1990,15 @@ selector a:hover {
 }
 /* Tablet: stack columns */
 @media (max-width: 991px) {
-  selector .footer-top-row {
+  selector .footer-top {
     flex-direction: column;
   }
 }
 @media (max-width: 479px) {
   selector .elementor-container { padding-top: 40px; padding-bottom: 0; }
   selector .footer-bottom { padding-top: 10px; padding-bottom: 10px; }
-  selector .footer-text, selector .footer-link { font-size: 14px; }
-  selector .footer-heading { font-size: 16px; padding-bottom: 4px; }
+  selector .footer-text { font-size: 14px; }
+  selector .footer-link-heading { font-size: 16px; padding-bottom: 4px; }
 }
 @media (min-width: 1920px) {
   selector .elementor-container { padding-top: 40px; }
@@ -1724,12 +2012,14 @@ selector a:hover {
 
 ### Floating — WhatsApp Button
 
-**Method**: Install **Click to Chat** plugin.
+> **HTML ref**: `<a class="lottie-animation whp w-inline-block">` — positioned fixed, bottom-right, with WhatsApp SVG icon. Background: `rgba(35, 179, 58, 0.3)` (semi-transparent green).
+
+**Method 1**: Install **Click to Chat** plugin.
 
 | Setting | Value |
 |---------|-------|
 | Phone Number | `628133786031` |
-| Pre-filled Message | `Hi CSmile Bali, I'm interested in a free consultation!` |
+| Pre-filled Message | `Hi CSmile Bali! I'd love to get information about my possible dental/smile treatment. I am looking for ` |
 | Position | Bottom Right |
 | Bottom Offset | `20px` |
 | Right Offset | `50px` |
@@ -1739,13 +2029,17 @@ selector a:hover {
 | Z-Index | `99` |
 | Icon Color | `#23b33a` |
 
-**Alternative — Custom HTML** (add as Elementor HTML widget on page):
+> Note the pre-filled message includes UTM parameters in the original: `&utm_source=website&utm_medium=whatsapp_button&utm_campaign=main_cta`
+
+**Method 2 — Custom HTML** (closer to original, add as Elementor HTML widget on page):
 
 ```html
-<a href="https://wa.me/628133786031?text=Hi%20CSmile%20Bali%2C%20I%27m%20interested%20in%20a%20free%20consultation!" 
+<a href="https://wa.me/628133786031?text=Hi%20CSmile%20Bali!%20I%E2%80%99d%20love%20to%20get%20information%20about%20my%20possible%20dental%2Fsmile%20treatment.%20I%20am%20looking%20for%20&utm_source=website&utm_medium=whatsapp_button&utm_campaign=main_cta"
    class="wa-fab" target="_blank" rel="noopener">
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#23b33a" width="30" height="30">
-    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+  <svg style="color:rgb(34,235,65)" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+    <g>
+      <path d="M17.496 14.3828C17.1952 14.2305 15.7305 13.5158 15.4567 13.4138C15.183 13.3163 14.9842 13.2652 14.7847 13.566C14.5897 13.8592 14.0152 14.5305 13.8397 14.7263C13.6642 14.922 13.4917 14.937 13.1955 14.8043C12.8947 14.652 11.934 14.3392 10.7932 13.3162C9.90225 12.5235 9.309 11.547 9.13275 11.2462C8.95725 10.9492 9.11325 10.7813 9.26175 10.6328C9.39825 10.4963 9.5625 10.2893 9.71475 10.1093C9.8595 9.92925 9.906 9.8085 10.0117 9.6135C10.1092 9.40275 10.059 9.2385 9.98475 9.09C9.9105 8.9415 9.31275 7.46925 9.063 6.88275C8.8245 6.30075 8.57475 6.375 8.391 6.375C8.21925 6.35925 8.01975 6.35925 7.821 6.35925C7.62225 6.35925 7.2975 6.4335 7.02375 6.7185C6.75 7.01925 5.97675 7.73775 5.97675 9.19125C5.97675 10.6485 7.047 12.0585 7.1955 12.2692C7.34775 12.4642 9.30075 15.4642 12.297 16.7535C13.0117 17.0542 13.5667 17.2343 14.0002 17.3828C14.715 17.6093 15.3675 17.5777 15.8828 17.5035C16.4528 17.4097 17.6482 16.7805 17.8987 16.0778C18.153 15.3705 18.153 14.7847 18.0787 14.652C18.0045 14.5155 17.8095 14.4412 17.5087 14.3085L17.496 14.3828ZM12.0623 21.75H12.0465C10.2728 21.75 8.51925 21.2692 6.98775 20.3707L6.6285 20.1562L2.8785 21.1328L3.8865 17.484L3.64425 17.109C2.65575 15.5348 2.1285 13.7183 2.1285 11.8515C2.1285 6.4065 6.58575 1.965 12.0698 1.965C14.7263 1.965 17.2185 3 19.0935 4.875C20.9685 6.73425 22.0035 9.2265 22.0035 11.8672C21.996 17.3085 17.5425 21.75 12.066 21.75H12.0623ZM20.5192 3.44925C18.2377 1.24575 15.2378 0 12.0465 0C5.4645 0 .105 5.33625.10125 11.8943C.10125 13.9883.648 16.0312 1.695 17.8395L0 24L6.336 22.3478C8.082 23.289 10.047 23.793 12.0472 23.7968H12.051C18.6368 23.7968 23.9963 18.4605 24 11.898C24 8.7225 22.7618 5.73375 20.5043 3.4875L20.5192 3.44925Z" fill="currentColor"></path>
+    </g>
   </svg>
 </a>
 ```
@@ -1759,13 +2053,13 @@ Add CSS to **Site Settings → Custom CSS**:
   right: 50px;
   width: 60px;
   height: 60px;
+  background-color: rgba(35, 179, 58, 0.3);
   border: 1px solid #23b33a;
   border-radius: 100px;
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 99;
-  background: #fff;
   transition: transform 0.2s ease;
 }
 .wa-fab:hover {
@@ -1779,22 +2073,24 @@ Add CSS to **Site Settings → Custom CSS**:
 }
 ```
 
+> ⚠️ Note: The original has `background-color: rgba(35, 179, 58, 0.3)` (semi-transparent green), NOT white background like the previous implementation stated.
+
 ---
 
 ### Animation Recreation (from scripts.js)
 
-These animations were handled by Webflow IX2. Here's how to recreate each in Elementor:
+These animations were handled by Webflow IX2. Here's how to recreate each in Elementor 3.35.0:
 
 | # | Original Effect | Elementor Setup | Applied To |
 |---|----------------|----------------|------------|
 | 1 | **Fade In Up on load** | Widget → Advanced → Motion Effects → Entrance Animation: `Fade In Up`, Duration `800ms` | Hero heading, description, CTA button (stagger delays: 0/200/400ms) |
 | 2 | **Fade In Up on scroll** | Widget → Advanced → Motion Effects → Entrance Animation: `Fade In Up` | Step cards, treatment cards, service elements, process cards |
 | 3 | **Marquee scroll** | CSS `@keyframes` animation on HTML widget | Lab images (S5), Testimonial rows (S9) |
-| 4 | **Premium bar hover** | CSS `::after` pseudo-element with `width: 0→100%` transition | Lab feature blocks (S5) |
-| 5 | **Before/After slider** | Plugin handles this — range input driving clip-path | Before/After section (S6) |
-| 6 | **Tab switching** | Elementor Pro Tabs widget OR custom JS for thumbnail→slider switching | Before/After thumbnails (S6) |
-| 7 | **Swiper carousel** | Elementor Media Carousel with coverflow effect OR Swiper CDN embed | Video testimonials (S7) |
-| 8 | **Webflow Slider** | Elementor Image Carousel widget with autoplay + nav | Who We Are clinic photos (S11) |
+| 4 | **Premium bar hover** | CSS transition on `.premium-material-div` (width 0→100%), triggered by hovering `.premium-material-hover-block` | Lab feature blocks (S5) |
+| 5 | **Before/After slider** | Plugin or custom HTML (BeerSlider) — range input driving clip-path or reveal width | Before/After section (S6) |
+| 6 | **Tab switching** | Custom JS toggling `.hide` class on `bas-wrapper` elements, or use Elementor Pro Tabs | Before/After thumbnails (S6) |
+| 7 | **Swiper carousel** | Custom HTML embed with Swiper.js CDN (v11) | Video testimonials (S7) |
+| 8 | **Webflow Slider** | Elementor Image Carousel widget with **5 slides**, arrows, numbered dots, no autoplay | Who We Are clinic photos (S11) |
 | 9 | **Sticky header** | Section → Advanced → Motion Effects → Sticky: Top | Navbar (S0) |
 | 10 | **Smooth scroll** | Built into Elementor (enable: Settings → General → Smooth Scroll) or use anchor links | Navbar links |
 | 11 | **Video autoplay** | Elementor Video Background widget handles this natively | Hero section (S1) |
@@ -1824,25 +2120,24 @@ These animations were handled by Webflow IX2. Here's how to recreate each in Ele
 - [ ] Header template created → Display: Entire Site
 - [ ] Footer template created → Display: Entire Site
 - [ ] All 13 sections on main page in correct order
-- [ ] CSS IDs set: `hero`, `treatments`, `services`, `process`, `contact`
+- [ ] CSS IDs set: `hero`, `treatments`, `services`, `process`, `contact`, `reviews`
 - [ ] All navbar anchor links work (#hero, #treatments, #services, #process, #contact)
 
 ### Interactive Features Checklist
 
-- [ ] Contact form submits → email action configured
-- [ ] Before/After slider plugin installed and working with 6 image pairs
-- [ ] Video carousel showing 3 slides on desktop
+- [ ] Contact form submits (with country code dropdown if using custom HTML approach)
+- [ ] Before/After slider working with 6 image pairs + thumbnail switching
+- [ ] Video carousel showing 3 slides on desktop (Swiper.js)
 - [ ] Lab marquee scrolling smoothly (no gap/flicker on loop)
-- [ ] Image carousel in Who We Are section autoplay working
-- [ ] WhatsApp FAB visible and links to correct number
+- [ ] Image carousel in Who We Are section — 5 slides, arrows, numbered dots
+- [ ] WhatsApp FAB visible and links to correct number with UTM params
 
 ### Animation Checklist
 
 - [ ] Hero entrance animations (fade in up, staggered)
 - [ ] Scroll-triggered fade-in on Steps, Treatments, Services
-- [ ] Lab feature hover bar animates (width 0→100%)
+- [ ] Lab feature hover bar animates (width 0→100% on `.premium-material-div`)
 - [ ] Navbar sticky on scroll
-- [ ] Treatment card hover (optional lift effect)
 - [ ] Testimonial rows scrolling (left + right)
 
 ### Responsive Checklist
@@ -1870,7 +2165,7 @@ Test each breakpoint in Elementor responsive mode:
 ### Performance Checklist
 
 - [ ] All images compressed (WebP/AVIF format)
-- [ ] Video hosted externally or YouTube embed (not large MP4 in WP media)
+- [ ] Video hosted in WP Media or externally (keep file sizes reasonable)
 - [ ] Elementor CSS loading: External File (not inline)
 - [ ] Lazy loading enabled for below-fold images
 - [ ] Unused Elementor features disabled in Experiments
@@ -1886,3 +2181,4 @@ Test each breakpoint in Elementor responsive mode:
 ---
 
 > **Build order**: Desktop first → then switch to tablet/mobile responsive modes in Elementor to adjust padding, fonts, and column stacking. Always test on a real device before launching.
+
