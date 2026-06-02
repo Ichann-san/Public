@@ -1,0 +1,151 @@
+<!-- Skeleton -->
+<div class="testimonial-wrapper-section">
+  <div class="testimonial-first-marquee-main-block">
+    <div class="testimonial-first-marquee-block" id="marquee-row-1a"></div>
+    <div class="testimonial-first-marquee-block" id="marquee-row-1b"></div>
+  </div>
+
+  <div class="testimonial-first-marquee-main-block second-testimonials">
+    <div class="testimonial-first-marquee-block" id="marquee-row-2a"></div>
+    <div class="testimonial-first-marquee-block" id="marquee-row-2b"></div>
+  </div>
+</div>
+
+<!-- Logic -->
+<script>
+  const starIcon = "https://csmilebali.id/wp-content/uploads/2026/06/s9_stars.png";
+  const reviewsBaris1 = [
+    {
+      name: "Vanessa Alessandro",
+      state: "United States",
+      image: "https://csmilebali.id/wp-content/uploads/2026/06/s9_vanessa.png",
+      text: "I had a great experience at CS Dental Bali. The staff were very friendly and professional, making me feel comfortable throughout the entire process. The clinic was clean, modern, and well-equipped. The dentist was thorough, explained everything clearly, and provided excellent care. I’m very happy with the results and would definitely recommend CS Dental Bali to anyone looking for quality dental treatment in Bali."
+    },
+    {
+      name: "Anna Rall",
+      state: "United States",
+      image: "https://csmilebali.id/wp-content/uploads/2026/06/s9_anna.png",
+      text: "The best dental service all over Bali. Super friendly doctors and staff. No waiting times. Highest technology with minimal pain. Can only recommend. Teeth are clean and shiny again!"
+    },
+    {
+      name: "Elly Wagener",
+      state: "United States",
+      image: "https://csmilebali.id/wp-content/uploads/2026/06/s9_elly.png",
+      text: "Best service ever! They even squeezed me in on the tight schedule two days only to fixed my gap teeth, and very flexible for my next appointment, since I live overseas! Highly recommended for your beauty smile, just right here."
+    },
+    {
+      name: "Masna sidabuta",
+      state: "Local Guide",
+      image: "https://csmilebali.id/wp-content/uploads/2026/06/s9_masda.png",
+      text: "We had a wonderful experience at CS Dental with Dr. Theresa. From the moment I walked in, the staff was welcoming, professional, and attentive. The clinic is very clean and modern. Dr. Theresa was amazing, she took the time to explain every step of the treatment, answered all my questions with patience, and made sure I felt comfortable throughout the procedure. Her gentle approach and attention to detail really made a difference. I truly felt like we were in good hands. Highly recommend CS Dental Clinic for anyone looking for excellent dental care."
+    },
+    {
+      name: "Ryan Jusuf",
+      state: "Local Guide",
+      image: "https://csmilebali.id/wp-content/uploads/2026/06/s9_ryan.png",
+      text: "The dentist is very friendly and professional. The clinic is clean and comfortable. Highly recommended! Not only professional but also makes patients feel comfortable. Easy appointment process, cozy waiting room, and excellent treatment results."
+    },
+    {
+      name: "Cinnamon Dorn",
+      state: "United States",
+      image: "https://csmilebali.id/wp-content/uploads/2026/06/s9_cinnamon.png",
+      text: "Fantastic dental clinic. Highly recommended, gentle and caring. Great prices. I will return. Thankyou."
+    },
+    {
+      name: "Josie Dillon",
+      state: "United States",
+      image: "https://csmilebali.id/wp-content/uploads/2026/06/s9_josie.png",
+      text: "Couldn't not remember this place more! amazing for English speaking visitors who would like to get their teeth looked at or any sort of dental needs."
+    },
+    {
+      name: "Jazmyn Tursina",
+      state: "Local Guide",
+      image: "https://csmilebali.id/wp-content/uploads/2026/06/s9_jazmyn.png",
+      text: "I had such a great experience here for my dental spa treatment! From the moment I walked in, the team made me feel so welcomed and comfortable. The clinic is clean, calming, and professional. The treatment itself was smooth and relaxing  I felt completely at ease the whole time. Big thanks to the amazing staff for their gentle care and attention to detail. Highly recommended for anyone looking for high-quality dental care in a cozy and trusted environment. I’ll definitely be coming back!"
+    }
+  ];
+
+  const reviewsBaris2 = [
+    {
+      name: "Jazmyn Tursina",
+      state: "Local Guide",
+      image: "https://csmilebali.id/wp-content/uploads/2026/06/s9_jazmyn.png",
+      text: "I had such a great experience here for my dental spa treatment! From the moment I walked in, the team made me feel so welcomed and comfortable. The clinic is clean, calming, and professional. The treatment itself was smooth and relaxing  I felt completely at ease the whole time. Big thanks to the amazing staff for their gentle care and attention to detail. Highly recommended for anyone looking for high-quality dental care in a cozy and trusted environment. I’ll definitely be coming back!"
+    },
+    {
+      name: "Josie Dillon",
+      state: "United States",
+      image: "https://csmilebali.id/wp-content/uploads/2026/06/s9_josie.png",
+      text: "Couldn't not remember this place more! amazing for English speaking visitors who would like to get their teeth looked at or any sort of dental needs."
+    },
+    {
+      name: "Cinnamon Dorn",
+      state: "United States",
+      image: "https://csmilebali.id/wp-content/uploads/2026/06/s9_cinnamon.png",
+      text: "Fantastic dental clinic. Highly recommended, gentle and caring. Great prices. I will return. Thankyou."
+    },
+    {
+      name: "Ryan Jusuf",
+      state: "Local Guide",
+      image: "https://csmilebali.id/wp-content/uploads/2026/06/s9_ryan.png",
+      text: "The dentist is very friendly and professional. The clinic is clean and comfortable. Highly recommended! Not only professional but also makes patients feel comfortable. Easy appointment process, cozy waiting room, and excellent treatment results."
+    },
+    {
+      name: "Masna sidabuta",
+      state: "Local Guide",
+      image: "https://csmilebali.id/wp-content/uploads/2026/06/s9_masda.png",
+      text: "We had a wonderful experience at CS Dental with Dr. Theresa. From the moment I walked in, the staff was welcoming, professional, and attentive. The clinic is very clean and modern. Dr. Theresa was amazing, she took the time to explain every step of the treatment, answered all my questions with patience, and made sure I felt comfortable throughout the procedure. Her gentle approach and attention to detail really made a difference. I truly felt like we were in good hands. Highly recommend CS Dental Clinic for anyone looking for excellent dental care."
+    },
+    {
+      name: "Elly Wagener",
+      state: "United States",
+      image: "https://csmilebali.id/wp-content/uploads/2026/06/s9_elly.png",
+      text: "Best service ever! They even squeezed me in on the tight schedule two days only to fixed my gap teeth, and very flexible for my next appointment, since I live overseas! Highly recommended for your beauty smile, just right here."
+    },
+    {
+      name: "Anna Rall",
+      state: "United States",
+      image: "https://csmilebali.id/wp-content/uploads/2026/06/s9_anna.png",
+      text: "The best dental service all over Bali. Super friendly doctors and staff. No waiting times. Highest technology with minimal pain. Can only recommend. Teeth are clean and shiny again!"
+    },
+    {
+      name: "Vanessa Alessandro",
+      state: "United States",
+      image: "https://csmilebali.id/wp-content/uploads/2026/06/s9_vanessa.png",
+      text: "I had a great experience at CS Dental Bali. The staff were very friendly and professional, making me feel comfortable throughout the entire process. The clinic was clean, modern, and well-equipped. The dentist was thorough, explained everything clearly, and provided excellent care. I’m very happy with the results and would definitely recommend CS Dental Bali to anyone looking for quality dental treatment in Bali."
+    }
+  ];
+
+  // Render
+  document.addEventListener("DOMContentLoaded", () => {
+    
+    const buildCard = (data) => `
+      <div class="testimonial-main-content-block">
+        <div class="testimonial-heading-blocks">
+          <div class="author-info-block">
+            <img src="${data.image}" class="author-image" alt="${data.name}">
+            <div class="author-info">
+              <div class="author-name">${data.name}</div>
+              <div class="author-state">${data.state}</div>
+            </div>
+          </div>
+          <img src="${starIcon}" class="rating" alt="5 stars">
+        </div>
+        <div class="testimonial-description">${data.text}</div>
+      </div>
+    `;
+
+    const htmlRow1 = reviewsBaris1.map(buildCard).join('');
+    const htmlRow2 = reviewsBaris2.map(buildCard).join('');
+    const injectHTML = (id, html) => {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = html;
+    };
+
+    injectHTML("marquee-row-1a", htmlRow1);
+    injectHTML("marquee-row-1b", htmlRow1);
+    
+    injectHTML("marquee-row-2a", htmlRow2);
+    injectHTML("marquee-row-2b", htmlRow2);
+  });
+</script>
