@@ -1,0 +1,460 @@
+questions
+
+no. 1
+Extended Hello SMTP Validation
+
+Description
+-----------
+You are given two Python functions: main() and report_on_message_size(connection
+, fromaddr, toaddrs, message). main() reads server, fromaddr, and toaddrs from s
+ys.argv, builds a message from a template, opens an smtplib.SMTP connection to t
+he given server, calls report_on_message_size(), prints "Message sent to N recip
+ient(s)", and calls connection.quit(). report_on_message_size() calls connection
+.ehlo() to detect ESMTP support; if the server advertises the SIZE extension it
+prints "Maximum message size is {size}" and aborts if the message exceeds that l
+imit; finally it calls connection.sendmail() to send the message.
+
+The goal of this task is to validate whether:
+- smtplib.SMTP is called with the server argument from sys.argv.
+- report_on_message_size() is called from main() and connection.quit() is called
+ after a successful send.
+- connection.sendmail() is called with the correct fromaddr and toaddrs when the
+ server reports a SIZE extension via esmtp_features.
+
+However, this should be tested, not actually performed. Mock smtplib.SMTP and re
+port_on_message_size in test_main; supply a MagicMock connection with ehlo retur
+ning (250, b'OK'), has_extn returning True, and esmtp_features = {'size': '10000
+000'} in test_report_on_message_size.
+Input
+-----
+No input is provided to the program.
+Output (unit test)
+------------------
+The program must print a sequence of result lines that indicate whether specific
+ attributes and calls were made as expected.
+Message sent to 1 recipient
+mock_smtp_cls.call_args: call('smtp.example.com')
+test attribute passed: True is equal to True
+Maximum message size is 10000000
+test attribute passed: True is equal to True
+test attribute passed: sender@example.com is equal to sender@example.com
+test attribute passed: ['recipient@example.com'] is equal to ['recipient@example
+.com']
+
+
+no. 2
+Google POP3 Email Downloader Validation
+
+Description
+-----------
+You are given a Python function download_email(username) that simulates download
+ing emails from a Google mail account using the poplib library over POP3 SSL. Th
+e goal of this task is to validate whether:
+- The function connects to the correct POP3 SSL server and port.
+- It authenticates with the correct username and password.
+- It retrieves the total message count and prints it.
+- It fetches and prints every line of the last message.
+- It closes the mailbox connection afterwards.
+
+However, this action should be tested, not actually performed. Therefore, you mu
+st mock the poplib.POP3_SSL class and ensure that the function behaves correctly
+ using Python's unittest.mock.
+Input
+-----
+No input is provided to the program.
+Output (unit test)
+------------------
+The program must print a sequence of result lines that indicate whether specific
+ attributes and calls were made as expected.
+Total emails: 3
+Getting last message
+b'From: sender@example.com'
+b'Subject: Test Email'
+b'Hello from POP3!'
+mock_pop3_ssl.call_args: call('pop.googlemail.com', '995')
+mock_mailbox_instance.user.call_args: call('testuser@gmail.com')
+mock_mailbox_instance.pass_.call_args: call('secret123')
+test attribute passed: testuser@gmail.com is equal to testuser@gmail.com
+test attribute passed: secret123 is equal to secret123
+
+
+
+no. 3
+SSH Simple Client Validation 
+ 
+Description 
+----------- 
+You are given a Python function main(hostname, username) that connects to a remo
+te host over SSH using the system ssh command via subprocess. The function const
+ructs the remote address as username@hostname, builds a command list that reques
+ts a pseudo-terminal (-tt) and accepts new host keys automatically, then runs ss
+h with "echo Hello, world" and "exit" piped as stdin input. It forwards the proc
+ess stdout and stderr directly to the program's own stdout and stderr via their 
+binary buffer interfaces, and returns the subprocess exit code. 
+ 
+The goal of this task is to validate whether: 
+- The remote address string is built correctly as username@hostname. 
+- subprocess.run is called with the correct SSH command list and the correct inp
+ut bytes. 
+- stdout=subprocess.PIPE and stderr=subprocess.PIPE are passed. 
+- The subprocess stdout is forwarded via sys.stdout.buffer.write. 
+- The subprocess return code is returned by the function. 
+ 
+However, this should be tested, not actually performed. Therefore, you must mock
+ subprocess.run and sys.stdout/sys.stderr using Python's unittest.mock so that n
+o real SSH connection is made. 
+Input 
+----- 
+No input is provided to the program. 
+Output (unit test) 
+------------------ 
+The program must print a sequence of result lines that indicate whether specific
+ attributes and calls were made as expected. 
+SSH command: ssh -tt -o StrictHostKeyChecking=accept-new user@localhost 
+test attribute passed: b'echo Hello, world\nexit\n' is equal to b'echo Hello, wo
+rld\nexit\n' 
+stdout written: call(b'Hello, world\n') 
+test attribute passed: 0 is equal to 0
+
+
+
+no. 4
+Multithreaded Multicall XMLRPC Server Validation
+
+Description
+-----------
+You are given a Python program that implements a multithreaded XML-RPC server an
+d a matching client. The server runs in a background thread (ServerThread) and e
+xposes four arithmetic functions: add, subtract, multiply, and divide. The clien
+t uses xmlrpc.client.MultiCall to batch all four operations in a single round tr
+ip and prints the results.
+
+The goal of this task is to validate whether:
+- The SimpleXMLRPCServer is created with the correct (host, port) tuple.
+- The server registers multicall support and all four arithmetic functions.
+- The server thread is started correctly.
+- The client proxy is created with the correct server URL.
+- A MultiCall object is created and each of the four operations is queued with a
+rguments (7, 3).
+- The batched call is executed and the results are printed.
+
+However, this should be tested, not actually performed. Therefore, you must mock
+ SimpleXMLRPCServer, threading.Thread.start, xmlrpc.client.ServerProxy, and xmlr
+pc.client.MultiCall using Python's unittest.mock.
+Input
+-----
+No input is provided to the program.
+Output (unit test)
+------------------
+The program must print a sequence of result lines that indicate whether specific
+ attributes and calls were made as expected.
+Server thread started. Testing the server...
+7+3=10, 7-3=4, 7*3=21, 7/3=2
+mock_server_cls.call_args: call(('localhost', 8000))
+mock_proxy_cls.call_args: call('http://localhost:8000/')
+test attribute passed: call(7, 3) is equal to call(7, 3)
+ 
+
+
+
+no. 5
+XMLRPC Server with HTTP Basic Auth Validation
+
+Description
+-----------
+You are given a Python program that implements a SimpleXMLRPCServer secured with
+ HTTP Basic Authentication. The SecureXMLRPCServer class extends SimpleXMLRPCSer
+ver and installs a custom VerifyingRequestHandler that decodes the Base64-encode
+d Authorization header and checks the username and password before allowing any
+XML-RPC call. The server also registers an echo function that returns the client
+'s message in uppercase.
+
+The goal of this task is to validate whether:
+- SecureXMLRPCServer stores the username and password and calls SimpleXMLRPCServ
+er.__init__ with the correct (host, port) tuple and the custom request handler.
+- The authenticate() method correctly returns True for valid credentials and Fal
+se for invalid ones.
+- run_server() creates a SecureXMLRPCServer with the correct parameters, registe
+rs the echo function by name, prints the startup message, and calls serve_foreve
+r().
+
+However, this should be tested, not actually performed. Therefore, you must mock
+ SimpleXMLRPCServer.__init__ (to avoid binding a real socket) and SecureXMLRPCSe
+rver (to avoid starting a real server) using Python's unittest.mock.
+Input
+-----
+No input is provided to the program.
+Output (unit test)
+------------------
+The program must print a sequence of result lines that indicate whether specific
+ attributes and calls were made as expected.
+test attribute passed: False is equal to False
+test attribute passed: True is equal to True
+Running a HTTP auth enabled XMLRPC server on localhost:8000...
+mock_server_cls.call_args: call('localhost', 8000, 'user', 'pass')
+registered function name: echo
+
+
+
+
+no. 6
+JSON-RPC 2.0 Client Validation
+
+Description
+-----------
+You are given a Python JSON-RPC 2.0 client built on urllib. json_rpc_call(url, m
+ethod, params, request_id) builds a JSON-RPC 2.0 payload dict, encodes it as UTF
+-8, creates a urllib.request.Request with Content-Type application/json and HTTP
+ method POST, then calls urlopen with a 10-second timeout. It reads and decodes
+the response body, parses the JSON, and returns the result dict. It raises Runti
+meError on HTTPError or URLError. parse_params(params_text) returns [] for None
+input, or the JSON-parsed value of the input string. run_examples(url) iterates
+over three example calls — add([10,5]), subtract([10,5]), echo({"message":"Hello
+, JSON-RPC!"}) — calls json_rpc_call for each with keyword arguments, and for ea
+ch prints "Request method: {method}", the pretty-printed JSON response (indent=2
+), and a blank line.
+
+The goal of this task is to validate whether:
+- json_rpc_call builds the correct payload dict (jsonrpc, method, params, id), e
+ncodes it, creates a Request with the correct URL and Content-Type header, calls
+ urlopen, and returns the parsed response.
+- parse_params correctly handles None, a JSON array string, and a JSON object st
+ring.
+- run_examples calls json_rpc_call three times in order with the correct keyword
+ arguments, and prints the method name and formatted response for each.
+
+However, this should be tested, not actually performed. Mock urlopen for json_rp
+c_call and mock json_rpc_call itself for run_examples using Python's unittest.mo
+ck.
+Input
+-----
+No input is provided to the program.
+Output (unit test)
+------------------
+The program must print a sequence of result lines that indicate whether specific
+ attributes and calls were made as expected.
+request URL: http://127.0.0.1:8000
+test attribute passed: add is equal to add
+test attribute passed: [10, 5] is equal to [10, 5]
+test attribute passed: 1 is equal to 1
+test attribute passed: 2.0 is equal to 2.0
+test attribute passed: application/json is equal to application/json
+test attribute passed: 15 is equal to 15
+test attribute passed: [] is equal to []
+test attribute passed: [1, 2] is equal to [1, 2]
+test attribute passed: hello is equal to hello
+Request method: add
+{
+ "jsonrpc": "2.0",
+ "result": 15,
+ "id": 1
+}
+
+Request method: subtract
+{
+ "jsonrpc": "2.0",
+ "result": 5,
+ "id": 2
+}
+
+Request method: echo
+{
+ "jsonrpc": "2.0",
+ "result": "Hello, JSON-RPC!",
+ "id": 3
+}
+
+test attribute passed: call(url='http://127.0.0.1:8000', method='add', params=[1
+0, 5], request_id=1) is equal to call(url='http://127.0.0.1:8000', method='add',
+ params=[10, 5], request_id=1)
+test attribute passed: call(url='http://127.0.0.1:8000', method='subtract', para
+ms=[10, 5], request_id=2) is equal to call(url='http://127.0.0.1:8000', method='
+subtract', params=[10, 5], request_id=2)
+test attribute passed: call(url='http://127.0.0.1:8000', method='echo', params={
+'message': 'Hello, JSON-RPC!'}, request_id=3) is equal to call(url='http://127.0
+.0.1:8000', method='echo', params={'message': 'Hello, JSON-RPC!'}, request_id=3)
+ 
+
+no. 7
+JSON-RPC 2.0 Server Validation
+
+Description
+-----------
+You are given a Python JSON-RPC 2.0 server built on http.server. It exposes thre
+e functions — add(a, b), subtract(a, b), and echo(message) — through a dispatch
+table called METHODS. make_error(code, message) builds a JSON-RPC error object.
+make_response(result, error, request_id) wraps a result or error into a complian
+t JSON-RPC 2.0 response dict. JsonRpcHandler.handle_json_rpc(request_data) valid
+ates the incoming request dict (checking the jsonrpc version, looking up the met
+hod, dispatching with positional or keyword params) and returns the appropriate
+response dict. run_server(host, port) creates an HTTPServer bound to the given a
+ddress, prints startup messages, calls serve_forever(), and closes the server on
+ exit.
+
+The goal of this task is to validate whether:
+- make_error and make_response produce the correct dicts.
+- handle_json_rpc dispatches a valid method call (add with params [3, 4]) and re
+turns result 7 with the correct id.
+- handle_json_rpc returns a -32601 Method not found error for an unknown method.
+- run_server creates HTTPServer with the correct (host, port) tuple and JsonRpcH
+andler, calls serve_forever(), and calls server_close() on exit.
+
+However, this should be tested, not actually performed. For handle_json_rpc, use
+ object.__new__(JsonRpcHandler) to obtain a handler instance without a real HTTP
+ connection. For run_server, mock HTTPServer using Python's unittest.mock.
+Input
+-----
+No input is provided to the program.
+Output (unit test)
+------------------
+The program must print a sequence of result lines that indicate whether specific
+ attributes and calls were made as expected.
+add result: 7
+test attribute passed: 7 is equal to 7
+test attribute passed: 1 is equal to 1
+error code: -32601
+test attribute passed: -32601 is equal to -32601
+test attribute passed: Method not found is equal to Method not found
+test attribute passed: -32700 is equal to -32700
+test attribute passed: Parse error is equal to Parse error
+test attribute passed: 2.0 is equal to 2.0
+test attribute passed: 42 is equal to 42
+test attribute passed: 5 is equal to 5
+JSON-RPC server running at http://127.0.0.1:8000
+Press Ctrl+C to stop.
+
+Server stopped.
+test attribute passed: ('127.0.0.1', 8000) is equal to ('127.0.0.1', 8000)
+test attribute passed: <class '__main__.JsonRpcHandler'> is equal to <class '__m
+ain__.JsonRpcHandler'>
+server address: ('127.0.0.1', 8000)
+
+
+
+no. 8
+SFTP File Download Validation
+
+Description
+-----------
+You are given a Python function main(hostname, username, filename) that download
+s a file via SFTP using the system sftp command through subprocess. It construct
+s a target string as "username@hostname", builds an sftp batch command string "g
+et filename filename.copy\nbye\n", and calls subprocess.run(["sftp", "-b", "-",
+target], input=commands, text=True). If the return code is 0 it prints "Download
+ed filename to filename.copy", otherwise it prints "Download failed".
+
+The goal of this task is to validate whether:
+- subprocess.run is called with the correct sftp command list ["sftp", "-b", "-"
+, "user@example.com"].
+- The input passed to subprocess.run contains the correct get command.
+- "Download failed" is printed when the return code is non-zero.
+- "Downloaded filename to filename.copy" is printed when the return code is 0.
+
+However, this should be tested, not actually performed. Mock subprocess.run usin
+g Python's unittest.mock and test both the success and failure code paths.
+Input
+-----
+No input is provided to the program.
+Output (unit test)
+------------------
+The program must print a sequence of result lines that indicate whether specific
+ attributes and calls were made as expected.
+Download failed
+test attribute passed: True is equal to True
+test attribute passed: ['sftp', '-b', '-', 'user@example.com'] is equal to ['sft
+p', '-b', '-', 'user@example.com']
+Downloaded file.txt to file.txt.copy
+test attribute passed: True is equal to True
+test attribute passed: ['sftp', '-b', '-', 'user@example.com'] is equal to ['sft
+p', '-b', '-', 'user@example.com']
+test attribute passed: True is equal to True
+
+
+
+no. 9
+SMTP TLS Email Sender Validation
+
+Description
+-----------
+You are given two Python functions: main() and send_message_securely(connection,
+ fromaddr, toaddrs, message). main() reads server, fromaddr, and toaddrs from sy
+s.argv, builds a message from a template, opens an smtplib.SMTP connection to th
+e given server, calls send_message_securely(), prints "Message sent to N recipie
+nt(s)", and calls connection.quit(). send_message_securely() calls connection.eh
+lo() to detect ESMTP support, and if the server advertises STARTTLS it prints "N
+egotiating TLS....", creates an ssl.SSLContext, calls connection.starttls(), reruns ehlo(), prints "Using TLS connection.", and finally calls connection.sendma
+il(). If STARTTLS is not available it prints "Server does not support TLS; using
+ normal connection." before calling sendmail().
+
+The goal of this task is to validate whether:
+- smtplib.SMTP is called with the server argument from sys.argv.
+- send_message_securely() is called from main().
+- connection.quit() is called after a successful send.
+- connection.starttls() is called when the server supports STARTTLS.
+- connection.sendmail() is called with the correct fromaddr and toaddrs.
+
+However, this should be tested, not actually performed. Mock smtplib.SMTP, ssl.S
+SLContext, and send_message_securely using Python's unittest.mock.
+Input
+-----
+No input is provided to the program.
+Output (unit test)
+------------------
+The program must print a sequence of result lines that indicate whether specific
+ attributes and calls were made as expected.
+Message sent to 1 recipient
+mock_smtp_cls.call_args: call('smtp.example.com')
+test attribute passed: True is equal to True
+Negotiating TLS....
+Using TLS connection.
+test attribute passed: True is equal to True
+test attribute passed: sender@example.com is equal to sender@example.com
+test attribute passed: ['recipient@example.com'] is equal to ['recipient@example
+.com']
+
+
+
+no. 10
+SSH Command Runner Validation
+
+Description
+-----------
+You are given a Python program with two functions. run_ssh_command(hostname, use
+rname, command) builds a target string as username@hostname, then uses subproces
+s.run to execute ['ssh', target, command] with stdin suppressed and stdout/stder
+r captured. If the subprocess produced any stderr output, it is forwarded via sy
+s.stderr.buffer.write. The function returns (stdout_bytes, returncode). main(hos
+tname, username) loops over three commands — 'echo "Hello, world!"', 'uname', an
+d 'uptime' — calling run_ssh_command for each, printing repr(output) for each re
+sult, and printing an error to stderr if the exit status is non-zero.
+
+The goal of this task is to validate whether:
+- run_ssh_command builds the correct ['ssh', 'user@localhost', command] command
+list and returns the subprocess stdout bytes and return code.
+- main calls run_ssh_command three times in the correct order with the correct a
+rguments and prints repr(output) for each call.
+
+However, this should be tested, not actually performed. Therefore, you must mock
+ subprocess.run (for run_ssh_command) and __main__.run_ssh_command (for main) us
+ing Python's unittest.mock.
+Input
+-----
+No input is provided to the program.
+Output (unit test)
+------------------
+The program must print a sequence of result lines that indicate whether specific
+ attributes and calls were made as expected.
+b'Hello, world!\n'
+b'Linux\n'
+b'uptime output\n'
+test attribute passed: call('localhost', 'user', 'echo "Hello, world!"') is equa
+l to call('localhost', 'user', 'echo "Hello, world!"')
+test attribute passed: call('localhost', 'user', 'uname') is equal to call('loca
+lhost', 'user', 'uname')
+test attribute passed: call('localhost', 'user', 'uptime') is equal to call('loc
+alhost', 'user', 'uptime')
+SSH command: ['ssh', 'user@localhost', 'echo "Hello, world!"']
+test attribute passed: b'Hello, world!\n' is equal to b'Hello, world!\n'
+test attribute passed: 0 is equal to 0
+
+
