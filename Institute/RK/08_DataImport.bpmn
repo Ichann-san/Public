@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  id="Definitions_DataImport"
+                  targetNamespace="http://bpmn.io/schema/bpmn">
+  <!-- PRODUK 8: IMPOR DATA TRANSAKSI (OFX/QIF/CSV) — 1 business process -->
+
+  <bpmn:collaboration id="Collab_Import">
+    <bpmn:participant id="Pool_BankImp" name="Bank" processRef="Process_BankFile"/>
+    <bpmn:participant id="Pool_ImpStaf" name="Staf Keuangan" processRef="Process_Import"/>
+    <bpmn:messageFlow id="MF_Imp" name="File transaksi (OFX/QIF/CSV)" sourceRef="Throw_ImpFile" targetRef="Start_Imp"/>
+  </bpmn:collaboration>
+
+  <bpmn:process id="Process_BankFile" name="Pengiriman File Bank" isExecutable="false">
+    <bpmn:startEvent id="Start_BankImp" name="Bank mengekspor file transaksi">
+      <bpmn:outgoing>Flow_BankImp</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:intermediateThrowEvent id="Throw_ImpFile" name="Kirim file transaksi">
+      <bpmn:incoming>Flow_BankImp</bpmn:incoming>
+      <bpmn:outgoing>Flow_BankFileEnd</bpmn:outgoing>
+      <bpmn:messageEventDefinition/>
+    </bpmn:intermediateThrowEvent>
+    <bpmn:endEvent id="End_BankFile" name="File bank terkirim">
+      <bpmn:incoming>Flow_BankFileEnd</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_BankImp" sourceRef="Start_BankImp" targetRef="Throw_ImpFile"/>
+    <bpmn:sequenceFlow id="Flow_BankFileEnd" sourceRef="Throw_ImpFile" targetRef="End_BankFile"/>
+  </bpmn:process>
+
+  <bpmn:process id="Process_Import" name="Mengimpor &amp; Mencocokkan Transaksi" isExecutable="false">
+    <bpmn:documentation>Proses mengimpor transaksi dari file bank (OFX/QIF/CSV) ke GnuCash: memilih file, menentukan akun tujuan, mencocokkan duplikat, dan menambahkan transaksi baru.</bpmn:documentation>
+
+    <bpmn:startEvent id="Start_Imp" name="Menerima file transaksi">
+      <bpmn:messageEventDefinition/>
+      <bpmn:outgoing>Flow_Imp_S_T1</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <bpmn:userTask id="Task_Imp_T1" name="Membuka dialog impor &amp; memilih file">
+      <bpmn:incoming>Flow_Imp_S_T1</bpmn:incoming>
+      <bpmn:outgoing>Flow_Imp_T1_T2</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_Imp_T2" name="Memilih akun tujuan &amp; format file">
+      <bpmn:incoming>Flow_Imp_T1_T2</bpmn:incoming>
+      <bpmn:outgoing>Flow_Imp_T2_Svc</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:serviceTask id="Task_Imp_Svc" name="Sistem membaca &amp; mencocokkan transaksi">
+      <bpmn:incoming>Flow_Imp_T2_Svc</bpmn:incoming>
+      <bpmn:outgoing>Flow_Imp_Svc_Gw</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:exclusiveGateway id="Gw_Imp_Duplikat" name="Ada transaksi mirip / duplikat?">
+      <bpmn:incoming>Flow_Imp_Svc_Gw</bpmn:incoming>
+      <bpmn:outgoing>Flow_Imp_Gw_Ya</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Imp_Gw_Tidak</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:userTask id="Task_Imp_Dup" name="Memilih transaksi duplikat &amp; menandai dilewati">
+      <bpmn:incoming>Flow_Imp_Gw_Ya</bpmn:incoming>
+      <bpmn:outgoing>Flow_Imp_Dup_Gw</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:serviceTask id="Task_Imp_Add" name="Sistem menambahkan transaksi baru">
+      <bpmn:incoming>Flow_Imp_Gw_Tidak</bpmn:incoming>
+      <bpmn:outgoing>Flow_Imp_Add_End</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:endEvent id="End_Imp" name="Transaksi terimpor">
+      <bpmn:incoming>Flow_Imp_Add_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:dataObject id="Data_Imp_File" name="File transaksi bank"/>
+    <bpmn:dataObjectReference id="DataRef_Imp_File" name="File transaksi bank" dataObjectRef="Data_Imp_File"/>
+
+    <bpmn:sequenceFlow id="Flow_Imp_S_T1" sourceRef="Start_Imp" targetRef="Task_Imp_T1"/>
+    <bpmn:sequenceFlow id="Flow_Imp_T1_T2" sourceRef="Task_Imp_T1" targetRef="Task_Imp_T2"/>
+    <bpmn:sequenceFlow id="Flow_Imp_T2_Svc" sourceRef="Task_Imp_T2" targetRef="Task_Imp_Svc"/>
+    <bpmn:sequenceFlow id="Flow_Imp_Svc_Gw" sourceRef="Task_Imp_Svc" targetRef="Gw_Imp_Duplikat"/>
+    <bpmn:sequenceFlow id="Flow_Imp_Gw_Ya" name="Ya" sourceRef="Gw_Imp_Duplikat" targetRef="Task_Imp_Dup"/>
+    <bpmn:sequenceFlow id="Flow_Imp_Gw_Tidak" name="Tidak" sourceRef="Gw_Imp_Duplikat" targetRef="Task_Imp_Add"/>
+    <bpmn:sequenceFlow id="Flow_Imp_Dup_Gw" sourceRef="Task_Imp_Dup" targetRef="Gw_Imp_Duplikat"/>
+    <bpmn:sequenceFlow id="Flow_Imp_Add_End" sourceRef="Task_Imp_Add" targetRef="End_Imp"/>
+
+    <bpmn:association id="Assoc_Imp" sourceRef="Task_Imp_T1" targetRef="DataRef_Imp_File"/>
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="Diagram_Import" name="Mengimpor &amp; Mencocokkan Transaksi">
+    <bpmndi:BPMNPlane id="Plane_Imp" bpmnElement="Collab_Import">
+      <bpmndi:BPMNShape id="Pool_BankImp_di" bpmnElement="Pool_BankImp" isHorizontal="true">
+        <dc:Bounds x="40" y="40" width="760" height="160"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_BankImp_di" bpmnElement="Start_BankImp">
+        <dc:Bounds x="272" y="70" width="36" height="36"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Throw_ImpFile_di" bpmnElement="Throw_ImpFile">
+        <dc:Bounds x="272" y="140" width="36" height="36"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_BankFile_di" bpmnElement="End_BankFile">
+        <dc:Bounds x="340" y="140" width="36" height="36"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Pool_ImpStaf_di" bpmnElement="Pool_ImpStaf" isHorizontal="true">
+        <dc:Bounds x="40" y="260" width="900" height="640"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_Imp_di" bpmnElement="Start_Imp">
+        <dc:Bounds x="272" y="300" width="36" height="36"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Imp_T1_di" bpmnElement="Task_Imp_T1">
+        <dc:Bounds x="200" y="380" width="180" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Imp_T2_di" bpmnElement="Task_Imp_T2">
+        <dc:Bounds x="200" y="500" width="180" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Imp_Svc_di" bpmnElement="Task_Imp_Svc">
+        <dc:Bounds x="200" y="620" width="180" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_Imp_Duplikat_di" bpmnElement="Gw_Imp_Duplikat">
+        <dc:Bounds x="250" y="760" width="80" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Imp_Dup_di" bpmnElement="Task_Imp_Dup">
+        <dc:Bounds x="40" y="760" width="180" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Imp_Add_di" bpmnElement="Task_Imp_Add">
+        <dc:Bounds x="520" y="760" width="180" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_Imp_di" bpmnElement="End_Imp">
+        <dc:Bounds x="592" y="880" width="36" height="36"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataRef_Imp_File_di" bpmnElement="DataRef_Imp_File">
+        <dc:Bounds x="40" y="380" width="100" height="60"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="Flow_BankImp_di" bpmnElement="Flow_BankImp">
+        <di:waypoint x="290" y="106"/>
+        <di:waypoint x="290" y="140"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_BankFileEnd_di" bpmnElement="Flow_BankFileEnd">
+        <di:waypoint x="308" y="158"/>
+        <di:waypoint x="340" y="158"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MF_Imp_di" bpmnElement="MF_Imp">
+        <di:waypoint x="290" y="176"/>
+        <di:waypoint x="290" y="300"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="300" y="220" width="160" height="20"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Imp_S_T1_di" bpmnElement="Flow_Imp_S_T1">
+        <di:waypoint x="290" y="336"/>
+        <di:waypoint x="290" y="380"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Imp_T1_T2_di" bpmnElement="Flow_Imp_T1_T2">
+        <di:waypoint x="290" y="460"/>
+        <di:waypoint x="290" y="500"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Imp_T2_Svc_di" bpmnElement="Flow_Imp_T2_Svc">
+        <di:waypoint x="290" y="580"/>
+        <di:waypoint x="290" y="620"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Imp_Svc_Gw_di" bpmnElement="Flow_Imp_Svc_Gw">
+        <di:waypoint x="290" y="700"/>
+        <di:waypoint x="290" y="760"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Imp_Gw_Ya_di" bpmnElement="Flow_Imp_Gw_Ya">
+        <di:waypoint x="250" y="800"/>
+        <di:waypoint x="220" y="800"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="224" y="782" width="30" height="20"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Imp_Gw_Tidak_di" bpmnElement="Flow_Imp_Gw_Tidak">
+        <di:waypoint x="330" y="800"/>
+        <di:waypoint x="520" y="800"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="420" y="782" width="40" height="20"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Imp_Dup_Gw_di" bpmnElement="Flow_Imp_Dup_Gw">
+        <di:waypoint x="220" y="800"/>
+        <di:waypoint x="250" y="800"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Imp_Add_End_di" bpmnElement="Flow_Imp_Add_End">
+        <di:waypoint x="610" y="840"/>
+        <di:waypoint x="610" y="880"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_Imp_di" bpmnElement="Assoc_Imp">
+        <di:waypoint x="140" y="410"/>
+        <di:waypoint x="200" y="410"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

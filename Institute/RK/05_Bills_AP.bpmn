@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  id="Definitions_BillsAP"
+                  targetNamespace="http://bpmn.io/schema/bpmn">
+  <!-- PRODUK 5: FAKTUR PEMBELIAN & HUTANG (Bills / AP) — 2 business processes -->
+
+  <!-- ============ BP 5A: MENCATAT TAGIHAN VENDOR ============ -->
+  <bpmn:process id="Process_AP_Bill" name="Mencatat Tagihan Vendor" isExecutable="false">
+    <bpmn:documentation>Proses mencatat tagihan (bill) dari vendor pada GnuCash: memeriksa tagihan, mengisi rincian item, dan memposting ke akun hutang.</bpmn:documentation>
+
+    <bpmn:startEvent id="Start_APB" name="Tagihan vendor diterima">
+      <bpmn:outgoing>Flow_APB_S_T1</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <bpmn:userTask id="Task_APB_T1" name="Memeriksa &amp; membuka data vendor, tagihan">
+      <bpmn:incoming>Flow_APB_S_T1</bpmn:incoming>
+      <bpmn:outgoing>Flow_APB_T1_T2</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_APB_T2" name="Mengisi rincian tagihan (deskripsi, jumlah, pajak)">
+      <bpmn:incoming>Flow_APB_T1_T2</bpmn:incoming>
+      <bpmn:outgoing>Flow_APB_T2_Gw</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:exclusiveGateway id="Gw_APB_Cocok" name="Rincian tagihan cocok?">
+      <bpmn:incoming>Flow_APB_T2_Gw</bpmn:incoming>
+      <bpmn:outgoing>Flow_APB_Gw_Ya</bpmn:outgoing>
+      <bpmn:outgoing>Flow_APB_Gw_Tidak</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:userTask id="Task_APB_Pend" name="Mencatat selisih / konfirmasi ke vendor">
+      <bpmn:incoming>Flow_APB_Gw_Tidak</bpmn:incoming>
+      <bpmn:outgoing>Flow_APB_Pend_T2</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:serviceTask id="Task_APB_Post" name="Sistem memposting tagihan ke akun AP">
+      <bpmn:incoming>Flow_APB_Gw_Ya</bpmn:incoming>
+      <bpmn:outgoing>Flow_APB_Post_End</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:endEvent id="End_APB" name="Tagihan tercatat sebagai hutang">
+      <bpmn:incoming>Flow_APB_Post_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="Flow_APB_S_T1" sourceRef="Start_APB" targetRef="Task_APB_T1"/>
+    <bpmn:sequenceFlow id="Flow_APB_T1_T2" sourceRef="Task_APB_T1" targetRef="Task_APB_T2"/>
+    <bpmn:sequenceFlow id="Flow_APB_T2_Gw" sourceRef="Task_APB_T2" targetRef="Gw_APB_Cocok"/>
+    <bpmn:sequenceFlow id="Flow_APB_Gw_Ya" name="Ya" sourceRef="Gw_APB_Cocok" targetRef="Task_APB_Post"/>
+    <bpmn:sequenceFlow id="Flow_APB_Gw_Tidak" name="Tidak" sourceRef="Gw_APB_Cocok" targetRef="Task_APB_Pend"/>
+    <bpmn:sequenceFlow id="Flow_APB_Pend_T2" sourceRef="Task_APB_Pend" targetRef="Task_APB_T2"/>
+    <bpmn:sequenceFlow id="Flow_APB_Post_End" sourceRef="Task_APB_Post" targetRef="End_APB"/>
+  </bpmn:process>
+
+  <!-- ============ BP 5B: MEMBAYAR TAGIHAN VENDOR ============ -->
+  <bpmn:collaboration id="Collab_AP_Pmt">
+    <bpmn:participant id="Pool_AP_Staf" name="Staf Keuangan" processRef="Process_AP_Pmt"/>
+    <bpmn:participant id="Pool_Vendor" name="Vendor" processRef="Process_VendorPay"/>
+    <bpmn:messageFlow id="MF_AP_Pmt" name="Bukti pembayaran" sourceRef="Throw_AP_Pmt" targetRef="Start_VendorPay"/>
+  </bpmn:collaboration>
+
+  <bpmn:process id="Process_AP_Pmt" name="Membayar Tagihan Vendor" isExecutable="false">
+    <bpmn:documentation>Proses melakukan pembayaran kepada vendor: memilih tagihan, menyiapkan pembayaran, memposting ke akun hutang, dan mengirim bukti pembayaran.</bpmn:documentation>
+
+    <bpmn:startEvent id="Start_AP_Pmt" name="Jadwal pembayaran jatuh tempo">
+      <bpmn:outgoing>Flow_APP_S_T1</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <bpmn:userTask id="Task_APP_T1" name="Memilih tagihan vendor yang akan dibayar">
+      <bpmn:incoming>Flow_APP_S_T1</bpmn:incoming>
+      <bpmn:outgoing>Flow_APP_T1_T2</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_APP_T2" name="Membuat pembayaran: akun, jumlah, tanggal">
+      <bpmn:incoming>Flow_APP_T1_T2</bpmn:incoming>
+      <bpmn:outgoing>Flow_APP_T2_Post</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:serviceTask id="Task_APP_Post" name="Sistem memposting pembayaran &amp; mengurangi hutang">
+      <bpmn:incoming>Flow_APP_T2_Post</bpmn:incoming>
+      <bpmn:outgoing>Flow_APP_Post_Throw</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:intermediateThrowEvent id="Throw_AP_Pmt" name="Kirim bukti pembayaran">
+      <bpmn:incoming>Flow_APP_Post_Throw</bpmn:incoming>
+      <bpmn:outgoing>Flow_APP_Throw_End</bpmn:outgoing>
+      <bpmn:messageEventDefinition/>
+    </bpmn:intermediateThrowEvent>
+
+    <bpmn:endEvent id="End_AP_Pmt" name="Tagihan terbayar">
+      <bpmn:incoming>Flow_APP_Throw_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="Flow_APP_S_T1" sourceRef="Start_AP_Pmt" targetRef="Task_APP_T1"/>
+    <bpmn:sequenceFlow id="Flow_APP_T1_T2" sourceRef="Task_APP_T1" targetRef="Task_APP_T2"/>
+    <bpmn:sequenceFlow id="Flow_APP_T2_Post" sourceRef="Task_APP_T2" targetRef="Task_APP_Post"/>
+    <bpmn:sequenceFlow id="Flow_APP_Post_Throw" sourceRef="Task_APP_Post" targetRef="Throw_AP_Pmt"/>
+    <bpmn:sequenceFlow id="Flow_APP_Throw_End" sourceRef="Throw_AP_Pmt" targetRef="End_AP_Pmt"/>
+  </bpmn:process>
+
+  <bpmn:process id="Process_VendorPay" name="Penerimaan Bukti Vendor" isExecutable="false">
+    <bpmn:startEvent id="Start_VendorPay" name="Menerima bukti pembayaran">
+      <bpmn:messageEventDefinition/>
+      <bpmn:outgoing>Flow_VP</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:endEvent id="End_VP" name="Pembayaran diterima">
+      <bpmn:incoming>Flow_VP</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_VP" sourceRef="Start_VendorPay" targetRef="End_VP"/>
+  </bpmn:process>
+
+  <!-- ============ DIAGRAM 5A ============ -->
+  <bpmndi:BPMNDiagram id="Diagram_AP_Bill" name="Mencatat Tagihan Vendor">
+    <bpmndi:BPMNPlane id="Plane_APB" bpmnElement="Process_AP_Bill">
+      <bpmndi:BPMNShape id="Start_APB_di" bpmnElement="Start_APB">
+        <dc:Bounds x="272" y="60" width="36" height="36"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_APB_T1_di" bpmnElement="Task_APB_T1">
+        <dc:Bounds x="200" y="120" width="180" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_APB_T2_di" bpmnElement="Task_APB_T2">
+        <dc:Bounds x="200" y="240" width="180" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_APB_Cocok_di" bpmnElement="Gw_APB_Cocok">
+        <dc:Bounds x="250" y="360" width="80" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_APB_Pend_di" bpmnElement="Task_APB_Pend">
+        <dc:Bounds x="60" y="360" width="150" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_APB_Post_di" bpmnElement="Task_APB_Post">
+        <dc:Bounds x="520" y="360" width="180" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_APB_di" bpmnElement="End_APB">
+        <dc:Bounds x="592" y="480" width="36" height="36"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="Flow_APB_S_T1_di" bpmnElement="Flow_APB_S_T1">
+        <di:waypoint x="290" y="96"/>
+        <di:waypoint x="290" y="120"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_APB_T1_T2_di" bpmnElement="Flow_APB_T1_T2">
+        <di:waypoint x="290" y="200"/>
+        <di:waypoint x="290" y="240"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_APB_T2_Gw_di" bpmnElement="Flow_APB_T2_Gw">
+        <di:waypoint x="290" y="320"/>
+        <di:waypoint x="290" y="360"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_APB_Gw_Ya_di" bpmnElement="Flow_APB_Gw_Ya">
+        <di:waypoint x="330" y="400"/>
+        <di:waypoint x="520" y="400"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="420" y="380" width="30" height="20"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_APB_Gw_Tidak_di" bpmnElement="Flow_APB_Gw_Tidak">
+        <di:waypoint x="250" y="400"/>
+        <di:waypoint x="210" y="400"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="212" y="380" width="40" height="20"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_APB_Pend_T2_di" bpmnElement="Flow_APB_Pend_T2">
+        <di:waypoint x="210" y="400"/>
+        <di:waypoint x="250" y="400"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_APB_Post_End_di" bpmnElement="Flow_APB_Post_End">
+        <di:waypoint x="610" y="440"/>
+        <di:waypoint x="610" y="480"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+  <!-- ============ DIAGRAM 5B ============ -->
+  <bpmndi:BPMNDiagram id="Diagram_AP_Pmt" name="Membayar Tagihan Vendor">
+    <bpmndi:BPMNPlane id="Plane_APP" bpmnElement="Collab_AP_Pmt">
+      <bpmndi:BPMNShape id="Pool_AP_Staf_di" bpmnElement="Pool_AP_Staf" isHorizontal="true">
+        <dc:Bounds x="40" y="40" width="900" height="580"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_AP_Pmt_di" bpmnElement="Start_AP_Pmt">
+        <dc:Bounds x="272" y="80" width="36" height="36"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_APP_T1_di" bpmnElement="Task_APP_T1">
+        <dc:Bounds x="200" y="150" width="180" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_APP_T2_di" bpmnElement="Task_APP_T2">
+        <dc:Bounds x="200" y="280" width="180" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_APP_Post_di" bpmnElement="Task_APP_Post">
+        <dc:Bounds x="200" y="410" width="180" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Throw_AP_Pmt_di" bpmnElement="Throw_AP_Pmt">
+        <dc:Bounds x="272" y="530" width="36" height="36"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_AP_Pmt_di" bpmnElement="End_AP_Pmt">
+        <dc:Bounds x="272" y="610" width="36" height="36"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Pool_Vendor_di" bpmnElement="Pool_Vendor" isHorizontal="true">
+        <dc:Bounds x="40" y="690" width="900" height="160"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_VendorPay_di" bpmnElement="Start_VendorPay">
+        <dc:Bounds x="272" y="750" width="36" height="36"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_VP_di" bpmnElement="End_VP">
+        <dc:Bounds x="452" y="750" width="36" height="36"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="Flow_APP_S_T1_di" bpmnElement="Flow_APP_S_T1">
+        <di:waypoint x="290" y="116"/>
+        <di:waypoint x="290" y="150"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_APP_T1_T2_di" bpmnElement="Flow_APP_T1_T2">
+        <di:waypoint x="290" y="230"/>
+        <di:waypoint x="290" y="280"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_APP_T2_Post_di" bpmnElement="Flow_APP_T2_Post">
+        <di:waypoint x="290" y="360"/>
+        <di:waypoint x="290" y="410"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_APP_Post_Throw_di" bpmnElement="Flow_APP_Post_Throw">
+        <di:waypoint x="290" y="490"/>
+        <di:waypoint x="290" y="530"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_APP_Throw_End_di" bpmnElement="Flow_APP_Throw_End">
+        <di:waypoint x="290" y="566"/>
+        <di:waypoint x="290" y="610"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MF_AP_Pmt_di" bpmnElement="MF_AP_Pmt">
+        <di:waypoint x="290" y="646"/>
+        <di:waypoint x="290" y="750"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="300" y="680" width="110" height="20"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_VP_di" bpmnElement="Flow_VP">
+        <di:waypoint x="308" y="768"/>
+        <di:waypoint x="452" y="768"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

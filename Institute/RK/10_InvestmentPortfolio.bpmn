@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  id="Definitions_InvestmentPortfolio"
+                  targetNamespace="http://bpmn.io/schema/bpmn">
+  <!-- PRODUK 10: PORTOFOLIO INVESTASI — 2 business processes -->
+
+  <!-- ============ BP 10A: MENCATAT TRANSAKSI INVESTASI ============ -->
+  <bpmn:process id="Process_Inv_Entry" name="Mencatat Transaksi Investasi" isExecutable="false">
+    <bpmn:documentation>Proses mencatat transaksi investasi (beli/jual saham, dividen) pada GnuCash: memilih sekuritas, menentukan jenis transaksi, mengisi jumlah dan harga, lalu sistem memposting ke akun.</bpmn:documentation>
+
+    <bpmn:startEvent id="Start_InvE" name="Instruksi transaksi investasi">
+      <bpmn:outgoing>Flow_IE_S_T1</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <bpmn:userTask id="Task_InvE_T1" name="Membuka akun investasi &amp; memilih sekuritas">
+      <bpmn:incoming>Flow_IE_S_T1</bpmn:incoming>
+      <bpmn:outgoing>Flow_IE_T1_T2</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_InvE_T2" name="Memilih jenis transaksi (beli/jual/dividen)">
+      <bpmn:incoming>Flow_IE_T1_T2</bpmn:incoming>
+      <bpmn:outgoing>Flow_IE_T2_T3</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_InvE_T3" name="Mengisi jumlah lembar, harga, dan biaya">
+      <bpmn:incoming>Flow_IE_T2_T3</bpmn:incoming>
+      <bpmn:outgoing>Flow_IE_T3_Gw</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:exclusiveGateway id="Gw_InvE_Benar" name="Data sudah benar?">
+      <bpmn:incoming>Flow_IE_T3_Gw</bpmn:incoming>
+      <bpmn:outgoing>Flow_IE_Gw_Ya</bpmn:outgoing>
+      <bpmn:outgoing>Flow_IE_Gw_Tidak</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:userTask id="Task_InvE_Betul" name="Memperbaiki isian transaksi">
+      <bpmn:incoming>Flow_IE_Gw_Tidak</bpmn:incoming>
+      <bpmn:outgoing>Flow_IE_Betul_Gw</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:serviceTask id="Task_InvE_Post" name="Sistem memposting transaksi &amp; memperbarui saldo">
+      <bpmn:incoming>Flow_IE_Gw_Ya</bpmn:incoming>
+      <bpmn:outgoing>Flow_IE_Post_End</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:endEvent id="End_InvE" name="Transaksi investasi tercatat">
+      <bpmn:incoming>Flow_IE_Post_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="Flow_IE_S_T1" sourceRef="Start_InvE" targetRef="Task_InvE_T1"/>
+    <bpmn:sequenceFlow id="Flow_IE_T1_T2" sourceRef="Task_InvE_T1" targetRef="Task_InvE_T2"/>
+    <bpmn:sequenceFlow id="Flow_IE_T2_T3" sourceRef="Task_InvE_T2" targetRef="Task_InvE_T3"/>
+    <bpmn:sequenceFlow id="Flow_IE_T3_Gw" sourceRef="Task_InvE_T3" targetRef="Gw_InvE_Benar"/>
+    <bpmn:sequenceFlow id="Flow_IE_Gw_Ya" name="Ya" sourceRef="Gw_InvE_Benar" targetRef="Task_InvE_Post"/>
+    <bpmn:sequenceFlow id="Flow_IE_Gw_Tidak" name="Tidak" sourceRef="Gw_InvE_Benar" targetRef="Task_InvE_Betul"/>
+    <bpmn:sequenceFlow id="Flow_IE_Betul_Gw" sourceRef="Task_InvE_Betul" targetRef="Gw_InvE_Benar"/>
+    <bpmn:sequenceFlow id="Flow_IE_Post_End" sourceRef="Task_InvE_Post" targetRef="End_InvE"/>
+  </bpmn:process>
+
+  <!-- ============ BP 10B: MEMUTAKHIRKAN HARGA & MENGEVALUASI PORTOFOLIO ============ -->
+  <bpmn:process id="Process_Inv_Eval" name="Memutakhirkan Harga &amp; Mengevaluasi Portofolio" isExecutable="false">
+    <bpmn:documentation>Proses memutakhirkan harga saham dan mengevaluasi portofolio investasi: memperbarui harga (otomatis/manual), lalu menyusun laporan posisi dan nilai investasi.</bpmn:documentation>
+
+    <bpmn:startEvent id="Start_InvEval" name="Periode evaluasi dimulai">
+      <bpmn:outgoing>Flow_IV_S_T1</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <bpmn:userTask id="Task_InvEval_T1" name="Memperbarui harga saham (otomatis/manual)">
+      <bpmn:incoming>Flow_IV_S_T1</bpmn:incoming>
+      <bpmn:outgoing>Flow_IV_T1_Gw</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:exclusiveGateway id="Gw_InvEval_Harga" name="Harga berhasil diperbarui?">
+      <bpmn:incoming>Flow_IV_T1_Gw</bpmn:incoming>
+      <bpmn:outgoing>Flow_IV_Gw_Ya</bpmn:outgoing>
+      <bpmn:outgoing>Flow_IV_Gw_Tidak</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:userTask id="Task_InvEval_Manual" name="Memasukkan harga secara manual">
+      <bpmn:incoming>Flow_IV_Gw_Tidak</bpmn:incoming>
+      <bpmn:outgoing>Flow_IV_Manual_Gw</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_InvEval_Lap" name="Membuka laporan posisi &amp; nilai investasi">
+      <bpmn:incoming>Flow_IV_Gw_Ya</bpmn:incoming>
+      <bpmn:outgoing>Flow_IV_Lap_End</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:endEvent id="End_InvEval" name="Portofolio dievaluasi">
+      <bpmn:incoming>Flow_IV_Lap_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="Flow_IV_S_T1" sourceRef="Start_InvEval" targetRef="Task_InvEval_T1"/>
+    <bpmn:sequenceFlow id="Flow_IV_T1_Gw" sourceRef="Task_InvEval_T1" targetRef="Gw_InvEval_Harga"/>
+    <bpmn:sequenceFlow id="Flow_IV_Gw_Ya" name="Ya" sourceRef="Gw_InvEval_Harga" targetRef="Task_InvEval_Lap"/>
+    <bpmn:sequenceFlow id="Flow_IV_Gw_Tidak" name="Tidak" sourceRef="Gw_InvEval_Harga" targetRef="Task_InvEval_Manual"/>
+    <bpmn:sequenceFlow id="Flow_IV_Manual_Gw" sourceRef="Task_InvEval_Manual" targetRef="Gw_InvEval_Harga"/>
+    <bpmn:sequenceFlow id="Flow_IV_Lap_End" sourceRef="Task_InvEval_Lap" targetRef="End_InvEval"/>
+  </bpmn:process>
+
+  <!-- ============ DIAGRAM 10A ============ -->
+  <bpmndi:BPMNDiagram id="Diagram_Inv_Entry" name="Mencatat Transaksi Investasi">
+    <bpmndi:BPMNPlane id="Plane_IE" bpmnElement="Process_Inv_Entry">
+      <bpmndi:BPMNShape id="Start_InvE_di" bpmnElement="Start_InvE">
+        <dc:Bounds x="272" y="60" width="36" height="36"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_InvE_T1_di" bpmnElement="Task_InvE_T1">
+        <dc:Bounds x="200" y="120" width="180" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_InvE_T2_di" bpmnElement="Task_InvE_T2">
+        <dc:Bounds x="200" y="240" width="180" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_InvE_T3_di" bpmnElement="Task_InvE_T3">
+        <dc:Bounds x="200" y="360" width="180" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_InvE_Benar_di" bpmnElement="Gw_InvE_Benar">
+        <dc:Bounds x="250" y="480" width="80" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_InvE_Betul_di" bpmnElement="Task_InvE_Betul">
+        <dc:Bounds x="60" y="480" width="150" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_InvE_Post_di" bpmnElement="Task_InvE_Post">
+        <dc:Bounds x="520" y="480" width="200" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_InvE_di" bpmnElement="End_InvE">
+        <dc:Bounds x="602" y="600" width="36" height="36"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="Flow_IE_S_T1_di" bpmnElement="Flow_IE_S_T1">
+        <di:waypoint x="290" y="96"/>
+        <di:waypoint x="290" y="120"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_IE_T1_T2_di" bpmnElement="Flow_IE_T1_T2">
+        <di:waypoint x="290" y="200"/>
+        <di:waypoint x="290" y="240"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_IE_T2_T3_di" bpmnElement="Flow_IE_T2_T3">
+        <di:waypoint x="290" y="320"/>
+        <di:waypoint x="290" y="360"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_IE_T3_Gw_di" bpmnElement="Flow_IE_T3_Gw">
+        <di:waypoint x="290" y="440"/>
+        <di:waypoint x="290" y="480"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_IE_Gw_Ya_di" bpmnElement="Flow_IE_Gw_Ya">
+        <di:waypoint x="330" y="520"/>
+        <di:waypoint x="520" y="520"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="420" y="500" width="30" height="20"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_IE_Gw_Tidak_di" bpmnElement="Flow_IE_Gw_Tidak">
+        <di:waypoint x="250" y="520"/>
+        <di:waypoint x="210" y="520"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="212" y="500" width="40" height="20"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_IE_Betul_Gw_di" bpmnElement="Flow_IE_Betul_Gw">
+        <di:waypoint x="210" y="520"/>
+        <di:waypoint x="250" y="520"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_IE_Post_End_di" bpmnElement="Flow_IE_Post_End">
+        <di:waypoint x="620" y="560"/>
+        <di:waypoint x="620" y="600"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+  <!-- ============ DIAGRAM 10B ============ -->
+  <bpmndi:BPMNDiagram id="Diagram_Inv_Eval" name="Memutakhirkan Harga &amp; Mengevaluasi Portofolio">
+    <bpmndi:BPMNPlane id="Plane_IV" bpmnElement="Process_Inv_Eval">
+      <bpmndi:BPMNShape id="Start_InvEval_di" bpmnElement="Start_InvEval">
+        <dc:Bounds x="272" y="60" width="36" height="36"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_InvEval_T1_di" bpmnElement="Task_InvEval_T1">
+        <dc:Bounds x="200" y="120" width="180" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_InvEval_Harga_di" bpmnElement="Gw_InvEval_Harga">
+        <dc:Bounds x="250" y="240" width="80" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_InvEval_Manual_di" bpmnElement="Task_InvEval_Manual">
+        <dc:Bounds x="40" y="240" width="180" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_InvEval_Lap_di" bpmnElement="Task_InvEval_Lap">
+        <dc:Bounds x="520" y="240" width="200" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_InvEval_di" bpmnElement="End_InvEval">
+        <dc:Bounds x="602" y="360" width="36" height="36"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="Flow_IV_S_T1_di" bpmnElement="Flow_IV_S_T1">
+        <di:waypoint x="290" y="96"/>
+        <di:waypoint x="290" y="120"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_IV_T1_Gw_di" bpmnElement="Flow_IV_T1_Gw">
+        <di:waypoint x="290" y="200"/>
+        <di:waypoint x="290" y="240"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_IV_Gw_Ya_di" bpmnElement="Flow_IV_Gw_Ya">
+        <di:waypoint x="330" y="280"/>
+        <di:waypoint x="520" y="280"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="420" y="260" width="30" height="20"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_IV_Gw_Tidak_di" bpmnElement="Flow_IV_Gw_Tidak">
+        <di:waypoint x="250" y="280"/>
+        <di:waypoint x="220" y="280"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="222" y="260" width="40" height="20"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_IV_Manual_Gw_di" bpmnElement="Flow_IV_Manual_Gw">
+        <di:waypoint x="220" y="280"/>
+        <di:waypoint x="250" y="280"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_IV_Lap_End_di" bpmnElement="Flow_IV_Lap_End">
+        <di:waypoint x="620" y="320"/>
+        <di:waypoint x="620" y="360"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

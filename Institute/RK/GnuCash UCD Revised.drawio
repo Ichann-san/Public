@@ -1,0 +1,62 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="app.diagrams.net" modified="2026-10-18T00:00:00.000Z" agent="Codex" version="24.7.17" type="device">
+  <diagram id="gnucash-use-cases" name="Use Case GnuCash">
+    <mxGraphModel dx="1500" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="system" value="GnuCash" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#334155;strokeWidth=2;fontSize=22;fontStyle=1;verticalAlign=top;align=center;spacingTop=14;" vertex="1" parent="1">
+          <mxGeometry x="330" y="80" width="1120" height="760" as="geometry" />
+        </mxCell>
+        <mxCell id="financial" value="Pengguna Keuangan" style="shape=umlActor;html=1;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#FFFFFF;strokeColor=#334155;fontColor=#0F172A;fontSize=17;" vertex="1" parent="1">
+          <mxGeometry x="95" y="245" width="120" height="125" as="geometry" />
+        </mxCell>
+        <mxCell id="business" value="Pengguna Bisnis" style="shape=umlActor;html=1;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#FFFFFF;strokeColor=#334155;fontColor=#0F172A;fontSize=17;" vertex="1" parent="1">
+          <mxGeometry x="95" y="580" width="120" height="125" as="geometry" />
+        </mxCell>
+        <mxCell id="records" value="Menetapkan dan Memelihara&lt;br&gt;Catatan Keuangan" style="ellipse;whiteSpace=wrap;html=1;fillColor=#EFF6FF;strokeColor=#2563EB;strokeWidth=2;fontColor=#172554;fontSize=17;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="425" y="175" width="365" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="reconcile" value="Merekonsiliasi&lt;br&gt;Rekening Bank" style="ellipse;whiteSpace=wrap;html=1;fillColor=#EFF6FF;strokeColor=#2563EB;strokeWidth=2;fontColor=#172554;fontSize=17;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="880" y="175" width="365" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="planning" value="Merencanakan dan&lt;br&gt;Mengevaluasi Keuangan" style="ellipse;whiteSpace=wrap;html=1;fillColor=#EFF6FF;strokeColor=#2563EB;strokeWidth=2;fontColor=#172554;fontSize=17;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="425" y="400" width="365" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="receivable" value="Mengelola Piutang Usaha&lt;br&gt;(Accounts Receivable)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#EFF6FF;strokeColor=#2563EB;strokeWidth=2;fontColor=#172554;fontSize=17;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="425" y="635" width="365" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="payable" value="Mengelola Hutang Usaha&lt;br&gt;(Accounts Payable)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#EFF6FF;strokeColor=#2563EB;strokeWidth=2;fontColor=#172554;fontSize=17;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="880" y="635" width="365" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="correction" value="Mengoreksi Catatan&lt;br&gt;Keuangan" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F5F3FF;strokeColor=#7C3AED;strokeWidth=2;fontColor=#172554;fontSize=17;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="880" y="400" width="365" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="a1" value="" style="endArrow=none;html=1;strokeColor=#475569;strokeWidth=2;" edge="1" parent="1" source="financial" target="records">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a2" value="" style="endArrow=none;html=1;strokeColor=#475569;strokeWidth=2;" edge="1" parent="1" source="financial" target="reconcile">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a3" value="" style="endArrow=none;html=1;strokeColor=#475569;strokeWidth=2;" edge="1" parent="1" source="financial" target="planning">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a4" value="" style="endArrow=none;html=1;strokeColor=#475569;strokeWidth=2;" edge="1" parent="1" source="business" target="receivable">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a5" value="" style="endArrow=none;html=1;strokeColor=#475569;strokeWidth=2;" edge="1" parent="1" source="business" target="payable">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a6" value="" style="endArrow=block;endFill=0;endSize=15;html=1;strokeColor=#475569;strokeWidth=2;" edge="1" parent="1" source="business" target="financial">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" value="«extend»&lt;br&gt;jika ada selisih" style="endArrow=open;endSize=12;dashed=1;dashPattern=7 5;html=1;strokeColor=#7C3AED;strokeWidth=2;fontSize=16;fontColor=#6D28D9;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="correction" target="reconcile">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" value="«extend»&lt;br&gt;jika data salah" style="endArrow=open;endSize=12;dashed=1;dashPattern=7 5;html=1;strokeColor=#7C3AED;strokeWidth=2;fontSize=16;fontColor=#6D28D9;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="correction" target="planning">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

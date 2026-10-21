@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  id="Definitions_ScheduledTransactions"
+                  targetNamespace="http://bpmn.io/schema/bpmn">
+  <!-- PRODUK 9: TRANSAKSI TERJADWAL (Scheduled Transactions / SX) — 2 business processes -->
+
+  <!-- ============ BP 9A: MEMBUAT TRANSAKSI TERJADWAL ============ -->
+  <bpmn:process id="Process_SX_Create" name="Membuat Transaksi Terjadwal" isExecutable="false">
+    <bpmn:documentation>Proses membuat transaksi terjadwal (scheduled transaction) pada GnuCash: mengisi rincian transaksi berulang, mengatur frekuensi, dan mengaktifkan reminder.</bpmn:documentation>
+
+    <bpmn:startEvent id="Start_SXC" name="Membuat transaksi berulang">
+      <bpmn:outgoing>Flow_XC_S_T1</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <bpmn:userTask id="Task_SXC_T1" name="Membuka editor transaksi terjadwal">
+      <bpmn:incoming>Flow_XC_S_T1</bpmn:incoming>
+      <bpmn:outgoing>Flow_XC_T1_T2</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_SXC_T2" name="Mengisi rincian transaksi &amp; aturan pengulangan">
+      <bpmn:incoming>Flow_XC_T1_T2</bpmn:incoming>
+      <bpmn:outgoing>Flow_XC_T2_Gw</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:exclusiveGateway id="Gw_SXC_Jadwal" name="Jadwal sudah sesuai?">
+      <bpmn:incoming>Flow_XC_T2_Gw</bpmn:incoming>
+      <bpmn:outgoing>Flow_XC_Gw_Ya</bpmn:outgoing>
+      <bpmn:outgoing>Flow_XC_Gw_Tidak</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:userTask id="Task_SXC_Betul" name="Menyesuaikan frekuensi / rincian">
+      <bpmn:incoming>Flow_XC_Gw_Tidak</bpmn:incoming>
+      <bpmn:outgoing>Flow_XC_Betul_Gw</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:serviceTask id="Task_SXC_Simpan" name="Sistem menyimpan SX &amp; menetapkan reminder">
+      <bpmn:incoming>Flow_XC_Gw_Ya</bpmn:incoming>
+      <bpmn:outgoing>Flow_XC_Simpan_End</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:endEvent id="End_SXC" name="Transaksi terjadwal aktif">
+      <bpmn:incoming>Flow_XC_Simpan_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="Flow_XC_S_T1" sourceRef="Start_SXC" targetRef="Task_SXC_T1"/>
+    <bpmn:sequenceFlow id="Flow_XC_T1_T2" sourceRef="Task_SXC_T1" targetRef="Task_SXC_T2"/>
+    <bpmn:sequenceFlow id="Flow_XC_T2_Gw" sourceRef="Task_SXC_T2" targetRef="Gw_SXC_Jadwal"/>
+    <bpmn:sequenceFlow id="Flow_XC_Gw_Ya" name="Ya" sourceRef="Gw_SXC_Jadwal" targetRef="Task_SXC_Simpan"/>
+    <bpmn:sequenceFlow id="Flow_XC_Gw_Tidak" name="Tidak" sourceRef="Gw_SXC_Jadwal" targetRef="Task_SXC_Betul"/>
+    <bpmn:sequenceFlow id="Flow_XC_Betul_Gw" sourceRef="Task_SXC_Betul" targetRef="Gw_SXC_Jadwal"/>
+    <bpmn:sequenceFlow id="Flow_XC_Simpan_End" sourceRef="Task_SXC_Simpan" targetRef="End_SXC"/>
+  </bpmn:process>
+
+  <!-- ============ BP 9B: MENJALANKAN TRANSAKSI TERJADWAL ============ -->
+  <bpmn:process id="Process_SX_Run" name="Menjalankan Transaksi Terjadwal" isExecutable="false">
+    <bpmn:documentation>Proses menjalankan transaksi terjadwal saat jatuh tempo: meninjau reminder, memutuskan melanjutkan atau melewati, lalu sistem memproses dan menggeser jadwal berikutnya.</bpmn:documentation>
+
+    <bpmn:startEvent id="Start_SXR" name="Sistem memeriksa jadwal SX">
+      <bpmn:outgoing>Flow_XR_S_Gw1</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <bpmn:exclusiveGateway id="Gw_SXR_Due" name="Ada SX jatuh tempo?">
+      <bpmn:incoming>Flow_XR_S_Gw1</bpmn:incoming>
+      <bpmn:outgoing>Flow_XR_Gw1_Tidak</bpmn:outgoing>
+      <bpmn:outgoing>Flow_XR_Gw1_Ya</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:endEvent id="End_SXR_None" name="Tidak ada jadwal jatuh tempo">
+      <bpmn:incoming>Flow_XR_Gw1_Tidak</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:userTask id="Task_SXR_Tinjau" name="Meninjau daftar SX yang jatuh tempo">
+      <bpmn:incoming>Flow_XR_Gw1_Ya</bpmn:incoming>
+      <bpmn:outgoing>Flow_XR_Tinjau_Gw2</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:exclusiveGateway id="Gw_SXR_Lanjut" name="Lanjutkan transaksi?">
+      <bpmn:incoming>Flow_XR_Tinjau_Gw2</bpmn:incoming>
+      <bpmn:outgoing>Flow_XR_Gw2_Tidak</bpmn:outgoing>
+      <bpmn:outgoing>Flow_XR_Gw2_Ya</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:userTask id="Task_SXR_Skip" name="Menunda / melewati (skip)">
+      <bpmn:incoming>Flow_XR_Gw2_Tidak</bpmn:incoming>
+      <bpmn:outgoing>Flow_XR_Skip_End</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:endEvent id="End_SXR_Skip" name="Transaksi dilewati">
+      <bpmn:incoming>Flow_XR_Skip_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:userTask id="Task_SXR_Sesuai" name="Menyesuaikan nilai transaksi bila perlu">
+      <bpmn:incoming>Flow_XR_Gw2_Ya</bpmn:incoming>
+      <bpmn:outgoing>Flow_XR_Sesuai_Buat</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_SXR_Buat" name="Membuat transaksi dari SX">
+      <bpmn:incoming>Flow_XR_Sesuai_Buat</bpmn:incoming>
+      <bpmn:outgoing>Flow_XR_Buat_Svc</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:serviceTask id="Task_SXR_Svc" name="Sistem menyimpan transaksi &amp; menggeser jadwal">
+      <bpmn:incoming>Flow_XR_Buat_Svc</bpmn:incoming>
+      <bpmn:outgoing>Flow_XR_Svc_End</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:endEvent id="End_SXR_done" name="Transaksi tercatat">
+      <bpmn:incoming>Flow_XR_Svc_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="Flow_XR_S_Gw1" sourceRef="Start_SXR" targetRef="Gw_SXR_Due"/>
+    <bpmn:sequenceFlow id="Flow_XR_Gw1_Tidak" name="Tidak" sourceRef="Gw_SXR_Due" targetRef="End_SXR_None"/>
+    <bpmn:sequenceFlow id="Flow_XR_Gw1_Ya" name="Ya" sourceRef="Gw_SXR_Due" targetRef="Task_SXR_Tinjau"/>
+    <bpmn:sequenceFlow id="Flow_XR_Tinjau_Gw2" sourceRef="Task_SXR_Tinjau" targetRef="Gw_SXR_Lanjut"/>
+    <bpmn:sequenceFlow id="Flow_XR_Gw2_Tidak" name="Tidak" sourceRef="Gw_SXR_Lanjut" targetRef="Task_SXR_Skip"/>
+    <bpmn:sequenceFlow id="Flow_XR_Gw2_Ya" name="Ya" sourceRef="Gw_SXR_Lanjut" targetRef="Task_SXR_Sesuai"/>
+    <bpmn:sequenceFlow id="Flow_XR_Skip_End" sourceRef="Task_SXR_Skip" targetRef="End_SXR_Skip"/>
+    <bpmn:sequenceFlow id="Flow_XR_Sesuai_Buat" sourceRef="Task_SXR_Sesuai" targetRef="Task_SXR_Buat"/>
+    <bpmn:sequenceFlow id="Flow_XR_Buat_Svc" sourceRef="Task_SXR_Buat" targetRef="Task_SXR_Svc"/>
+    <bpmn:sequenceFlow id="Flow_XR_Svc_End" sourceRef="Task_SXR_Svc" targetRef="End_SXR_done"/>
+  </bpmn:process>
+
+  <!-- ============ DIAGRAM 9A ============ -->
+  <bpmndi:BPMNDiagram id="Diagram_SX_Create" name="Membuat Transaksi Terjadwal">
+    <bpmndi:BPMNPlane id="Plane_XC" bpmnElement="Process_SX_Create">
+      <bpmndi:BPMNShape id="Start_SXC_di" bpmnElement="Start_SXC">
+        <dc:Bounds x="272" y="60" width="36" height="36"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SXC_T1_di" bpmnElement="Task_SXC_T1">
+        <dc:Bounds x="200" y="120" width="180" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SXC_T2_di" bpmnElement="Task_SXC_T2">
+        <dc:Bounds x="200" y="240" width="180" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_SXC_Jadwal_di" bpmnElement="Gw_SXC_Jadwal">
+        <dc:Bounds x="250" y="360" width="80" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SXC_Betul_di" bpmnElement="Task_SXC_Betul">
+        <dc:Bounds x="60" y="360" width="150" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SXC_Simpan_di" bpmnElement="Task_SXC_Simpan">
+        <dc:Bounds x="520" y="360" width="180" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_SXC_di" bpmnElement="End_SXC">
+        <dc:Bounds x="592" y="480" width="36" height="36"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="Flow_XC_S_T1_di" bpmnElement="Flow_XC_S_T1">
+        <di:waypoint x="290" y="96"/>
+        <di:waypoint x="290" y="120"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_XC_T1_T2_di" bpmnElement="Flow_XC_T1_T2">
+        <di:waypoint x="290" y="200"/>
+        <di:waypoint x="290" y="240"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_XC_T2_Gw_di" bpmnElement="Flow_XC_T2_Gw">
+        <di:waypoint x="290" y="320"/>
+        <di:waypoint x="290" y="360"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_XC_Gw_Ya_di" bpmnElement="Flow_XC_Gw_Ya">
+        <di:waypoint x="330" y="400"/>
+        <di:waypoint x="520" y="400"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="420" y="380" width="30" height="20"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_XC_Gw_Tidak_di" bpmnElement="Flow_XC_Gw_Tidak">
+        <di:waypoint x="250" y="400"/>
+        <di:waypoint x="210" y="400"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="212" y="380" width="40" height="20"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_XC_Betul_Gw_di" bpmnElement="Flow_XC_Betul_Gw">
+        <di:waypoint x="210" y="400"/>
+        <di:waypoint x="250" y="400"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_XC_Simpan_End_di" bpmnElement="Flow_XC_Simpan_End">
+        <di:waypoint x="610" y="440"/>
+        <di:waypoint x="610" y="480"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+  <!-- ============ DIAGRAM 9B ============ -->
+  <bpmndi:BPMNDiagram id="Diagram_SX_Run" name="Menjalankan Transaksi Terjadwal">
+    <bpmndi:BPMNPlane id="Plane_XR" bpmnElement="Process_SX_Run">
+      <bpmndi:BPMNShape id="Start_SXR_di" bpmnElement="Start_SXR">
+        <dc:Bounds x="272" y="60" width="36" height="36"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_SXR_Due_di" bpmnElement="Gw_SXR_Due">
+        <dc:Bounds x="250" y="140" width="80" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_SXR_None_di" bpmnElement="End_SXR_None">
+        <dc:Bounds x="552" y="162" width="36" height="36"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SXR_Tinjau_di" bpmnElement="Task_SXR_Tinjau">
+        <dc:Bounds x="200" y="260" width="180" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_SXR_Lanjut_di" bpmnElement="Gw_SXR_Lanjut">
+        <dc:Bounds x="250" y="380" width="80" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SXR_Skip_di" bpmnElement="Task_SXR_Skip">
+        <dc:Bounds x="40" y="380" width="160" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_SXR_Skip_di" bpmnElement="End_SXR_Skip">
+        <dc:Bounds x="102" y="500" width="36" height="36"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SXR_Sesuai_di" bpmnElement="Task_SXR_Sesuai">
+        <dc:Bounds x="520" y="380" width="180" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SXR_Buat_di" bpmnElement="Task_SXR_Buat">
+        <dc:Bounds x="520" y="500" width="180" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SXR_Svc_di" bpmnElement="Task_SXR_Svc">
+        <dc:Bounds x="520" y="620" width="180" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_SXR_done_di" bpmnElement="End_SXR_done">
+        <dc:Bounds x="592" y="740" width="36" height="36"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="Flow_XR_S_Gw1_di" bpmnElement="Flow_XR_S_Gw1">
+        <di:waypoint x="290" y="96"/>
+        <di:waypoint x="290" y="140"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_XR_Gw1_Tidak_di" bpmnElement="Flow_XR_Gw1_Tidak">
+        <di:waypoint x="330" y="180"/>
+        <di:waypoint x="552" y="180"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="440" y="162" width="40" height="20"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_XR_Gw1_Ya_di" bpmnElement="Flow_XR_Gw1_Ya">
+        <di:waypoint x="290" y="220"/>
+        <di:waypoint x="290" y="260"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="302" y="234" width="30" height="20"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_XR_Tinjau_Gw2_di" bpmnElement="Flow_XR_Tinjau_Gw2">
+        <di:waypoint x="290" y="340"/>
+        <di:waypoint x="290" y="380"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_XR_Gw2_Tidak_di" bpmnElement="Flow_XR_Gw2_Tidak">
+        <di:waypoint x="250" y="420"/>
+        <di:waypoint x="200" y="420"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="202" y="402" width="40" height="20"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_XR_Gw2_Ya_di" bpmnElement="Flow_XR_Gw2_Ya">
+        <di:waypoint x="330" y="420"/>
+        <di:waypoint x="520" y="420"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="420" y="402" width="30" height="20"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_XR_Skip_End_di" bpmnElement="Flow_XR_Skip_End">
+        <di:waypoint x="120" y="460"/>
+        <di:waypoint x="120" y="500"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_XR_Sesuai_Buat_di" bpmnElement="Flow_XR_Sesuai_Buat">
+        <di:waypoint x="610" y="460"/>
+        <di:waypoint x="610" y="500"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_XR_Buat_Svc_di" bpmnElement="Flow_XR_Buat_Svc">
+        <di:waypoint x="610" y="580"/>
+        <di:waypoint x="610" y="620"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_XR_Svc_End_di" bpmnElement="Flow_XR_Svc_End">
+        <di:waypoint x="610" y="700"/>
+        <di:waypoint x="610" y="740"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

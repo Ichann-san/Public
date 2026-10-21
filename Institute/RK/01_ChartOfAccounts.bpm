@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  id="Definitions_ChartOfAccounts"
+                  targetNamespace="http://bpmn.io/schema/bpmn">
+  <!-- PRODUK 1: BAGAN AKUN (Chart of Accounts) — 1 business process -->
+  <bpmn:process id="Process_ChartOfAccounts" name="Mengelola Bagan Akun" isExecutable="false">
+    <bpmn:documentation>Proses mengelola bagan akun pada GnuCash: memeriksa kebutuhan akun, membuat akun baru beserta tipe dan mata uang, menetapkan kelompok dan saldo awal, lalu sistem menyimpan dan memperbarui bagan akun.</bpmn:documentation>
+
+    <bpmn:startEvent id="Start_Coa" name="Kebutuhan akun teridentifikasi">
+      <bpmn:outgoing>Flow_Start_Coa_T1</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <bpmn:userTask id="Task_Coa_T1" name="Memeriksa kebutuhan &amp; ketersediaan akun">
+      <bpmn:incoming>Flow_Start_Coa_T1</bpmn:incoming>
+      <bpmn:outgoing>Flow_T1_Coa_Gw</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:exclusiveGateway id="Gw_Coa_Ada" name="Akun sudah tersedia?">
+      <bpmn:incoming>Flow_T1_Coa_Gw</bpmn:incoming>
+      <bpmn:outgoing>Flow_Gw_Coa_Ya</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Gw_Coa_Tidak</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:userTask id="Task_Coa_T2" name="Menggunakan akun yang sudah ada">
+      <bpmn:incoming>Flow_Gw_Coa_Ya</bpmn:incoming>
+      <bpmn:outgoing>Flow_T2_Coa_End1</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:endEvent id="End_Coa_1" name="Bagan akun siap digunakan">
+      <bpmn:incoming>Flow_T2_Coa_End1</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:userTask id="Task_Coa_T3" name="Membuat akun baru (nama, tipe, mata uang)">
+      <bpmn:incoming>Flow_Gw_Coa_Tidak</bpmn:incoming>
+      <bpmn:outgoing>Flow_T3_Coa_T4</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_Coa_T4" name="Menetapkan kelompok akun &amp; saldo awal">
+      <bpmn:incoming>Flow_T3_Coa_T4</bpmn:incoming>
+      <bpmn:outgoing>Flow_T4_Coa_End2</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:endEvent id="End_Coa_2" name="Bagan akun diperbarui">
+      <bpmn:incoming>Flow_T4_Coa_End2</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:dataObject id="Data_Coa_Template" name="Template bagan akun"/>
+    <bpmn:dataObjectReference id="DataRef_Coa_Template" name="Template bagan akun" dataObjectRef="Data_Coa_Template"/>
+
+    <bpmn:textAnnotation id="Ann_Coa">
+      <bpmn:text>Gunakan template bagan akun bawaan GnuCash agar susunan akun konsisten.</bpmn:text>
+    </bpmn:textAnnotation>
+
+    <!-- SEQUENCE FLOWS -->
+    <bpmn:sequenceFlow id="Flow_Start_Coa_T1" sourceRef="Start_Coa" targetRef="Task_Coa_T1"/>
+    <bpmn:sequenceFlow id="Flow_T1_Coa_Gw" sourceRef="Task_Coa_T1" targetRef="Gw_Coa_Ada"/>
+    <bpmn:sequenceFlow id="Flow_Gw_Coa_Ya" name="Ya" sourceRef="Gw_Coa_Ada" targetRef="Task_Coa_T2"/>
+    <bpmn:sequenceFlow id="Flow_Gw_Coa_Tidak" name="Tidak" sourceRef="Gw_Coa_Ada" targetRef="Task_Coa_T3"/>
+    <bpmn:sequenceFlow id="Flow_T2_Coa_End1" sourceRef="Task_Coa_T2" targetRef="End_Coa_1"/>
+    <bpmn:sequenceFlow id="Flow_T3_Coa_T4" sourceRef="Task_Coa_T3" targetRef="Task_Coa_T4"/>
+    <bpmn:sequenceFlow id="Flow_T4_Coa_End2" sourceRef="Task_Coa_T4" targetRef="End_Coa_2"/>
+
+    <bpmn:association id="Assoc_Coa" sourceRef="Task_Coa_T3" targetRef="DataRef_Coa_Template"/>
+    <bpmn:association id="Assoc_Coa_Ann" sourceRef="Task_Coa_T1" targetRef="Ann_Coa"/>
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="Diagram_ChartOfAccounts" name="Mengelola Bagan Akun">
+    <bpmndi:BPMNPlane id="Plane_ChartOfAccounts" bpmnElement="Process_ChartOfAccounts">
+      <bpmndi:BPMNShape id="Start_Coa_di" bpmnElement="Start_Coa">
+        <dc:Bounds x="402" y="80" width="36" height="36"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Coa_T1_di" bpmnElement="Task_Coa_T1">
+        <dc:Bounds x="330" y="150" width="180" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_Coa_Ada_di" bpmnElement="Gw_Coa_Ada">
+        <dc:Bounds x="380" y="280" width="80" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Coa_T2_di" bpmnElement="Task_Coa_T2">
+        <dc:Bounds x="610" y="280" width="180" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_Coa_1_di" bpmnElement="End_Coa_1">
+        <dc:Bounds x="682" y="440" width="36" height="36"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Coa_T3_di" bpmnElement="Task_Coa_T3">
+        <dc:Bounds x="330" y="420" width="180" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Coa_T4_di" bpmnElement="Task_Coa_T4">
+        <dc:Bounds x="330" y="560" width="180" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_Coa_2_di" bpmnElement="End_Coa_2">
+        <dc:Bounds x="402" y="700" width="36" height="36"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataRef_Coa_Template_di" bpmnElement="DataRef_Coa_Template">
+        <dc:Bounds x="120" y="420" width="100" height="60"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Ann_Coa_di" bpmnElement="Ann_Coa">
+        <dc:Bounds x="560" y="150" width="180" height="60"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="Flow_Start_Coa_T1_di" bpmnElement="Flow_Start_Coa_T1">
+        <di:waypoint x="420" y="116"/>
+        <di:waypoint x="420" y="150"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_T1_Coa_Gw_di" bpmnElement="Flow_T1_Coa_Gw">
+        <di:waypoint x="420" y="230"/>
+        <di:waypoint x="420" y="280"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Gw_Coa_Ya_di" bpmnElement="Flow_Gw_Coa_Ya">
+        <di:waypoint x="460" y="320"/>
+        <di:waypoint x="610" y="320"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="520" y="300" width="30" height="20"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Gw_Coa_Tidak_di" bpmnElement="Flow_Gw_Coa_Tidak">
+        <di:waypoint x="420" y="360"/>
+        <di:waypoint x="420" y="420"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="432" y="382" width="40" height="20"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_T2_Coa_End1_di" bpmnElement="Flow_T2_Coa_End1">
+        <di:waypoint x="700" y="360"/>
+        <di:waypoint x="700" y="440"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_T3_Coa_T4_di" bpmnElement="Flow_T3_Coa_T4">
+        <di:waypoint x="420" y="500"/>
+        <di:waypoint x="420" y="560"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_T4_Coa_End2_di" bpmnElement="Flow_T4_Coa_End2">
+        <di:waypoint x="420" y="640"/>
+        <di:waypoint x="420" y="700"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_Coa_di" bpmnElement="Assoc_Coa">
+        <di:waypoint x="220" y="450"/>
+        <di:waypoint x="330" y="450"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_Coa_Ann_di" bpmnElement="Assoc_Coa_Ann">
+        <di:waypoint x="510" y="190"/>
+        <di:waypoint x="560" y="190"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

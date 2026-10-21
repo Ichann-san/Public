@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  id="Definitions_Budgeting"
+                  targetNamespace="http://bpmn.io/schema/bpmn">
+  <!-- PRODUK 6: ANGGARAN (Budget) — 2 business processes -->
+
+  <!-- ============ BP 6A: MENYUSUN ANGGARAN ============ -->
+  <bpmn:process id="Process_Budget_Create" name="Menyusun Anggaran" isExecutable="false">
+    <bpmn:documentation>Proses menyusun anggaran pada GnuCash: memilih akun, menentukan nilai per periode, melengkapi pos anggaran, lalu sistem menyimpan dan mengaktifkan anggaran.</bpmn:documentation>
+
+    <bpmn:startEvent id="Start_BudC" name="Periode anggaran dimulai">
+      <bpmn:outgoing>Flow_BC_S_T1</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <bpmn:userTask id="Task_BC_T1" name="Memilih akun yang akan dianggarkan">
+      <bpmn:incoming>Flow_BC_S_T1</bpmn:incoming>
+      <bpmn:outgoing>Flow_BC_T1_T2</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_BC_T2" name="Menentukan nilai anggaran per periode">
+      <bpmn:incoming>Flow_BC_T1_T2</bpmn:incoming>
+      <bpmn:outgoing>Flow_BC_T2_Gw</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:exclusiveGateway id="Gw_BC_Lengkap" name="Semua pos terisi?">
+      <bpmn:incoming>Flow_BC_T2_Gw</bpmn:incoming>
+      <bpmn:outgoing>Flow_BC_Gw_Ya</bpmn:outgoing>
+      <bpmn:outgoing>Flow_BC_Gw_Tidak</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:userTask id="Task_BC_Isi" name="Mengisi pos yang belum terisi">
+      <bpmn:incoming>Flow_BC_Gw_Tidak</bpmn:incoming>
+      <bpmn:outgoing>Flow_BC_Isi_Gw</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:serviceTask id="Task_BC_Simpan" name="Sistem menyimpan &amp; mengaktifkan anggaran">
+      <bpmn:incoming>Flow_BC_Gw_Ya</bpmn:incoming>
+      <bpmn:outgoing>Flow_BC_Simpan_End</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:endEvent id="End_BC" name="Anggaran aktif">
+      <bpmn:incoming>Flow_BC_Simpan_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="Flow_BC_S_T1" sourceRef="Start_BudC" targetRef="Task_BC_T1"/>
+    <bpmn:sequenceFlow id="Flow_BC_T1_T2" sourceRef="Task_BC_T1" targetRef="Task_BC_T2"/>
+    <bpmn:sequenceFlow id="Flow_BC_T2_Gw" sourceRef="Task_BC_T2" targetRef="Gw_BC_Lengkap"/>
+    <bpmn:sequenceFlow id="Flow_BC_Gw_Ya" name="Ya" sourceRef="Gw_BC_Lengkap" targetRef="Task_BC_Simpan"/>
+    <bpmn:sequenceFlow id="Flow_BC_Gw_Tidak" name="Tidak" sourceRef="Gw_BC_Lengkap" targetRef="Task_BC_Isi"/>
+    <bpmn:sequenceFlow id="Flow_BC_Isi_Gw" sourceRef="Task_BC_Isi" targetRef="Gw_BC_Lengkap"/>
+    <bpmn:sequenceFlow id="Flow_BC_Simpan_End" sourceRef="Task_BC_Simpan" targetRef="End_BC"/>
+  </bpmn:process>
+
+  <!-- ============ BP 6B: MEMANTAU REALISASI ANGGARAN ============ -->
+  <bpmn:process id="Process_Budget_Monitor" name="Memantau Realisasi Anggaran" isExecutable="false">
+    <bpmn:documentation>Proses memantau kinerja anggaran dengan laporan budget (real vs anggaran), menganalisis penyimpangan, dan mengambil tindakan korektif bila diperlukan.</bpmn:documentation>
+
+    <bpmn:startEvent id="Start_BudM" name="Periode anggaran berjalan">
+      <bpmn:outgoing>Flow_BM_S_T1</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <bpmn:userTask id="Task_BM_T1" name="Membuka laporan budget (real vs anggaran)">
+      <bpmn:incoming>Flow_BM_S_T1</bpmn:incoming>
+      <bpmn:outgoing>Flow_BM_T1_Gw</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:exclusiveGateway id="Gw_BM_Sesuai" name="Realisasi sesuai target?">
+      <bpmn:incoming>Flow_BM_T1_Gw</bpmn:incoming>
+      <bpmn:outgoing>Flow_BM_Gw_Ya</bpmn:outgoing>
+      <bpmn:outgoing>Flow_BM_Gw_Tidak</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:userTask id="Task_BM_Efektif" name="Mencatat evaluasi anggaran efektif">
+      <bpmn:incoming>Flow_BM_Gw_Ya</bpmn:incoming>
+      <bpmn:outgoing>Flow_BM_Efektif_End</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:endEvent id="End_BM_Efektif" name="Anggaran efektif">
+      <bpmn:incoming>Flow_BM_Efektif_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:userTask id="Task_BM_Analisis" name="Menganalisis penyebab penyimpangan">
+      <bpmn:incoming>Flow_BM_Gw_Tidak</bpmn:incoming>
+      <bpmn:outgoing>Flow_BM_Analisis_Tlk</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Task_BM_Tlk" name="Mengambil tindakan korektif">
+      <bpmn:incoming>Flow_BM_Analisis_Tlk</bpmn:incoming>
+      <bpmn:outgoing>Flow_BM_Tlk_End</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:endEvent id="End_BM_Dev" name="Deviasi ditindaklanjuti">
+      <bpmn:incoming>Flow_BM_Tlk_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="Flow_BM_S_T1" sourceRef="Start_BudM" targetRef="Task_BM_T1"/>
+    <bpmn:sequenceFlow id="Flow_BM_T1_Gw" sourceRef="Task_BM_T1" targetRef="Gw_BM_Sesuai"/>
+    <bpmn:sequenceFlow id="Flow_BM_Gw_Ya" name="Ya" sourceRef="Gw_BM_Sesuai" targetRef="Task_BM_Efektif"/>
+    <bpmn:sequenceFlow id="Flow_BM_Gw_Tidak" name="Tidak" sourceRef="Gw_BM_Sesuai" targetRef="Task_BM_Analisis"/>
+    <bpmn:sequenceFlow id="Flow_BM_Efektif_End" sourceRef="Task_BM_Efektif" targetRef="End_BM_Efektif"/>
+    <bpmn:sequenceFlow id="Flow_BM_Analisis_Tlk" sourceRef="Task_BM_Analisis" targetRef="Task_BM_Tlk"/>
+    <bpmn:sequenceFlow id="Flow_BM_Tlk_End" sourceRef="Task_BM_Tlk" targetRef="End_BM_Dev"/>
+  </bpmn:process>
+
+  <!-- ============ DIAGRAM 6A ============ -->
+  <bpmndi:BPMNDiagram id="Diagram_Budget_Create" name="Menyusun Anggaran">
+    <bpmndi:BPMNPlane id="Plane_BC" bpmnElement="Process_Budget_Create">
+      <bpmndi:BPMNShape id="Start_BudC_di" bpmnElement="Start_BudC">
+        <dc:Bounds x="272" y="60" width="36" height="36"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_BC_T1_di" bpmnElement="Task_BC_T1">
+        <dc:Bounds x="200" y="120" width="180" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_BC_T2_di" bpmnElement="Task_BC_T2">
+        <dc:Bounds x="200" y="240" width="180" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_BC_Lengkap_di" bpmnElement="Gw_BC_Lengkap">
+        <dc:Bounds x="250" y="360" width="80" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_BC_Isi_di" bpmnElement="Task_BC_Isi">
+        <dc:Bounds x="60" y="360" width="150" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_BC_Simpan_di" bpmnElement="Task_BC_Simpan">
+        <dc:Bounds x="520" y="360" width="180" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_BC_di" bpmnElement="End_BC">
+        <dc:Bounds x="592" y="480" width="36" height="36"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="Flow_BC_S_T1_di" bpmnElement="Flow_BC_S_T1">
+        <di:waypoint x="290" y="96"/>
+        <di:waypoint x="290" y="120"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_BC_T1_T2_di" bpmnElement="Flow_BC_T1_T2">
+        <di:waypoint x="290" y="200"/>
+        <di:waypoint x="290" y="240"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_BC_T2_Gw_di" bpmnElement="Flow_BC_T2_Gw">
+        <di:waypoint x="290" y="320"/>
+        <di:waypoint x="290" y="360"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_BC_Gw_Ya_di" bpmnElement="Flow_BC_Gw_Ya">
+        <di:waypoint x="330" y="400"/>
+        <di:waypoint x="520" y="400"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="420" y="380" width="30" height="20"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_BC_Gw_Tidak_di" bpmnElement="Flow_BC_Gw_Tidak">
+        <di:waypoint x="250" y="400"/>
+        <di:waypoint x="210" y="400"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="212" y="380" width="40" height="20"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_BC_Isi_Gw_di" bpmnElement="Flow_BC_Isi_Gw">
+        <di:waypoint x="210" y="400"/>
+        <di:waypoint x="250" y="400"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_BC_Simpan_End_di" bpmnElement="Flow_BC_Simpan_End">
+        <di:waypoint x="610" y="440"/>
+        <di:waypoint x="610" y="480"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+  <!-- ============ DIAGRAM 6B ============ -->
+  <bpmndi:BPMNDiagram id="Diagram_Budget_Monitor" name="Memantau Realisasi Anggaran">
+    <bpmndi:BPMNPlane id="Plane_BM" bpmnElement="Process_Budget_Monitor">
+      <bpmndi:BPMNShape id="Start_BudM_di" bpmnElement="Start_BudM">
+        <dc:Bounds x="272" y="60" width="36" height="36"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_BM_T1_di" bpmnElement="Task_BM_T1">
+        <dc:Bounds x="200" y="120" width="180" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_BM_Sesuai_di" bpmnElement="Gw_BM_Sesuai">
+        <dc:Bounds x="250" y="240" width="80" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_BM_Efektif_di" bpmnElement="Task_BM_Efektif">
+        <dc:Bounds x="520" y="240" width="180" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_BM_Efektif_di" bpmnElement="End_BM_Efektif">
+        <dc:Bounds x="592" y="360" width="36" height="36"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_BM_Analisis_di" bpmnElement="Task_BM_Analisis">
+        <dc:Bounds x="40" y="240" width="170" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_BM_Tlk_di" bpmnElement="Task_BM_Tlk">
+        <dc:Bounds x="40" y="360" width="170" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_BM_Dev_di" bpmnElement="End_BM_Dev">
+        <dc:Bounds x="107" y="480" width="36" height="36"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="Flow_BM_S_T1_di" bpmnElement="Flow_BM_S_T1">
+        <di:waypoint x="290" y="96"/>
+        <di:waypoint x="290" y="120"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_BM_T1_Gw_di" bpmnElement="Flow_BM_T1_Gw">
+        <di:waypoint x="290" y="200"/>
+        <di:waypoint x="290" y="240"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_BM_Gw_Ya_di" bpmnElement="Flow_BM_Gw_Ya">
+        <di:waypoint x="330" y="280"/>
+        <di:waypoint x="520" y="280"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="420" y="260" width="30" height="20"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_BM_Gw_Tidak_di" bpmnElement="Flow_BM_Gw_Tidak">
+        <di:waypoint x="250" y="280"/>
+        <di:waypoint x="210" y="280"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="212" y="262" width="40" height="20"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_BM_Efektif_End_di" bpmnElement="Flow_BM_Efektif_End">
+        <di:waypoint x="610" y="320"/>
+        <di:waypoint x="610" y="360"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_BM_Analisis_Tlk_di" bpmnElement="Flow_BM_Analisis_Tlk">
+        <di:waypoint x="125" y="320"/>
+        <di:waypoint x="125" y="360"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_BM_Tlk_End_di" bpmnElement="Flow_BM_Tlk_End">
+        <di:waypoint x="125" y="440"/>
+        <di:waypoint x="125" y="480"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
