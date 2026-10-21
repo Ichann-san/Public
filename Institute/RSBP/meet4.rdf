@@ -1,0 +1,202 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2/"
+     xml:base="http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#hasAunt -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#hasAunt"/>
+    
+
+
+    <!-- http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#hasBrother -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#hasBrother"/>
+    
+
+
+    <!-- http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#hasChild -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#hasChild"/>
+    
+
+
+    <!-- http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#hasCousin -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#hasCousin"/>
+    
+
+
+    <!-- http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#hasGrandParent -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#hasGrandParent"/>
+    
+
+
+    <!-- http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#hasNephew -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#hasNephew"/>
+    
+
+
+    <!-- http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#hasNiece -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#hasNiece"/>
+    
+
+
+    <!-- http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#hasParent -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#hasParent"/>
+    
+
+
+    <!-- http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#hasParentInLaw -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#hasParentInLaw"/>
+    
+
+
+    <!-- http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#hasSiblings -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#hasSiblings"/>
+    
+
+
+    <!-- http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#hasSister -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#hasSister"/>
+    
+
+
+    <!-- http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#hasSpouse -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#hasSpouse"/>
+    
+
+
+    <!-- http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#hasUncle -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#hasUncle"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#hasAge -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#hasAge"/>
+    
+
+
+    <!-- http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#hasDOB -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#hasDOB"/>
+    
+
+
+    <!-- http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#hasDOD -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#hasDOD"/>
+    
+
+
+    <!-- http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#hasFirstName -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#hasFirstName"/>
+    
+
+
+    <!-- http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#hasLastName -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#hasLastName"/>
+    
+
+
+    <!-- http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#hasMarriageName -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#hasMarriageName"/>
+    
+
+
+    <!-- http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#hasSex -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#hasSex"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#Deceased -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#Deceased"/>
+    
+
+
+    <!-- http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#Man -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#Man">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#Person"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#Parent -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#Parent"/>
+    
+
+
+    <!-- http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#Person -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#Person"/>
+    
+
+
+    <!-- http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#Woman -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#Woman">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/maula/ontologies/2026/8/untitled-ontology-2#Person"/>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.5.29.2024-05-13T12:11:03Z) https://github.com/owlcs/owlapi -->
+
