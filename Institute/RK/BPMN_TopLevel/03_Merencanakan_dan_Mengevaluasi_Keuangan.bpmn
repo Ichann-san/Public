@@ -1,0 +1,459 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_TopLevel_EVA" targetNamespace="http://bpmn.io/schema/bpmn">
+  <!-- DIAGRAM TOP-LEVEL 3: Merencanakan dan Mengevaluasi Keuangan — memakai ulang draf 06_Budgeting dan 07_FinancialReports. Jejak: BR-03, BR-04; langkah E, G. -->
+  <bpmn:collaboration id="Collab_EVA">
+    <bpmn:participant id="Pool_EVA_Main" name="Proses Perencanaan dan Evaluasi" processRef="Process_EVA" />
+  </bpmn:collaboration>
+  <bpmn:process id="Process_EVA" name="Merencanakan dan Mengevaluasi Keuangan" isExecutable="false">
+    <bpmn:documentation>Tujuan: pengguna menetapkan jumlah anggaran, membandingkan realisasi, dan memeriksa/membagikan laporan keuangan; satu siklus keputusan berulang. Pemicu: periode perencanaan baru atau tanggal tinjauan. Prasyarat: akun relevan ada; perbandingan aktual butuh transaksi tercatat. Akhir: anggaran tersimpan dan situasi keuangan ditinjau; laporan opsional disimpan/dicetak/dibagikan pengguna. Keputusan korektif bisnis (di luar GnuCash) tetap tugas pengguna. Jejak: 06, 07; BR-03, BR-04.</bpmn:documentation>
+    <bpmn:laneSet id="LaneSet_EVA">
+      <bpmn:lane id="Lane_EVA_User" name="Pengguna">
+        <bpmn:flowNodeRef>Start_EVA</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_EVA_Lanjut</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_EVA_Batal</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_EVA_Jalur</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_EVA_T1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_EVA_T2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_EVA_Cukup</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_EVA_Siklus</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_EVA_Anggaran</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_EVA_T4</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_EVA_Layak</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_EVA_Arah</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Sub_EVA_Koreksi</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_EVA_T6</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_EVA_Revisi</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_EVA_Bagi</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_EVA_T7</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_EVA_Sukses</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_EVA_GC" name="GnuCash">
+        <bpmn:flowNodeRef>Task_EVA_T3</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_EVA_T5</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Start_EVA" name="Periode perencanaan atau tinjauan tiba">
+      <bpmn:outgoing>Flow_EVA_S_Gw</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:exclusiveGateway id="Gw_EVA_Lanjut" name="Lanjutkan perencanaan?">
+      <bpmn:incoming>Flow_EVA_S_Gw</bpmn:incoming>
+      <bpmn:outgoing>Flow_EVA_Lanjut_Ya</bpmn:outgoing>
+      <bpmn:outgoing>Flow_EVA_Lanjut_Tidak</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="End_EVA_Batal" name="Dibatalkan (tanpa perubahan)">
+      <bpmn:incoming>Flow_EVA_Lanjut_Tidak</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:exclusiveGateway id="Gw_EVA_Jalur" name="Mulai dari?">
+      <bpmn:incoming>Flow_EVA_Lanjut_Ya</bpmn:incoming>
+      <bpmn:outgoing>Flow_EVA_Jalur_Anggaran</bpmn:outgoing>
+      <bpmn:outgoing>Flow_EVA_Jalur_Tinjau</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="Task_EVA_T1" name="Memilih periode dan akun anggaran (boleh sebagian)">
+      <bpmn:incoming>Flow_EVA_Jalur_Anggaran</bpmn:incoming>
+      <bpmn:outgoing>Flow_EVA_T1_T2</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_EVA_T2" name="Mengisi jumlah anggaran per periode">
+      <bpmn:incoming>Flow_EVA_T1_T2</bpmn:incoming>
+      <bpmn:incoming>Flow_EVA_Cukup_Tidak</bpmn:incoming>
+      <bpmn:incoming>Flow_EVA_Revisi_Ya</bpmn:incoming>
+      <bpmn:outgoing>Flow_EVA_T2_Gw</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="Gw_EVA_Cukup" name="Anggaran cukup jelas untuk disimpan?">
+      <bpmn:incoming>Flow_EVA_T2_Gw</bpmn:incoming>
+      <bpmn:outgoing>Flow_EVA_Cukup_Tidak</bpmn:outgoing>
+      <bpmn:outgoing>Flow_EVA_Cukup_Ya</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="Task_EVA_T3" name="Sistem menyimpan anggaran">
+      <bpmn:incoming>Flow_EVA_Cukup_Ya</bpmn:incoming>
+      <bpmn:outgoing>Flow_EVA_T3_Gw</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="Gw_EVA_Siklus" name="Lanjut ke tinjauan sekarang?">
+      <bpmn:incoming>Flow_EVA_T3_Gw</bpmn:incoming>
+      <bpmn:outgoing>Flow_EVA_Siklus_Ya</bpmn:outgoing>
+      <bpmn:outgoing>Flow_EVA_Siklus_Tidak</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="End_EVA_Anggaran" name="Anggaran tersimpan (belum ditinjau)">
+      <bpmn:incoming>Flow_EVA_Siklus_Tidak</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:userTask id="Task_EVA_T4" name="Membuka budget-vs-aktual; memilih jenis, tanggal dan opsi">
+      <bpmn:incoming>Flow_EVA_Jalur_Tinjau</bpmn:incoming>
+      <bpmn:incoming>Flow_EVA_Siklus_Ya</bpmn:incoming>
+      <bpmn:incoming>Flow_EVA_Arah_Filter</bpmn:incoming>
+      <bpmn:outgoing>Flow_EVA_T4_T5</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:serviceTask id="Task_EVA_T5" name="Sistem menghitung dari buku besar dan merender hasil">
+      <bpmn:incoming>Flow_EVA_T4_T5</bpmn:incoming>
+      <bpmn:incoming>Flow_EVA_Koreksi_T5</bpmn:incoming>
+      <bpmn:outgoing>Flow_EVA_T5_Gw</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="Gw_EVA_Layak" name="Data dan opsi sudah tepat?">
+      <bpmn:incoming>Flow_EVA_T5_Gw</bpmn:incoming>
+      <bpmn:outgoing>Flow_EVA_Layak_Ya</bpmn:outgoing>
+      <bpmn:outgoing>Flow_EVA_Layak_Tidak</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:exclusiveGateway id="Gw_EVA_Arah" name="Perbaiki melalui?">
+      <bpmn:incoming>Flow_EVA_Layak_Tidak</bpmn:incoming>
+      <bpmn:outgoing>Flow_EVA_Arah_Filter</bpmn:outgoing>
+      <bpmn:outgoing>Flow_EVA_Arah_Data</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:subProcess id="Sub_EVA_Koreksi" name="Subproses: koreksi data buku besar">
+      <bpmn:documentation>Memakai ulang Diagram 1 (draf 01/02): memilih atau membuat akun, mencatat atau mengoreksi transaksi, lalu menghitung ulang.</bpmn:documentation>
+      <bpmn:incoming>Flow_EVA_Arah_Data</bpmn:incoming>
+      <bpmn:outgoing>Flow_EVA_Koreksi_T5</bpmn:outgoing>
+    </bpmn:subProcess>
+    <bpmn:userTask id="Task_EVA_T6" name="Menilai selisih dan memutuskan tindak lanjut (di luar GnuCash)">
+      <bpmn:incoming>Flow_EVA_Layak_Ya</bpmn:incoming>
+      <bpmn:outgoing>Flow_EVA_T6_Gw</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="Gw_EVA_Revisi" name="Revisi anggaran?">
+      <bpmn:incoming>Flow_EVA_T6_Gw</bpmn:incoming>
+      <bpmn:outgoing>Flow_EVA_Revisi_Ya</bpmn:outgoing>
+      <bpmn:outgoing>Flow_EVA_Revisi_Tidak</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:exclusiveGateway id="Gw_EVA_Bagi" name="Simpan, cetak, atau ekspor laporan?">
+      <bpmn:incoming>Flow_EVA_Revisi_Tidak</bpmn:incoming>
+      <bpmn:outgoing>Flow_EVA_Bagi_Ya</bpmn:outgoing>
+      <bpmn:outgoing>Flow_EVA_Bagi_Tidak</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="Task_EVA_T7" name="Menyimpan, mencetak, atau mengekspor (opsi yang didukung)">
+      <bpmn:incoming>Flow_EVA_Bagi_Ya</bpmn:incoming>
+      <bpmn:outgoing>Flow_EVA_T7_End</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="End_EVA_Sukses" name="Rencana ditinjau dan laporan siap">
+      <bpmn:incoming>Flow_EVA_Bagi_Tidak</bpmn:incoming>
+      <bpmn:incoming>Flow_EVA_T7_End</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:dataObject id="Data_EVA_Anggaran" name="Periode, akun dan jumlah anggaran" />
+    <bpmn:dataObject id="Data_EVA_Aktual" name="Transaksi aktual buku besar" />
+    <bpmn:dataObject id="Data_EVA_Opsi" name="Jenis, tanggal, opsi dan output laporan" />
+    <bpmn:dataObjectReference id="DataRef_EVA_Anggaran" name="Periode, akun dan jumlah anggaran" dataObjectRef="Data_EVA_Anggaran" />
+    <bpmn:dataObjectReference id="DataRef_EVA_Aktual" name="Transaksi aktual buku besar" dataObjectRef="Data_EVA_Aktual" />
+    <bpmn:dataObjectReference id="DataRef_EVA_Opsi" name="Jenis, tanggal, opsi dan output laporan" dataObjectRef="Data_EVA_Opsi" />
+    <bpmn:textAnnotation id="Ann_EVA_Sebagian">
+      <bpmn:text>Anggaran boleh sebagian akun; keputusan korektif bisnis di luar GnuCash.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:sequenceFlow id="Flow_EVA_S_Gw" sourceRef="Start_EVA" targetRef="Gw_EVA_Lanjut" />
+    <bpmn:sequenceFlow id="Flow_EVA_Lanjut_Ya" sourceRef="Gw_EVA_Lanjut" targetRef="Gw_EVA_Jalur" name="Ya" />
+    <bpmn:sequenceFlow id="Flow_EVA_Lanjut_Tidak" sourceRef="Gw_EVA_Lanjut" targetRef="End_EVA_Batal" name="Tidak" />
+    <bpmn:sequenceFlow id="Flow_EVA_Jalur_Anggaran" sourceRef="Gw_EVA_Jalur" targetRef="Task_EVA_T1" name="Anggaran" />
+    <bpmn:sequenceFlow id="Flow_EVA_Jalur_Tinjau" sourceRef="Gw_EVA_Jalur" targetRef="Task_EVA_T4" name="Tinjauan" />
+    <bpmn:sequenceFlow id="Flow_EVA_T1_T2" sourceRef="Task_EVA_T1" targetRef="Task_EVA_T2" />
+    <bpmn:sequenceFlow id="Flow_EVA_T2_Gw" sourceRef="Task_EVA_T2" targetRef="Gw_EVA_Cukup" />
+    <bpmn:sequenceFlow id="Flow_EVA_Cukup_Tidak" sourceRef="Gw_EVA_Cukup" targetRef="Task_EVA_T2" name="Tidak" />
+    <bpmn:sequenceFlow id="Flow_EVA_Cukup_Ya" sourceRef="Gw_EVA_Cukup" targetRef="Task_EVA_T3" name="Ya" />
+    <bpmn:sequenceFlow id="Flow_EVA_T3_Gw" sourceRef="Task_EVA_T3" targetRef="Gw_EVA_Siklus" />
+    <bpmn:sequenceFlow id="Flow_EVA_Siklus_Ya" sourceRef="Gw_EVA_Siklus" targetRef="Task_EVA_T4" name="Ya" />
+    <bpmn:sequenceFlow id="Flow_EVA_Siklus_Tidak" sourceRef="Gw_EVA_Siklus" targetRef="End_EVA_Anggaran" name="Tidak" />
+    <bpmn:sequenceFlow id="Flow_EVA_T4_T5" sourceRef="Task_EVA_T4" targetRef="Task_EVA_T5" />
+    <bpmn:sequenceFlow id="Flow_EVA_T5_Gw" sourceRef="Task_EVA_T5" targetRef="Gw_EVA_Layak" />
+    <bpmn:sequenceFlow id="Flow_EVA_Layak_Ya" sourceRef="Gw_EVA_Layak" targetRef="Task_EVA_T6" name="Ya" />
+    <bpmn:sequenceFlow id="Flow_EVA_Layak_Tidak" sourceRef="Gw_EVA_Layak" targetRef="Gw_EVA_Arah" name="Tidak" />
+    <bpmn:sequenceFlow id="Flow_EVA_Arah_Filter" sourceRef="Gw_EVA_Arah" targetRef="Task_EVA_T4" name="Ubah filter atau opsi" />
+    <bpmn:sequenceFlow id="Flow_EVA_Arah_Data" sourceRef="Gw_EVA_Arah" targetRef="Sub_EVA_Koreksi" name="Koreksi data buku besar" />
+    <bpmn:sequenceFlow id="Flow_EVA_Koreksi_T5" sourceRef="Sub_EVA_Koreksi" targetRef="Task_EVA_T5" />
+    <bpmn:sequenceFlow id="Flow_EVA_T6_Gw" sourceRef="Task_EVA_T6" targetRef="Gw_EVA_Revisi" />
+    <bpmn:sequenceFlow id="Flow_EVA_Revisi_Ya" sourceRef="Gw_EVA_Revisi" targetRef="Task_EVA_T2" name="Ya" />
+    <bpmn:sequenceFlow id="Flow_EVA_Revisi_Tidak" sourceRef="Gw_EVA_Revisi" targetRef="Gw_EVA_Bagi" name="Tidak" />
+    <bpmn:sequenceFlow id="Flow_EVA_Bagi_Ya" sourceRef="Gw_EVA_Bagi" targetRef="Task_EVA_T7" name="Ya" />
+    <bpmn:sequenceFlow id="Flow_EVA_Bagi_Tidak" sourceRef="Gw_EVA_Bagi" targetRef="End_EVA_Sukses" name="Tidak" />
+    <bpmn:sequenceFlow id="Flow_EVA_T7_End" sourceRef="Task_EVA_T7" targetRef="End_EVA_Sukses" />
+    <bpmn:association id="Assoc_EVA_Anggaran" sourceRef="Task_EVA_T2" targetRef="DataRef_EVA_Anggaran" />
+    <bpmn:association id="Assoc_EVA_Aktual" sourceRef="Task_EVA_T5" targetRef="DataRef_EVA_Aktual" />
+    <bpmn:association id="Assoc_EVA_Opsi" sourceRef="Task_EVA_T4" targetRef="DataRef_EVA_Opsi" />
+    <bpmn:association id="Assoc_EVA_Ann" sourceRef="Task_EVA_T1" targetRef="Ann_EVA_Sebagian" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collab_EVA">
+      <bpmndi:BPMNShape id="Lane_EVA_User_di" bpmnElement="Lane_EVA_User" isHorizontal="true">
+        <dc:Bounds x="150" y="0" width="3650" height="812" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_EVA_GC_di" bpmnElement="Lane_EVA_GC" isHorizontal="true">
+        <dc:Bounds x="150" y="812" width="3650" height="250" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Pool_EVA_Main_di" bpmnElement="Pool_EVA_Main" isHorizontal="true">
+        <dc:Bounds x="120" y="0" width="3680" height="1062" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_EVA_di" bpmnElement="Start_EVA">
+        <dc:Bounds x="222" y="177" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="180" y="217" width="120" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_EVA_Lanjut_di" bpmnElement="Gw_EVA_Lanjut" isMarkerVisible="true">
+        <dc:Bounds x="435" y="170" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="400" y="126" width="120" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_EVA_Batal_di" bpmnElement="End_EVA_Batal">
+        <dc:Bounds x="662" y="387" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="620" y="427" width="120" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_EVA_Jalur_di" bpmnElement="Gw_EVA_Jalur" isMarkerVisible="true">
+        <dc:Bounds x="655" y="170" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="620" y="126" width="120" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_EVA_T1_di" bpmnElement="Task_EVA_T1">
+        <dc:Bounds x="830" y="155" width="140" height="80" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="836" y="161" width="128" height="58" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_EVA_T2_di" bpmnElement="Task_EVA_T2">
+        <dc:Bounds x="1050" y="155" width="140" height="80" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1056" y="161" width="128" height="58" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_EVA_Cukup_di" bpmnElement="Gw_EVA_Cukup" isMarkerVisible="true">
+        <dc:Bounds x="1315" y="170" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1280" y="126" width="120" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_EVA_T3_di" bpmnElement="Task_EVA_T3">
+        <dc:Bounds x="1490" y="897" width="140" height="80" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1496" y="903" width="128" height="58" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_EVA_Siklus_di" bpmnElement="Gw_EVA_Siklus" isMarkerVisible="true">
+        <dc:Bounds x="1755" y="170" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1720" y="126" width="120" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_EVA_Anggaran_di" bpmnElement="End_EVA_Anggaran">
+        <dc:Bounds x="1982" y="387" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1940" y="427" width="120" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_EVA_T4_di" bpmnElement="Task_EVA_T4">
+        <dc:Bounds x="1930" y="575" width="140" height="80" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1936" y="581" width="128" height="58" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_EVA_T5_di" bpmnElement="Task_EVA_T5">
+        <dc:Bounds x="2150" y="897" width="140" height="80" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2156" y="903" width="128" height="58" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_EVA_Layak_di" bpmnElement="Gw_EVA_Layak" isMarkerVisible="true">
+        <dc:Bounds x="2415" y="170" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2380" y="126" width="120" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_EVA_Arah_di" bpmnElement="Gw_EVA_Arah" isMarkerVisible="true">
+        <dc:Bounds x="2635" y="380" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2600" y="336" width="120" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Sub_EVA_Koreksi_di" bpmnElement="Sub_EVA_Koreksi" isExpanded="false">
+        <dc:Bounds x="2810" y="365" width="140" height="80" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2816" y="371" width="128" height="58" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_EVA_T6_di" bpmnElement="Task_EVA_T6">
+        <dc:Bounds x="2590" y="155" width="140" height="80" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2596" y="161" width="128" height="58" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_EVA_Revisi_di" bpmnElement="Gw_EVA_Revisi" isMarkerVisible="true">
+        <dc:Bounds x="2855" y="170" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2820" y="126" width="120" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_EVA_Bagi_di" bpmnElement="Gw_EVA_Bagi" isMarkerVisible="true">
+        <dc:Bounds x="3075" y="170" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3040" y="126" width="120" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_EVA_T7_di" bpmnElement="Task_EVA_T7">
+        <dc:Bounds x="3250" y="155" width="140" height="80" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3256" y="161" width="128" height="58" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_EVA_Sukses_di" bpmnElement="End_EVA_Sukses">
+        <dc:Bounds x="3522" y="387" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3480" y="427" width="120" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataRef_EVA_Anggaran_di" bpmnElement="DataRef_EVA_Anggaran">
+        <dc:Bounds x="1062" y="247" width="36" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1020" y="301" width="120" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataRef_EVA_Aktual_di" bpmnElement="DataRef_EVA_Aktual">
+        <dc:Bounds x="2162" y="989" width="36" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2120" y="1043" width="120" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataRef_EVA_Opsi_di" bpmnElement="DataRef_EVA_Opsi">
+        <dc:Bounds x="1942" y="667" width="36" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1900" y="721" width="120" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Ann_EVA_Sebagian_di" bpmnElement="Ann_EVA_Sebagian">
+        <dc:Bounds x="720" y="12" width="150" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_EVA_S_Gw_di" bpmnElement="Flow_EVA_S_Gw">
+        <di:waypoint x="258" y="195" />
+        <di:waypoint x="435" y="195" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_EVA_Lanjut_Ya_di" bpmnElement="Flow_EVA_Lanjut_Ya">
+        <di:waypoint x="485" y="195" />
+        <di:waypoint x="655" y="195" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_EVA_Lanjut_Tidak_di" bpmnElement="Flow_EVA_Lanjut_Tidak">
+        <di:waypoint x="460" y="220" />
+        <di:waypoint x="460" y="405" />
+        <di:waypoint x="662" y="405" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_EVA_Jalur_Anggaran_di" bpmnElement="Flow_EVA_Jalur_Anggaran">
+        <di:waypoint x="705" y="195" />
+        <di:waypoint x="830" y="195" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_EVA_Jalur_Tinjau_di" bpmnElement="Flow_EVA_Jalur_Tinjau">
+        <di:waypoint x="705" y="195" />
+        <di:waypoint x="730" y="195" />
+        <di:waypoint x="730" y="615" />
+        <di:waypoint x="1930" y="615" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_EVA_T1_T2_di" bpmnElement="Flow_EVA_T1_T2">
+        <di:waypoint x="970" y="195" />
+        <di:waypoint x="1050" y="195" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_EVA_T2_Gw_di" bpmnElement="Flow_EVA_T2_Gw">
+        <di:waypoint x="1190" y="195" />
+        <di:waypoint x="1315" y="195" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_EVA_Cukup_Tidak_di" bpmnElement="Flow_EVA_Cukup_Tidak">
+        <di:waypoint x="1340" y="220" />
+        <di:waypoint x="1340" y="798" />
+        <di:waypoint x="1120" y="798" />
+        <di:waypoint x="1120" y="235" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_EVA_Cukup_Ya_di" bpmnElement="Flow_EVA_Cukup_Ya">
+        <di:waypoint x="1340" y="220" />
+        <di:waypoint x="1340" y="937" />
+        <di:waypoint x="1490" y="937" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_EVA_T3_Gw_di" bpmnElement="Flow_EVA_T3_Gw">
+        <di:waypoint x="1630" y="937" />
+        <di:waypoint x="1730" y="937" />
+        <di:waypoint x="1730" y="195" />
+        <di:waypoint x="1755" y="195" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_EVA_Siklus_Ya_di" bpmnElement="Flow_EVA_Siklus_Ya">
+        <di:waypoint x="1780" y="220" />
+        <di:waypoint x="1780" y="615" />
+        <di:waypoint x="1930" y="615" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_EVA_Siklus_Tidak_di" bpmnElement="Flow_EVA_Siklus_Tidak">
+        <di:waypoint x="1780" y="220" />
+        <di:waypoint x="1780" y="405" />
+        <di:waypoint x="1982" y="405" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_EVA_T4_T5_di" bpmnElement="Flow_EVA_T4_T5">
+        <di:waypoint x="2070" y="615" />
+        <di:waypoint x="2125" y="615" />
+        <di:waypoint x="2125" y="937" />
+        <di:waypoint x="2150" y="937" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_EVA_T5_Gw_di" bpmnElement="Flow_EVA_T5_Gw">
+        <di:waypoint x="2290" y="937" />
+        <di:waypoint x="2390" y="937" />
+        <di:waypoint x="2390" y="195" />
+        <di:waypoint x="2415" y="195" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_EVA_Layak_Ya_di" bpmnElement="Flow_EVA_Layak_Ya">
+        <di:waypoint x="2465" y="195" />
+        <di:waypoint x="2590" y="195" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_EVA_Layak_Tidak_di" bpmnElement="Flow_EVA_Layak_Tidak">
+        <di:waypoint x="2440" y="220" />
+        <di:waypoint x="2440" y="405" />
+        <di:waypoint x="2635" y="405" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_EVA_Arah_Filter_di" bpmnElement="Flow_EVA_Arah_Filter">
+        <di:waypoint x="2660" y="430" />
+        <di:waypoint x="2660" y="780" />
+        <di:waypoint x="2000" y="780" />
+        <di:waypoint x="2000" y="655" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_EVA_Arah_Data_di" bpmnElement="Flow_EVA_Arah_Data">
+        <di:waypoint x="2685" y="405" />
+        <di:waypoint x="2810" y="405" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_EVA_Koreksi_T5_di" bpmnElement="Flow_EVA_Koreksi_T5">
+        <di:waypoint x="2880" y="445" />
+        <di:waypoint x="2880" y="1048" />
+        <di:waypoint x="2220" y="1048" />
+        <di:waypoint x="2220" y="977" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_EVA_T6_Gw_di" bpmnElement="Flow_EVA_T6_Gw">
+        <di:waypoint x="2730" y="195" />
+        <di:waypoint x="2855" y="195" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_EVA_Revisi_Ya_di" bpmnElement="Flow_EVA_Revisi_Ya">
+        <di:waypoint x="2880" y="220" />
+        <di:waypoint x="2880" y="762" />
+        <di:waypoint x="1120" y="762" />
+        <di:waypoint x="1120" y="235" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_EVA_Revisi_Tidak_di" bpmnElement="Flow_EVA_Revisi_Tidak">
+        <di:waypoint x="2905" y="195" />
+        <di:waypoint x="3075" y="195" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_EVA_Bagi_Ya_di" bpmnElement="Flow_EVA_Bagi_Ya">
+        <di:waypoint x="3125" y="195" />
+        <di:waypoint x="3250" y="195" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_EVA_Bagi_Tidak_di" bpmnElement="Flow_EVA_Bagi_Tidak">
+        <di:waypoint x="3100" y="220" />
+        <di:waypoint x="3100" y="405" />
+        <di:waypoint x="3522" y="405" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_EVA_T7_End_di" bpmnElement="Flow_EVA_T7_End">
+        <di:waypoint x="3390" y="195" />
+        <di:waypoint x="3497" y="195" />
+        <di:waypoint x="3497" y="405" />
+        <di:waypoint x="3522" y="405" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_EVA_Anggaran_di" bpmnElement="Assoc_EVA_Anggaran">
+        <di:waypoint x="1080" y="235" />
+        <di:waypoint x="1080" y="247" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_EVA_Aktual_di" bpmnElement="Assoc_EVA_Aktual">
+        <di:waypoint x="2180" y="977" />
+        <di:waypoint x="2180" y="989" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_EVA_Opsi_di" bpmnElement="Assoc_EVA_Opsi">
+        <di:waypoint x="1960" y="655" />
+        <di:waypoint x="1960" y="667" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_EVA_Ann_di" bpmnElement="Assoc_EVA_Ann">
+        <di:waypoint x="890" y="155" />
+        <di:waypoint x="870" y="37" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

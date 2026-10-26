@@ -1,0 +1,506 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_TopLevel_CAT" targetNamespace="http://bpmn.io/schema/bpmn">
+  <!-- DIAGRAM TOP-LEVEL 1: Menetapkan dan Memelihara Catatan Keuangan — memakai ulang draf 01_ChartOfAccounts, 02_TransactionEntry, 08_DataImport, 09_ScheduledTransactions sebagai subproses. Jejak: BR-01, BR-02, BR-04; langkah A-C, F. -->
+  <bpmn:collaboration id="Collab_CAT">
+    <bpmn:participant id="Pool_CAT_File" name="Sumber Berkas (eksternal)" processRef="Process_CAT_File" />
+    <bpmn:participant id="Pool_CAT_Main" name="Proses Pencatatan Keuangan" processRef="Process_CAT" />
+    <bpmn:messageFlow id="MF_CAT_File" sourceRef="Throw_CAT_File" targetRef="Sub_CAT_Impor" name="Berkas transaksi yang didukung" />
+  </bpmn:collaboration>
+  <bpmn:process id="Process_CAT_File" name="Sumber Berkas" isExecutable="false">
+    <bpmn:documentation>Bank atau aplikasi lain menyediakan berkas transaksi (mis. QIF/OFX/CSV) yang diunduh pengguna; bukan sinkronisasi bank otomatis.</bpmn:documentation>
+    <bpmn:startEvent id="Start_CAT_File" name="Berkas transaksi tersedia">
+      <bpmn:outgoing>F_Start_CAT_File</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:intermediateThrowEvent id="Throw_CAT_File" name="Menyediakan berkas transaksi">
+      <bpmn:incoming>F_Start_CAT_File</bpmn:incoming>
+      <bpmn:outgoing>F_Throw_CAT_File</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MED_Throw_CAT_File" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:endEvent id="End_CAT_File" name="Berkas diberikan">
+      <bpmn:incoming>F_Throw_CAT_File</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="F_Start_CAT_File" sourceRef="Start_CAT_File" targetRef="Throw_CAT_File" />
+    <bpmn:sequenceFlow id="F_Throw_CAT_File" sourceRef="Throw_CAT_File" targetRef="End_CAT_File" />
+  </bpmn:process>
+  <bpmn:process id="Process_CAT" name="Menetapkan dan Memelihara Catatan Keuangan" isExecutable="false">
+    <bpmn:documentation>Tujuan: bagan akun valid dan transaksi berimbang, dicatat manual, diimpor dari berkas, atau dibuat dari jadwal. Pemicu: kebutuhan akun/transaksi baru, berkas transaksi yang didukung, atau jadwal jatuh tempo. Prasyarat: buku GnuCash terbuka; mata uang/komoditas diketahui; berkas didukung tersedia untuk impor; jadwal sudah ada untuk entri terjadwal. Akhir: transaksi tercatat dan seimbang terlihat di register, atau pembatalan/lewati eksplisit tanpa transaksi. Jejak: 01, 02, 08, 09; BR-01, BR-02, BR-04.</bpmn:documentation>
+    <bpmn:laneSet id="LaneSet_CAT">
+      <bpmn:lane id="Lane_CAT_User" name="Pengguna">
+        <bpmn:flowNodeRef>Start_CAT</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_CAT_T1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_CAT_Akun</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_CAT_T2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_CAT_T3</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_CAT_Siap</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_CAT_Lanjut</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_CAT_Batal</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_CAT_Src</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Sub_CAT_Manual</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Sub_CAT_Impor</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Sub_CAT_Sched</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_CAT_Gabung</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_CAT_T6</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_CAT_Benar</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Sub_CAT_Koreksi</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_CAT_Sukses</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_CAT_GC" name="GnuCash">
+        <bpmn:flowNodeRef>Task_CAT_T4</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_CAT_T5</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Start_CAT" name="Kebutuhan pencatatan muncul">
+      <bpmn:outgoing>Flow_CAT_S_T1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:userTask id="Task_CAT_T1" name="Mengidentifikasi peristiwa dan memeriksa akun yang dibutuhkan">
+      <bpmn:incoming>Flow_CAT_S_T1</bpmn:incoming>
+      <bpmn:outgoing>Flow_CAT_T1_Gw</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="Gw_CAT_Akun" name="Akun sudah tersedia?">
+      <bpmn:incoming>Flow_CAT_T1_Gw</bpmn:incoming>
+      <bpmn:outgoing>Flow_CAT_Gw_Tidak</bpmn:outgoing>
+      <bpmn:outgoing>Flow_CAT_Gw_Ya</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="Task_CAT_T2" name="Membuat akun baru (induk, tipe, komoditas)">
+      <bpmn:documentation>Akun dibuat di bawah induk aset/liabilitas/ekuitas/pendapatan/beban yang sesuai; memakai ulang draf 01_ChartOfAccounts.</bpmn:documentation>
+      <bpmn:incoming>Flow_CAT_Gw_Tidak</bpmn:incoming>
+      <bpmn:outgoing>Flow_CAT_T2_T3</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_CAT_T3" name="Mencatat saldo awal sebagai transaksi saldo awal">
+      <bpmn:documentation>Saldo awal dicatat melalui transaksi saldo awal (opening balance transaction), bukan sebagai properti akun.</bpmn:documentation>
+      <bpmn:incoming>Flow_CAT_T2_T3</bpmn:incoming>
+      <bpmn:outgoing>Flow_CAT_T3_T4</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:serviceTask id="Task_CAT_T4" name="Sistem menyimpan akun dan memperbarui bagan">
+      <bpmn:incoming>Flow_CAT_T3_T4</bpmn:incoming>
+      <bpmn:outgoing>Flow_CAT_T4_Siap</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="Gw_CAT_Siap" name="Akun siap digunakan">
+      <bpmn:incoming>Flow_CAT_T4_Siap</bpmn:incoming>
+      <bpmn:incoming>Flow_CAT_Gw_Ya</bpmn:incoming>
+      <bpmn:outgoing>Flow_CAT_Siap_Lanjut</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:exclusiveGateway id="Gw_CAT_Lanjut" name="Lanjutkan pencatatan?">
+      <bpmn:incoming>Flow_CAT_Siap_Lanjut</bpmn:incoming>
+      <bpmn:outgoing>Flow_CAT_Lanjut_Ya</bpmn:outgoing>
+      <bpmn:outgoing>Flow_CAT_Lanjut_Tidak</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="End_CAT_Batal" name="Dibatalkan (tanpa transaksi)">
+      <bpmn:incoming>Flow_CAT_Lanjut_Tidak</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:exclusiveGateway id="Gw_CAT_Src" name="Sumber pencatatan?">
+      <bpmn:incoming>Flow_CAT_Lanjut_Ya</bpmn:incoming>
+      <bpmn:outgoing>Flow_CAT_Src_Manual</bpmn:outgoing>
+      <bpmn:outgoing>Flow_CAT_Src_Impor</bpmn:outgoing>
+      <bpmn:outgoing>Flow_CAT_Src_Sched</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:subProcess id="Sub_CAT_Manual" name="Subproses: pencatatan transaksi manual">
+      <bpmn:documentation>Memakai ulang draf 02_TransactionEntry: pengguna memilih register, mengisi tanggal, deskripsi, jumlah, dan akun lawan/splits; GnuCash menghitung total splits dan menampilkan selisih; pengguna mengoreksi atau menangani akun selisih secara eksplisit; tidak pernah diam-diam dianggap seimbang. Pembatalan di dalam subproses tidak menghasilkan transaksi.</bpmn:documentation>
+      <bpmn:incoming>Flow_CAT_Src_Manual</bpmn:incoming>
+      <bpmn:outgoing>Flow_CAT_M_Gabung</bpmn:outgoing>
+    </bpmn:subProcess>
+    <bpmn:subProcess id="Sub_CAT_Impor" name="Subproses: impor berkas transaksi">
+      <bpmn:documentation>Memakai ulang draf 08_DataImport: pengguna memilih berkas yang didukung dan akun tujuan; GnuCash mengurai dan mengusulkan calon cocok/kategori; pengguna memeriksa pemetaan akun dan tiap calon (baru/cocok/duplikat), mengoreksi atau melewati; hanya yang disetujui menjadi transaksi. Deteksi duplikat hanya usulan untuk ditinjau, bukan bukti otomatis. Berkas rusak/gagal baca dihentikan tanpa posting.</bpmn:documentation>
+      <bpmn:incoming>Flow_CAT_Src_Impor</bpmn:incoming>
+      <bpmn:outgoing>Flow_CAT_I_Gabung</bpmn:outgoing>
+    </bpmn:subProcess>
+    <bpmn:subProcess id="Sub_CAT_Sched" name="Subproses: transaksi terjadwal jatuh tempo">
+      <bpmn:documentation>Memakai ulang draf 09_ScheduledTransactions: saat aplikasi dibuka, pengguna meninjau jadwal jatuh tempo; GnuCash menampilkan kejadian sesuai pengingat/buat-otomatis/konfirmasi yang dikonfigurasi; pengguna mengonfirmasi, mengubah, menunda, atau melewati; kejadian yang dikonfirmasi dibuat sekali dan jadwal maju; tanpa klaim scheduler berjalan saat aplikasi tertutup.</bpmn:documentation>
+      <bpmn:incoming>Flow_CAT_Src_Sched</bpmn:incoming>
+      <bpmn:outgoing>Flow_CAT_S_Gabung</bpmn:outgoing>
+    </bpmn:subProcess>
+    <bpmn:exclusiveGateway id="Gw_CAT_Gabung" name="Transaksi terkumpul">
+      <bpmn:incoming>Flow_CAT_M_Gabung</bpmn:incoming>
+      <bpmn:incoming>Flow_CAT_I_Gabung</bpmn:incoming>
+      <bpmn:incoming>Flow_CAT_S_Gabung</bpmn:incoming>
+      <bpmn:outgoing>Flow_CAT_Gabung_Save</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="Task_CAT_T5" name="Sistem menyimpan transaksi dan memperbarui saldo">
+      <bpmn:incoming>Flow_CAT_Gabung_Save</bpmn:incoming>
+      <bpmn:incoming>Flow_CAT_Koreksi_Save</bpmn:incoming>
+      <bpmn:outgoing>Flow_CAT_Save_Review</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:userTask id="Task_CAT_T6" name="Meninjau transaksi di register">
+      <bpmn:incoming>Flow_CAT_Save_Review</bpmn:incoming>
+      <bpmn:outgoing>Flow_CAT_Review_Gw</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="Gw_CAT_Benar" name="Transaksi benar dan seimbang?">
+      <bpmn:incoming>Flow_CAT_Review_Gw</bpmn:incoming>
+      <bpmn:outgoing>Flow_CAT_Benar_Ya</bpmn:outgoing>
+      <bpmn:outgoing>Flow_CAT_Benar_Tidak</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:subProcess id="Sub_CAT_Koreksi" name="Subproses: koreksi transaksi yang salah">
+      <bpmn:documentation>Memakai ulang draf 02_TransactionEntry: ubah rincian, void, atau jurnal pembalik terpisah; hapus hanya setelah konfirmasi eksplisit; lalu cek ulang saldo.</bpmn:documentation>
+      <bpmn:incoming>Flow_CAT_Benar_Tidak</bpmn:incoming>
+      <bpmn:outgoing>Flow_CAT_Koreksi_Save</bpmn:outgoing>
+    </bpmn:subProcess>
+    <bpmn:endEvent id="End_CAT_Sukses" name="Transaksi tercatat dan seimbang">
+      <bpmn:incoming>Flow_CAT_Benar_Ya</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:dataObject id="Data_CAT_Bagan" name="Bagan akun" />
+    <bpmn:dataObject id="Data_CAT_Trans" name="Tanggal, deskripsi dan splits" />
+    <bpmn:dataObject id="Data_CAT_Berkas" name="Berkas impor dan keputusan calon" />
+    <bpmn:dataObject id="Data_CAT_Jadwal" name="Jadwal, frekuensi, kejadian berikut" />
+    <bpmn:dataObjectReference id="DataRef_CAT_Bagan" name="Bagan akun" dataObjectRef="Data_CAT_Bagan" />
+    <bpmn:dataObjectReference id="DataRef_CAT_Trans" name="Tanggal, deskripsi dan splits" dataObjectRef="Data_CAT_Trans" />
+    <bpmn:dataObjectReference id="DataRef_CAT_Berkas" name="Berkas impor dan keputusan calon" dataObjectRef="Data_CAT_Berkas" />
+    <bpmn:dataObjectReference id="DataRef_CAT_Jadwal" name="Jadwal, frekuensi, kejadian berikut" dataObjectRef="Data_CAT_Jadwal" />
+    <bpmn:textAnnotation id="Ann_CAT_Saldo">
+      <bpmn:text>Saldo awal dicatat sebagai transaksi saldo awal, bukan properti akun.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:textAnnotation id="Ann_CAT_Impor">
+      <bpmn:text>Impor hanya memproses berkas yang dipilih pengguna.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:sequenceFlow id="Flow_CAT_S_T1" sourceRef="Start_CAT" targetRef="Task_CAT_T1" />
+    <bpmn:sequenceFlow id="Flow_CAT_T1_Gw" sourceRef="Task_CAT_T1" targetRef="Gw_CAT_Akun" />
+    <bpmn:sequenceFlow id="Flow_CAT_Gw_Tidak" sourceRef="Gw_CAT_Akun" targetRef="Task_CAT_T2" name="Tidak" />
+    <bpmn:sequenceFlow id="Flow_CAT_T2_T3" sourceRef="Task_CAT_T2" targetRef="Task_CAT_T3" />
+    <bpmn:sequenceFlow id="Flow_CAT_T3_T4" sourceRef="Task_CAT_T3" targetRef="Task_CAT_T4" />
+    <bpmn:sequenceFlow id="Flow_CAT_T4_Siap" sourceRef="Task_CAT_T4" targetRef="Gw_CAT_Siap" />
+    <bpmn:sequenceFlow id="Flow_CAT_Gw_Ya" sourceRef="Gw_CAT_Akun" targetRef="Gw_CAT_Siap" name="Ya" />
+    <bpmn:sequenceFlow id="Flow_CAT_Siap_Lanjut" sourceRef="Gw_CAT_Siap" targetRef="Gw_CAT_Lanjut" />
+    <bpmn:sequenceFlow id="Flow_CAT_Lanjut_Ya" sourceRef="Gw_CAT_Lanjut" targetRef="Gw_CAT_Src" name="Ya" />
+    <bpmn:sequenceFlow id="Flow_CAT_Lanjut_Tidak" sourceRef="Gw_CAT_Lanjut" targetRef="End_CAT_Batal" name="Tidak" />
+    <bpmn:sequenceFlow id="Flow_CAT_Src_Manual" sourceRef="Gw_CAT_Src" targetRef="Sub_CAT_Manual" name="Manual" />
+    <bpmn:sequenceFlow id="Flow_CAT_Src_Impor" sourceRef="Gw_CAT_Src" targetRef="Sub_CAT_Impor" name="Impor" />
+    <bpmn:sequenceFlow id="Flow_CAT_Src_Sched" sourceRef="Gw_CAT_Src" targetRef="Sub_CAT_Sched" name="Terjadwal" />
+    <bpmn:sequenceFlow id="Flow_CAT_M_Gabung" sourceRef="Sub_CAT_Manual" targetRef="Gw_CAT_Gabung" />
+    <bpmn:sequenceFlow id="Flow_CAT_I_Gabung" sourceRef="Sub_CAT_Impor" targetRef="Gw_CAT_Gabung" />
+    <bpmn:sequenceFlow id="Flow_CAT_S_Gabung" sourceRef="Sub_CAT_Sched" targetRef="Gw_CAT_Gabung" />
+    <bpmn:sequenceFlow id="Flow_CAT_Gabung_Save" sourceRef="Gw_CAT_Gabung" targetRef="Task_CAT_T5" />
+    <bpmn:sequenceFlow id="Flow_CAT_Save_Review" sourceRef="Task_CAT_T5" targetRef="Task_CAT_T6" />
+    <bpmn:sequenceFlow id="Flow_CAT_Review_Gw" sourceRef="Task_CAT_T6" targetRef="Gw_CAT_Benar" />
+    <bpmn:sequenceFlow id="Flow_CAT_Benar_Ya" sourceRef="Gw_CAT_Benar" targetRef="End_CAT_Sukses" name="Ya" />
+    <bpmn:sequenceFlow id="Flow_CAT_Benar_Tidak" sourceRef="Gw_CAT_Benar" targetRef="Sub_CAT_Koreksi" name="Tidak" />
+    <bpmn:sequenceFlow id="Flow_CAT_Koreksi_Save" sourceRef="Sub_CAT_Koreksi" targetRef="Task_CAT_T5" />
+    <bpmn:association id="Assoc_CAT_Bagan" sourceRef="Task_CAT_T2" targetRef="DataRef_CAT_Bagan" />
+    <bpmn:association id="Assoc_CAT_Trans" sourceRef="Task_CAT_T6" targetRef="DataRef_CAT_Trans" />
+    <bpmn:association id="Assoc_CAT_Berkas" sourceRef="Sub_CAT_Impor" targetRef="DataRef_CAT_Berkas" />
+    <bpmn:association id="Assoc_CAT_Jadwal" sourceRef="Sub_CAT_Sched" targetRef="DataRef_CAT_Jadwal" />
+    <bpmn:association id="Assoc_CAT_Ann1" sourceRef="Task_CAT_T3" targetRef="Ann_CAT_Saldo" />
+    <bpmn:association id="Assoc_CAT_Ann2" sourceRef="Sub_CAT_Impor" targetRef="Ann_CAT_Impor" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collab_CAT">
+      <bpmndi:BPMNShape id="Pool_CAT_File_di" bpmnElement="Pool_CAT_File" isHorizontal="true">
+        <dc:Bounds x="120" y="0" width="3460" height="250" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_CAT_File_di" bpmnElement="Start_CAT_File">
+        <dc:Bounds x="2077" y="107" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2035" y="147" width="120" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Throw_CAT_File_di" bpmnElement="Throw_CAT_File">
+        <dc:Bounds x="2297" y="107" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2255" y="147" width="120" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_CAT_File_di" bpmnElement="End_CAT_File">
+        <dc:Bounds x="2517" y="107" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2475" y="147" width="120" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_CAT_User_di" bpmnElement="Lane_CAT_User" isHorizontal="true">
+        <dc:Bounds x="150" y="280" width="3430" height="968" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_CAT_GC_di" bpmnElement="Lane_CAT_GC" isHorizontal="true">
+        <dc:Bounds x="150" y="1248" width="3430" height="250" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Pool_CAT_Main_di" bpmnElement="Pool_CAT_Main" isHorizontal="true">
+        <dc:Bounds x="120" y="280" width="3460" height="1218" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_CAT_di" bpmnElement="Start_CAT">
+        <dc:Bounds x="222" y="457" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="180" y="497" width="120" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_CAT_T1_di" bpmnElement="Task_CAT_T1">
+        <dc:Bounds x="390" y="435" width="140" height="80" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="396" y="441" width="128" height="58" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_CAT_Akun_di" bpmnElement="Gw_CAT_Akun" isMarkerVisible="true">
+        <dc:Bounds x="655" y="450" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="620" y="406" width="120" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_CAT_T2_di" bpmnElement="Task_CAT_T2">
+        <dc:Bounds x="830" y="435" width="140" height="80" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="836" y="441" width="128" height="58" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_CAT_T3_di" bpmnElement="Task_CAT_T3">
+        <dc:Bounds x="1050" y="435" width="140" height="80" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1056" y="441" width="128" height="58" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_CAT_T4_di" bpmnElement="Task_CAT_T4">
+        <dc:Bounds x="1270" y="1333" width="140" height="80" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1276" y="1339" width="128" height="58" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_CAT_Siap_di" bpmnElement="Gw_CAT_Siap" isMarkerVisible="true">
+        <dc:Bounds x="1535" y="660" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1500" y="616" width="120" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_CAT_Lanjut_di" bpmnElement="Gw_CAT_Lanjut" isMarkerVisible="true">
+        <dc:Bounds x="1755" y="660" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1720" y="616" width="120" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_CAT_Batal_di" bpmnElement="End_CAT_Batal">
+        <dc:Bounds x="1982" y="877" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1940" y="917" width="120" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_CAT_Src_di" bpmnElement="Gw_CAT_Src" isMarkerVisible="true">
+        <dc:Bounds x="1975" y="660" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1940" y="616" width="120" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Sub_CAT_Manual_di" bpmnElement="Sub_CAT_Manual" isExpanded="false">
+        <dc:Bounds x="2150" y="645" width="140" height="80" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2156" y="651" width="128" height="58" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Sub_CAT_Impor_di" bpmnElement="Sub_CAT_Impor" isExpanded="false">
+        <dc:Bounds x="2150" y="855" width="140" height="80" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2156" y="861" width="128" height="58" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Sub_CAT_Sched_di" bpmnElement="Sub_CAT_Sched" isExpanded="false">
+        <dc:Bounds x="2150" y="1065" width="140" height="80" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2156" y="1071" width="128" height="58" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_CAT_Gabung_di" bpmnElement="Gw_CAT_Gabung" isMarkerVisible="true">
+        <dc:Bounds x="2415" y="660" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2380" y="616" width="120" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_CAT_T5_di" bpmnElement="Task_CAT_T5">
+        <dc:Bounds x="2590" y="1333" width="140" height="80" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2596" y="1339" width="128" height="58" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_CAT_T6_di" bpmnElement="Task_CAT_T6">
+        <dc:Bounds x="2810" y="435" width="140" height="80" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2816" y="441" width="128" height="58" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_CAT_Benar_di" bpmnElement="Gw_CAT_Benar" isMarkerVisible="true">
+        <dc:Bounds x="3075" y="450" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3040" y="406" width="120" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Sub_CAT_Koreksi_di" bpmnElement="Sub_CAT_Koreksi" isExpanded="false">
+        <dc:Bounds x="3250" y="645" width="140" height="80" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3256" y="651" width="128" height="58" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_CAT_Sukses_di" bpmnElement="End_CAT_Sukses">
+        <dc:Bounds x="3302" y="457" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3260" y="497" width="120" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataRef_CAT_Bagan_di" bpmnElement="DataRef_CAT_Bagan">
+        <dc:Bounds x="842" y="527" width="36" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="800" y="581" width="120" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataRef_CAT_Trans_di" bpmnElement="DataRef_CAT_Trans">
+        <dc:Bounds x="2822" y="527" width="36" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2780" y="581" width="120" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataRef_CAT_Berkas_di" bpmnElement="DataRef_CAT_Berkas">
+        <dc:Bounds x="2162" y="947" width="36" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2120" y="1001" width="120" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataRef_CAT_Jadwal_di" bpmnElement="DataRef_CAT_Jadwal">
+        <dc:Bounds x="2162" y="1157" width="36" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2120" y="1211" width="120" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Ann_CAT_Saldo_di" bpmnElement="Ann_CAT_Saldo">
+        <dc:Bounds x="940" y="292" width="150" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Ann_CAT_Impor_di" bpmnElement="Ann_CAT_Impor">
+        <dc:Bounds x="2330" y="965" width="130" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="F_Start_CAT_File_di" bpmnElement="F_Start_CAT_File">
+        <di:waypoint x="2113" y="125" />
+        <di:waypoint x="2297" y="125" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_Throw_CAT_File_di" bpmnElement="F_Throw_CAT_File">
+        <di:waypoint x="2333" y="125" />
+        <di:waypoint x="2517" y="125" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_CAT_S_T1_di" bpmnElement="Flow_CAT_S_T1">
+        <di:waypoint x="258" y="475" />
+        <di:waypoint x="390" y="475" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_CAT_T1_Gw_di" bpmnElement="Flow_CAT_T1_Gw">
+        <di:waypoint x="530" y="475" />
+        <di:waypoint x="655" y="475" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_CAT_Gw_Tidak_di" bpmnElement="Flow_CAT_Gw_Tidak">
+        <di:waypoint x="705" y="475" />
+        <di:waypoint x="830" y="475" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_CAT_T2_T3_di" bpmnElement="Flow_CAT_T2_T3">
+        <di:waypoint x="970" y="475" />
+        <di:waypoint x="1050" y="475" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_CAT_T3_T4_di" bpmnElement="Flow_CAT_T3_T4">
+        <di:waypoint x="1190" y="475" />
+        <di:waypoint x="1245" y="475" />
+        <di:waypoint x="1245" y="1373" />
+        <di:waypoint x="1270" y="1373" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_CAT_T4_Siap_di" bpmnElement="Flow_CAT_T4_Siap">
+        <di:waypoint x="1410" y="1373" />
+        <di:waypoint x="1510" y="1373" />
+        <di:waypoint x="1510" y="685" />
+        <di:waypoint x="1535" y="685" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_CAT_Gw_Ya_di" bpmnElement="Flow_CAT_Gw_Ya">
+        <di:waypoint x="680" y="500" />
+        <di:waypoint x="680" y="685" />
+        <di:waypoint x="1535" y="685" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_CAT_Siap_Lanjut_di" bpmnElement="Flow_CAT_Siap_Lanjut">
+        <di:waypoint x="1585" y="685" />
+        <di:waypoint x="1755" y="685" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_CAT_Lanjut_Ya_di" bpmnElement="Flow_CAT_Lanjut_Ya">
+        <di:waypoint x="1805" y="685" />
+        <di:waypoint x="1975" y="685" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_CAT_Lanjut_Tidak_di" bpmnElement="Flow_CAT_Lanjut_Tidak">
+        <di:waypoint x="1780" y="710" />
+        <di:waypoint x="1780" y="895" />
+        <di:waypoint x="1982" y="895" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_CAT_Src_Manual_di" bpmnElement="Flow_CAT_Src_Manual">
+        <di:waypoint x="2025" y="685" />
+        <di:waypoint x="2150" y="685" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_CAT_Src_Impor_di" bpmnElement="Flow_CAT_Src_Impor">
+        <di:waypoint x="2025" y="685" />
+        <di:waypoint x="2125" y="685" />
+        <di:waypoint x="2125" y="895" />
+        <di:waypoint x="2150" y="895" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_CAT_Src_Sched_di" bpmnElement="Flow_CAT_Src_Sched">
+        <di:waypoint x="2025" y="685" />
+        <di:waypoint x="2125" y="685" />
+        <di:waypoint x="2125" y="1105" />
+        <di:waypoint x="2150" y="1105" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_CAT_M_Gabung_di" bpmnElement="Flow_CAT_M_Gabung">
+        <di:waypoint x="2290" y="685" />
+        <di:waypoint x="2415" y="685" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_CAT_I_Gabung_di" bpmnElement="Flow_CAT_I_Gabung">
+        <di:waypoint x="2290" y="895" />
+        <di:waypoint x="2390" y="895" />
+        <di:waypoint x="2390" y="685" />
+        <di:waypoint x="2415" y="685" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_CAT_S_Gabung_di" bpmnElement="Flow_CAT_S_Gabung">
+        <di:waypoint x="2290" y="1105" />
+        <di:waypoint x="2390" y="1105" />
+        <di:waypoint x="2390" y="685" />
+        <di:waypoint x="2415" y="685" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_CAT_Gabung_Save_di" bpmnElement="Flow_CAT_Gabung_Save">
+        <di:waypoint x="2440" y="710" />
+        <di:waypoint x="2440" y="1373" />
+        <di:waypoint x="2590" y="1373" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_CAT_Save_Review_di" bpmnElement="Flow_CAT_Save_Review">
+        <di:waypoint x="2730" y="1373" />
+        <di:waypoint x="2785" y="1373" />
+        <di:waypoint x="2785" y="475" />
+        <di:waypoint x="2810" y="475" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_CAT_Review_Gw_di" bpmnElement="Flow_CAT_Review_Gw">
+        <di:waypoint x="2950" y="475" />
+        <di:waypoint x="3075" y="475" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_CAT_Benar_Ya_di" bpmnElement="Flow_CAT_Benar_Ya">
+        <di:waypoint x="3125" y="475" />
+        <di:waypoint x="3302" y="475" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_CAT_Benar_Tidak_di" bpmnElement="Flow_CAT_Benar_Tidak">
+        <di:waypoint x="3100" y="500" />
+        <di:waypoint x="3100" y="685" />
+        <di:waypoint x="3250" y="685" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_CAT_Koreksi_Save_di" bpmnElement="Flow_CAT_Koreksi_Save">
+        <di:waypoint x="3320" y="725" />
+        <di:waypoint x="3320" y="1484" />
+        <di:waypoint x="2660" y="1484" />
+        <di:waypoint x="2660" y="1413" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_CAT_Bagan_di" bpmnElement="Assoc_CAT_Bagan">
+        <di:waypoint x="860" y="515" />
+        <di:waypoint x="860" y="527" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_CAT_Trans_di" bpmnElement="Assoc_CAT_Trans">
+        <di:waypoint x="2840" y="515" />
+        <di:waypoint x="2840" y="527" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_CAT_Berkas_di" bpmnElement="Assoc_CAT_Berkas">
+        <di:waypoint x="2180" y="935" />
+        <di:waypoint x="2180" y="947" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_CAT_Jadwal_di" bpmnElement="Assoc_CAT_Jadwal">
+        <di:waypoint x="2180" y="1145" />
+        <di:waypoint x="2180" y="1157" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_CAT_Ann1_di" bpmnElement="Assoc_CAT_Ann1">
+        <di:waypoint x="1110" y="435" />
+        <di:waypoint x="1090" y="317" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_CAT_Ann2_di" bpmnElement="Assoc_CAT_Ann2">
+        <di:waypoint x="2290" y="925" />
+        <di:waypoint x="2330" y="995" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MF_CAT_File_di" bpmnElement="MF_CAT_File">
+        <di:waypoint x="2315" y="143" />
+        <di:waypoint x="2315" y="895" />
+        <di:waypoint x="2290" y="895" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

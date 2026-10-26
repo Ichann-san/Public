@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_TopLevel_BSN" targetNamespace="http://bpmn.io/schema/bpmn">
+  <!-- DIAGRAM TOP-LEVEL 4: Mengelola Piutang dan Hutang Usaha — memakai ulang draf 04_Invoicing_AR dan 05_Bills_AP sebagai subproses. Jejak: BR-06; langkah H. -->
+  <bpmn:collaboration id="Collab_BSN">
+    <bpmn:participant id="Pool_BSN_Cust" name="Pelanggan" processRef="Process_BSN_Cust" />
+    <bpmn:participant id="Pool_BSN_Vend" name="Vendor" processRef="Process_BSN_Vend" />
+    <bpmn:participant id="Pool_BSN_Main" name="Proses Piutang dan Hutang Usaha" processRef="Process_BSN" />
+    <bpmn:messageFlow id="MF_BSN_Inv" sourceRef="Sub_BSN_AR" targetRef="Start_BSN_Cust" name="Faktur diserahkan (cetak atau antar manual)" />
+    <bpmn:messageFlow id="MF_BSN_Pay" sourceRef="Sub_BSN_AP" targetRef="Start_BSN_Vend" name="Transfer atau bukti pembayaran (eksternal)" />
+  </bpmn:collaboration>
+  <bpmn:process id="Process_BSN_Cust" name="Pelanggan" isExecutable="false">
+    <bpmn:documentation>Pelanggan menerima faktur di luar GnuCash (cetak atau antar manual).</bpmn:documentation>
+    <bpmn:startEvent id="Start_BSN_Cust" name="Faktur diterima">
+      <bpmn:outgoing>F_Start_BSN_Cust</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MED_Start_BSN_Cust" />
+    </bpmn:startEvent>
+    <bpmn:endEvent id="End_BSN_Cust" name="Faktur diterima pelanggan">
+      <bpmn:incoming>F_Start_BSN_Cust</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="F_Start_BSN_Cust" sourceRef="Start_BSN_Cust" targetRef="End_BSN_Cust" />
+  </bpmn:process>
+  <bpmn:process id="Process_BSN_Vend" name="Vendor" isExecutable="false">
+    <bpmn:documentation>Vendor menerima transfer atau bukti pembayaran di luar GnuCash.</bpmn:documentation>
+    <bpmn:startEvent id="Start_BSN_Vend" name="Pembayaran diterima">
+      <bpmn:outgoing>F_Start_BSN_Vend</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MED_Start_BSN_Vend" />
+    </bpmn:startEvent>
+    <bpmn:endEvent id="End_BSN_Vend" name="Pembayaran diterima vendor">
+      <bpmn:incoming>F_Start_BSN_Vend</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="F_Start_BSN_Vend" sourceRef="Start_BSN_Vend" targetRef="End_BSN_Vend" />
+  </bpmn:process>
+  <bpmn:process id="Process_BSN" name="Mengelola Piutang dan Hutang Usaha" isExecutable="false">
+    <bpmn:documentation>Tujuan: pemilik usaha atau akuntan mencatat piutang pelanggan dan hutang vendor, termasuk pelunasan sebagian; ekstensi usaha kecil, bukan prasyarat diagram personal. Pemicu: penjualan yang ditagih atau tagihan vendor diterima; kemudian pembayaran diterima atau dibayar. Prasyarat: buku usaha, data pelanggan/vendor, dan akun A/R atau A/P serta pendapatan/beban yang sesuai. Akhir: faktur atau tagihan terposting tetap terbuka dengan sisa benar, atau lunas penuh setelah alokasi pembayaran. Draf tidak menimbulkan piutang/hutang; posting yang menimbulkan. Pembayaran tercatat di GnuCash berbeda dengan transfer bank atau penerimaan di dunia nyata. Jejak: 04, 05; BR-06.</bpmn:documentation>
+    <bpmn:laneSet id="LaneSet_BSN">
+      <bpmn:lane id="Lane_BSN_User" name="Pengguna">
+        <bpmn:flowNodeRef>Start_BSN</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_BSN_Lanjut</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_BSN_Batal</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_BSN_Jenis</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Sub_BSN_AR</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Sub_BSN_AP</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gw_BSN_Gabung</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_BSN_Sukses</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_BSN_GC" name="GnuCash">
+        <bpmn:flowNodeRef>Task_BSN_T1</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Start_BSN" name="Penjualan, tagihan, atau pembayaran tiba">
+      <bpmn:outgoing>Flow_BSN_S_Gw</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:exclusiveGateway id="Gw_BSN_Lanjut" name="Diproses?">
+      <bpmn:incoming>Flow_BSN_S_Gw</bpmn:incoming>
+      <bpmn:outgoing>Flow_BSN_Lanjut_Ya</bpmn:outgoing>
+      <bpmn:outgoing>Flow_BSN_Lanjut_Tidak</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="End_BSN_Batal" name="Dibatalkan (tanpa posting)">
+      <bpmn:incoming>Flow_BSN_Lanjut_Tidak</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:exclusiveGateway id="Gw_BSN_Jenis" name="Jenis pekerjaan?">
+      <bpmn:incoming>Flow_BSN_Lanjut_Ya</bpmn:incoming>
+      <bpmn:outgoing>Flow_BSN_Jenis_AR</bpmn:outgoing>
+      <bpmn:outgoing>Flow_BSN_Jenis_AP</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:subProcess id="Sub_BSN_AR" name="Subproses: piutang usaha (A/R)">
+      <bpmn:documentation>Memakai ulang draf 04_Invoicing_AR: pengguna memilih pelanggan, membuat item, tanggal, jumlah, dan ketentuan pajak; GnuCash menghitung total; pengguna memeriksa lalu memposting faktur secara eksplisit ke A/R (draf tidak menimbulkan piutang); faktur diserahkan manual di luar posting; pembayaran pelanggan dicatat ke akun aset dan dialokasikan ke faktur; GnuCash mengurangi sisa; sisa nol berarti lunas, sebagian berarti terbuka. Koreksi sebelum posting mengubah draf; setelah posting memakai alur unpost atau koreksi yang didukung.</bpmn:documentation>
+      <bpmn:incoming>Flow_BSN_Jenis_AR</bpmn:incoming>
+      <bpmn:outgoing>Flow_BSN_AR_Gabung</bpmn:outgoing>
+    </bpmn:subProcess>
+    <bpmn:subProcess id="Sub_BSN_AP" name="Subproses: hutang usaha (A/P)">
+      <bpmn:documentation>Memakai ulang draf 05_Bills_AP: pengguna memeriksa tagihan vendor, mengisi item, jatuh tempo, jumlah, dan pajak; GnuCash menghitung total; pengguna memeriksa lalu memposting tagihan secara eksplisit ke A/P (draf tidak menimbulkan hutang); pembayaran vendor dicatat dari akun aset dan dialokasikan ke tagihan; GnuCash mengurangi sisa; transfer dana nyata melalui bank adalah tugas pengguna terpisah; pembayaran tercatat bukan bukti dana terkirim atau diterima.</bpmn:documentation>
+      <bpmn:incoming>Flow_BSN_Jenis_AP</bpmn:incoming>
+      <bpmn:outgoing>Flow_BSN_AP_Gabung</bpmn:outgoing>
+    </bpmn:subProcess>
+    <bpmn:exclusiveGateway id="Gw_BSN_Gabung" name="Pekerjaan terkumpul">
+      <bpmn:incoming>Flow_BSN_AR_Gabung</bpmn:incoming>
+      <bpmn:incoming>Flow_BSN_AP_Gabung</bpmn:incoming>
+      <bpmn:outgoing>Flow_BSN_Gabung_T1</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="Task_BSN_T1" name="Sistem memperbarui saldo A/R atau A/P">
+      <bpmn:incoming>Flow_BSN_Gabung_T1</bpmn:incoming>
+      <bpmn:outgoing>Flow_BSN_T1_End</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="End_BSN_Sukses" name="Faktur atau tagihan terposting dan pembayaran teralokasi">
+      <bpmn:incoming>Flow_BSN_T1_End</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:dataObject id="Data_BSN_AR" name="Akun A/R, faktur dan alokasi" />
+    <bpmn:dataObject id="Data_BSN_AP" name="Akun A/P, tagihan dan alokasi" />
+    <bpmn:dataObject id="Data_BSN_CV" name="Pelanggan, vendor dan rincian" />
+    <bpmn:dataObjectReference id="DataRef_BSN_AR" name="Akun A/R, faktur dan alokasi" dataObjectRef="Data_BSN_AR" />
+    <bpmn:dataObjectReference id="DataRef_BSN_AP" name="Akun A/P, tagihan dan alokasi" dataObjectRef="Data_BSN_AP" />
+    <bpmn:dataObjectReference id="DataRef_BSN_CV" name="Pelanggan, vendor dan rincian" dataObjectRef="Data_BSN_CV" />
+    <bpmn:textAnnotation id="Ann_BSN_Post">
+      <bpmn:text>Draf tidak menimbulkan piutang atau hutang; pembayaran tercatat berbeda dengan transfer bank.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:sequenceFlow id="Flow_BSN_S_Gw" sourceRef="Start_BSN" targetRef="Gw_BSN_Lanjut" />
+    <bpmn:sequenceFlow id="Flow_BSN_Lanjut_Ya" sourceRef="Gw_BSN_Lanjut" targetRef="Gw_BSN_Jenis" name="Ya" />
+    <bpmn:sequenceFlow id="Flow_BSN_Lanjut_Tidak" sourceRef="Gw_BSN_Lanjut" targetRef="End_BSN_Batal" name="Tidak" />
+    <bpmn:sequenceFlow id="Flow_BSN_Jenis_AR" sourceRef="Gw_BSN_Jenis" targetRef="Sub_BSN_AR" name="Piutang (A/R)" />
+    <bpmn:sequenceFlow id="Flow_BSN_Jenis_AP" sourceRef="Gw_BSN_Jenis" targetRef="Sub_BSN_AP" name="Hutang (A/P)" />
+    <bpmn:sequenceFlow id="Flow_BSN_AR_Gabung" sourceRef="Sub_BSN_AR" targetRef="Gw_BSN_Gabung" />
+    <bpmn:sequenceFlow id="Flow_BSN_AP_Gabung" sourceRef="Sub_BSN_AP" targetRef="Gw_BSN_Gabung" />
+    <bpmn:sequenceFlow id="Flow_BSN_Gabung_T1" sourceRef="Gw_BSN_Gabung" targetRef="Task_BSN_T1" />
+    <bpmn:sequenceFlow id="Flow_BSN_T1_End" sourceRef="Task_BSN_T1" targetRef="End_BSN_Sukses" />
+    <bpmn:association id="Assoc_BSN_AR" sourceRef="Sub_BSN_AR" targetRef="DataRef_BSN_AR" />
+    <bpmn:association id="Assoc_BSN_AP" sourceRef="Sub_BSN_AP" targetRef="DataRef_BSN_AP" />
+    <bpmn:association id="Assoc_BSN_CV" sourceRef="Sub_BSN_AR" targetRef="DataRef_BSN_CV" />
+    <bpmn:association id="Assoc_BSN_Ann" sourceRef="Gw_BSN_Lanjut" targetRef="Ann_BSN_Post" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collab_BSN">
+      <bpmndi:BPMNShape id="Pool_BSN_Cust_di" bpmnElement="Pool_BSN_Cust" isHorizontal="true">
+        <dc:Bounds x="120" y="0" width="1700" height="250" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_BSN_Cust_di" bpmnElement="Start_BSN_Cust">
+        <dc:Bounds x="882" y="107" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="840" y="147" width="120" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_BSN_Cust_di" bpmnElement="End_BSN_Cust">
+        <dc:Bounds x="1102" y="107" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1060" y="147" width="120" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Pool_BSN_Vend_di" bpmnElement="Pool_BSN_Vend" isHorizontal="true">
+        <dc:Bounds x="120" y="280" width="1700" height="250" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_BSN_Vend_di" bpmnElement="Start_BSN_Vend">
+        <dc:Bounds x="977" y="387" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="935" y="427" width="120" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_BSN_Vend_di" bpmnElement="End_BSN_Vend">
+        <dc:Bounds x="1197" y="387" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1155" y="427" width="120" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_BSN_User_di" bpmnElement="Lane_BSN_User" isHorizontal="true">
+        <dc:Bounds x="150" y="560" width="1670" height="530" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_BSN_GC_di" bpmnElement="Lane_BSN_GC" isHorizontal="true">
+        <dc:Bounds x="150" y="1090" width="1670" height="250" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Pool_BSN_Main_di" bpmnElement="Pool_BSN_Main" isHorizontal="true">
+        <dc:Bounds x="120" y="560" width="1700" height="780" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_BSN_di" bpmnElement="Start_BSN">
+        <dc:Bounds x="222" y="737" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="180" y="777" width="120" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_BSN_Lanjut_di" bpmnElement="Gw_BSN_Lanjut" isMarkerVisible="true">
+        <dc:Bounds x="435" y="730" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="400" y="686" width="120" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_BSN_Batal_di" bpmnElement="End_BSN_Batal">
+        <dc:Bounds x="662" y="947" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="620" y="987" width="120" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_BSN_Jenis_di" bpmnElement="Gw_BSN_Jenis" isMarkerVisible="true">
+        <dc:Bounds x="655" y="730" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="620" y="686" width="120" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Sub_BSN_AR_di" bpmnElement="Sub_BSN_AR" isExpanded="false">
+        <dc:Bounds x="830" y="715" width="140" height="80" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="836" y="721" width="128" height="58" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Sub_BSN_AP_di" bpmnElement="Sub_BSN_AP" isExpanded="false">
+        <dc:Bounds x="830" y="925" width="140" height="80" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="836" y="931" width="128" height="58" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_BSN_Gabung_di" bpmnElement="Gw_BSN_Gabung" isMarkerVisible="true">
+        <dc:Bounds x="1095" y="730" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1060" y="686" width="120" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_BSN_T1_di" bpmnElement="Task_BSN_T1">
+        <dc:Bounds x="1270" y="1175" width="140" height="80" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1276" y="1181" width="128" height="58" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_BSN_Sukses_di" bpmnElement="End_BSN_Sukses">
+        <dc:Bounds x="1542" y="737" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1500" y="777" width="120" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataRef_BSN_AR_di" bpmnElement="DataRef_BSN_AR">
+        <dc:Bounds x="842" y="807" width="36" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="800" y="861" width="120" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataRef_BSN_AP_di" bpmnElement="DataRef_BSN_AP">
+        <dc:Bounds x="842" y="1017" width="36" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="800" y="1071" width="120" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataRef_BSN_CV_di" bpmnElement="DataRef_BSN_CV">
+        <dc:Bounds x="892" y="807" width="36" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="850" y="861" width="120" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Ann_BSN_Post_di" bpmnElement="Ann_BSN_Post">
+        <dc:Bounds x="280" y="572" width="150" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="F_Start_BSN_Cust_di" bpmnElement="F_Start_BSN_Cust">
+        <di:waypoint x="918" y="125" />
+        <di:waypoint x="1102" y="125" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_Start_BSN_Vend_di" bpmnElement="F_Start_BSN_Vend">
+        <di:waypoint x="1013" y="405" />
+        <di:waypoint x="1197" y="405" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_BSN_S_Gw_di" bpmnElement="Flow_BSN_S_Gw">
+        <di:waypoint x="258" y="755" />
+        <di:waypoint x="435" y="755" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_BSN_Lanjut_Ya_di" bpmnElement="Flow_BSN_Lanjut_Ya">
+        <di:waypoint x="485" y="755" />
+        <di:waypoint x="655" y="755" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_BSN_Lanjut_Tidak_di" bpmnElement="Flow_BSN_Lanjut_Tidak">
+        <di:waypoint x="460" y="780" />
+        <di:waypoint x="460" y="965" />
+        <di:waypoint x="662" y="965" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_BSN_Jenis_AR_di" bpmnElement="Flow_BSN_Jenis_AR">
+        <di:waypoint x="705" y="755" />
+        <di:waypoint x="830" y="755" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_BSN_Jenis_AP_di" bpmnElement="Flow_BSN_Jenis_AP">
+        <di:waypoint x="705" y="755" />
+        <di:waypoint x="805" y="755" />
+        <di:waypoint x="805" y="965" />
+        <di:waypoint x="830" y="965" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_BSN_AR_Gabung_di" bpmnElement="Flow_BSN_AR_Gabung">
+        <di:waypoint x="970" y="755" />
+        <di:waypoint x="1095" y="755" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_BSN_AP_Gabung_di" bpmnElement="Flow_BSN_AP_Gabung">
+        <di:waypoint x="970" y="965" />
+        <di:waypoint x="1070" y="965" />
+        <di:waypoint x="1070" y="755" />
+        <di:waypoint x="1095" y="755" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_BSN_Gabung_T1_di" bpmnElement="Flow_BSN_Gabung_T1">
+        <di:waypoint x="1120" y="780" />
+        <di:waypoint x="1120" y="1215" />
+        <di:waypoint x="1270" y="1215" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_BSN_T1_End_di" bpmnElement="Flow_BSN_T1_End">
+        <di:waypoint x="1410" y="1215" />
+        <di:waypoint x="1517" y="1215" />
+        <di:waypoint x="1517" y="755" />
+        <di:waypoint x="1542" y="755" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_BSN_AR_di" bpmnElement="Assoc_BSN_AR">
+        <di:waypoint x="860" y="795" />
+        <di:waypoint x="860" y="807" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_BSN_AP_di" bpmnElement="Assoc_BSN_AP">
+        <di:waypoint x="860" y="1005" />
+        <di:waypoint x="860" y="1017" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_BSN_CV_di" bpmnElement="Assoc_BSN_CV">
+        <di:waypoint x="910" y="795" />
+        <di:waypoint x="910" y="807" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_BSN_Ann_di" bpmnElement="Assoc_BSN_Ann">
+        <di:waypoint x="450" y="730" />
+        <di:waypoint x="430" y="597" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MF_BSN_Inv_di" bpmnElement="MF_BSN_Inv">
+        <di:waypoint x="900" y="715" />
+        <di:waypoint x="900" y="143" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MF_BSN_Pay_di" bpmnElement="MF_BSN_Pay">
+        <di:waypoint x="970" y="965" />
+        <di:waypoint x="995" y="965" />
+        <di:waypoint x="995" y="423" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
