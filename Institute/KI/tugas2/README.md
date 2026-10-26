@@ -1,14 +1,339 @@
 # Assignment 2: Manual AES and Key Distribution
 
-This individual coursework project implements the approved C++17 command-line design: a KDC, Alice, and Bob at three distinct IP addresses. Alice obtains a session key through the five-step scenario supplied with the assignment. Alice and Bob then communicate directly in both directions.
+An individual Information Security coursework project in C++17. A Key Distribution Center (KDC), Alice, and Bob use three distinct IPv4 addresses. The KDC distributes a session key through the supplied five-step scenario. Alice and Bob then communicate directly in both directions using manually implemented AES-128.
 
-## Approved design
+All project documentation and reports belong in this README. Other files contain implementation, build support, and executable tests. The project was developed with AI assistance; the submitted work and demonstration must accurately reflect the student's own understanding and contribution.
 
-- One executable provides `kdc`, `alice`, and `bob` roles.
-- AES-128 encryption, decryption, key expansion, CBC, padding, and the KDC protocol are implemented manually.
-- Long-term keys are entered locally, never hardcoded or sent over the network. Key changes require a fresh session.
-- Keys and user messages use ASCII. Ciphertext uses hexadecimal in terminal output and network payloads.
-- The intended demonstration uses two physical devices and a bridged VM, each with its own LAN IP.
-- Documentation, design decisions, verification results, and demonstration instructions belong only in this README. Other files are implementation, build support, and tests.
+## Requirements and implementation
 
-Implementation and verification are in progress.
+| Assignment requirement | Implementation |
+| --- | --- |
+| Individual submission | No invented group members or co-author metadata |
+| Three entities and IP addresses | `kdc`, `alice`, and `bob` roles; explicit local binding and distinct-address validation |
+| Five-step key distribution | Separate Alice response and opaque Bob ticket, followed by challenge-response |
+| AES after step 5 | Chat remains blocked until authentication completes |
+| Both sender and receiver | Independent receive thread; either peer can send without waiting for a reply |
+| Manual AES and KDC | AES arithmetic, S-box generation, key schedule, inverse operations, CBC, padding, and protocol logic are local C++ code |
+| ASCII keys and plaintext; Hex ciphertext | Strict ASCII validation, printable 16-character keys, hexadecimal encrypted envelopes |
+| Change keys without restart | `/key` updates local long-term keys; KDC has matching update commands; Alice uses `/rekey` for a fresh session key |
+| Wireshark demonstration | Capture and display filters, expected fields, and checklist below |
+| Understandable source | Separate AES, protocol, networking, and CLI layers; no long explanatory comments in source |
+
+## Architecture and approved design
+
+Use two physical devices and a VM with a **bridged network adapter**. For example, place the KDC on device 1, Alice on device 2, and Bob in a VM on device 1. The guest must have a distinct LAN address reachable from device 2. A NAT-only guest address or three terminals on one IP does not demonstrate the required three-address communication.
+
+Replace these illustrative addresses with actual addresses from your network:
+
+| Entity | Example IP | TCP role | Local secret |
+| --- | --- | --- | --- |
+| KDC | `192.168.1.10` | Listens on port `9000` | `Ka` and `Kb` |
+| Alice | `192.168.1.20` | Contacts KDC, then Bob | `Ka` |
+| Bob | `192.168.1.30` | Listens on port `9001` | `Kb` |
+
+Alice explicitly binds outgoing connections to her configured IP. KDC accepts requests from the configured Alice address; Bob accepts connections from the configured Alice address. IP checks support the demo topology; they are not cryptographic authentication. Actual local and remote socket addresses appear in handshake logs.
+
+The KDC is a trusted party. It generates and therefore knows the session key. Chat traffic goes directly between Alice and Bob; the KDC is not a relay. Bob is the TCP listener, but both peers are senders and receivers. Alice remains the initiator of key distribution as shown in the supplied scenario.
+
+## Five-step scenario
+
+`||` means field concatenation. `E(K, X)` means encrypt serialized ASCII fields `X` with AES-128-CBC, PKCS#7 padding, and a fresh IV under key `K`.
+
+| Step | Direction | Scenario payload | Receiver action |
+| --- | --- | --- | --- |
+| 1 | Alice to KDC | `ID_A || ID_B || N1` | Validate known identities and nonce representation |
+| 2 | KDC to Alice | `E(Ka, Ks || ID_A || ID_B || N1) || E(Kb, Ks || ID_A)` | Alice decrypts only her portion and checks both identities and `N1` |
+| 3 | Alice to Bob | `E(Kb, Ks || ID_A)` | Alice forwards Bob's ticket unchanged; Bob decrypts it with `Kb` |
+| 4 | Bob to Alice | `E(Ks, N2)` | Alice decrypts Bob's challenge using `Ks` |
+| 5 | Alice to Bob | `E(Ks, f(N2))` | Bob verifies `f(N2)`, completing authentication |
+
+`Ka` is shared locally between Alice and KDC. `Kb` is shared locally between Bob and KDC. Provision matching values at their prompts before connecting. The program does not distribute these initial long-term keys over the network. `Ks` is a fresh session key generated by KDC for each request. Alice cannot decrypt Bob's ticket because she does not know `Kb`.
+
+`N1` and `N2` are independent random unsigned 64-bit integers serialized as decimal ASCII. `f(N2) = (N2 - 1) mod 2^64`; for `N2 = 0`, the answer is `18446744073709551615`.
+
+Encrypted records include small type labels (`session`, `ticket`, `challenge`, and `response`) to reject messages used in the wrong context. These labels are serialization metadata around the scenario fields.
+
+After Bob verifies step 5, he sends an encrypted `READY` acknowledgment. This is an application acknowledgment after the five prescribed steps, not an additional key-distribution step. Alice enables chat only after verifying it. Bob enables chat after validating step 5. Sending plaintext before then produces `Chat blocked: complete steps 1-5 first`.
+
+## Build and test
+
+The application has no third-party C++ dependencies. Python 3 is used only by the integration test. Build separately for Windows and Linux; a Linux VM needs the Linux binary.
+
+### Windows PowerShell
+
+Use a MinGW-w64 `g++` compiler in `PATH`. The development machine has MSYS2 UCRT64 at `C:\msys64\ucrt64\bin`.
+
+```powershell
+cd C:\Users\maula\Documents\Code\Public\Institute\KI\tugas2
+.\build.ps1
+.\build\ki_chat.exe --help
+```
+
+Build and run all tests:
+
+```powershell
+.\build.ps1 -Test
+```
+
+The script links the GCC and pthread runtimes statically. The executable still uses normal Windows system libraries for sockets, console handling, and randomness. Copy `build\ki_chat.exe` to another compatible Windows machine for the demo; never copy a file containing real keys into the repository.
+
+### Linux / Ubuntu / WSL
+
+Install `g++`, `make`, and, for integration tests, `python3` through your system package manager if absent.
+
+```bash
+cd /path/to/tugas2
+make
+./build/ki_chat --help
+make test
+```
+
+From Ubuntu WSL on this development machine:
+
+```bash
+cd /mnt/c/Users/maula/Documents/Code/Public/Institute/KI/tugas2
+make test
+```
+
+Native Windows is simpler for the physical-device demo than adding WSL networking to the topology. Use an independently bridged VM for Bob.
+
+## Run the three entities
+
+Start KDC and Bob before Alice initiates a session. On Linux, replace `.\build\ki_chat.exe` with `./build/ki_chat`. Use the actual three IP addresses consistently on all machines.
+
+KDC, device 1:
+
+```powershell
+.\build\ki_chat.exe kdc --bind 192.168.1.10 --alice 192.168.1.20 --bob 192.168.1.30 --port 9000
+```
+
+Enter `Ka`, then `Kb`. Wait for `KDC READY`.
+
+Bob, bridged VM:
+
+```powershell
+.\build\ki_chat.exe bob --bind 192.168.1.30 --kdc 192.168.1.10 --peer 192.168.1.20 --port 9001
+```
+
+Enter the same `Kb` entered at KDC. Wait for `BOB LISTENING`.
+
+Alice, device 2:
+
+```powershell
+.\build\ki_chat.exe alice --bind 192.168.1.20 --kdc 192.168.1.10 --peer 192.168.1.30 --port 9001 --kdc-port 9000
+```
+
+Enter the same `Ka` entered at KDC, then type:
+
+```text
+/connect
+Hello Bob
+```
+
+Once both peers print `SESSION ESTABLISHED`, Bob can type `Hello Alice`. Either peer can send multiple messages without waiting for a reply. Messages arrive while the other peer is waiting for keyboard input.
+
+For a reproducible practice run, `AliceMasterKey16` and `BobMasterKey0016` are valid example keys, each exactly 16 printable ASCII characters. They are test examples, not application defaults; the program always asks for keys. Key entry is hidden on a supported terminal. Keys and decrypted session keys are not printed in logs.
+
+If the LAN is not reachable, inspect the guest's IP, bridged adapter, local firewall, and any Wi-Fi client-isolation setting. Permit inbound TCP `9000` on KDC and `9001` on Bob according to local policy. Different ports on the same address do not satisfy the three-IP requirement. The program rejects wildcard, multicast, broadcast, and duplicate role addresses.
+
+## Interactive commands and key changes
+
+| Command | Where | Effect |
+| --- | --- | --- |
+| `/connect` | Alice | Obtain a fresh KDC session and perform steps 1-5 |
+| `/rekey` | Alice | Close the current session and repeat all five steps with a new `Ks` |
+| `/disconnect` | Either peer | Close the connection; Bob returns to listening |
+| `/key` | Disconnected peer | Prompt for a replacement local long-term key |
+| `/key Alice` | KDC | Prompt for replacement `Ka` |
+| `/key Bob` | KDC | Prompt for replacement `Kb` |
+| `/status` | Any role | Show state without displaying keys |
+| `/send TEXT` | Either peer | Send text literally, including text beginning with `/` |
+| `/help` | Any role | Show usage and commands |
+| `/quit` | Any role | Exit cleanly |
+
+To change `Ka` without restarting:
+
+1. Alice types `/disconnect`. Wait until Bob reports `SESSION CLOSED`.
+2. At KDC, type `/key Alice` and enter a new 16-character key.
+3. At Alice, type `/key` and enter the same replacement.
+4. Alice types `/connect`. The new handshake uses the new `Ka` and a new `Ks`.
+
+For `Kb`, disconnect first, update `/key Bob` at KDC and `/key` at Bob, then reconnect from Alice. A peer refuses `/key` while a session or handshake is active. A mismatched replacement causes the next handshake to fail. KDC key updates affect future tickets; they do not revoke a session already established with an old session key. For a session-key-only change, use `/rekey`; no manual distribution of `Ks` is needed.
+
+## AES implementation
+
+`src/aes.cpp` implements AES-128 from the specification, without OpenSSL, Crypto++, platform AES services, or copied encryption-library code:
+
+1. Represent each 16-byte block as a 4-by-4 state in column-major order: `state[4 * column + row]`.
+2. Implement multiplication in `GF(2^8)` using XOR, shifts, and reduction by `0x1b` when the high bit overflows. This corresponds to the AES irreducible polynomial `x^8 + x^4 + x^3 + x + 1`.
+3. Generate the S-box by computing the multiplicative inverse (`x^254`, with zero mapped to zero), then applying the affine transformation. Build the inverse S-box from that permutation.
+4. Expand the 16-byte key into 176 bytes: 11 round keys. Every fourth word uses `RotWord`, `SubWord`, and `Rcon`.
+5. Encrypt with initial `AddRoundKey`, nine full rounds of `SubBytes`, `ShiftRows`, `MixColumns`, and `AddRoundKey`, then a final round without `MixColumns`.
+6. Decrypt with the reverse round order and inverse transformations. XOR with a round key is its own inverse.
+
+CBC computes `C_i = AES_K(P_i XOR C_(i-1))`, with `C_0 = IV`. Decryption computes `P_i = AES_K^-1(C_i) XOR C_(i-1)`. PKCS#7 adds between 1 and 16 bytes; every added byte equals the number of added bytes. Even an exact block-length plaintext receives a full padding block. The receiver validates every padding byte.
+
+The AES primitive operates on bytes, allowing published binary test vectors. The application interface restricts long-term keys to exactly 16 printable ASCII characters (codes 32-126), preserving surrounding spaces. Chat accepts ASCII codes 0-127, up to 4096 bytes per message; terminal input normally supplies one line. Empty messages and multi-block messages are supported. Nonprintable received characters are escaped in terminal logs.
+
+KDC samples each session-key character uniformly from the same 95 printable ASCII characters using rejection sampling. IVs are unrestricted random 16-byte values. Randomness comes from `BCryptGenRandom` on Windows and `/dev/urandom` on Linux. These OS services provide randomness only; AES, CBC, padding, and KDC logic are manual.
+
+## TCP framing and ASCII/Hex format
+
+TCP is a byte stream, so one `send` is not necessarily one packet or one `recv`. Every application message uses:
+
+```text
+[4-byte unsigned payload length, big-endian][ASCII payload]
+```
+
+The ASCII payload is a sequence of length-prefixed fields:
+
+```text
+<decimal byte count>:<field><decimal byte count>:<field>...
+```
+
+For example, fields `1`, `Alice`, `Bob`, and nonce `123` serialize as:
+
+```text
+1:15:Alice3:Bob3:123
+```
+
+An encrypted envelope is:
+
+```text
+<32 Hex characters for IV>:<Hex ciphertext, a multiple of 32 characters>
+```
+
+The IV is public. The actual ciphertext is the portion after the colon. Encrypted plaintext is itself an ASCII field sequence. Length prefixes preserve spaces and delimiter characters without ambiguity. There is no JSON or serialization dependency.
+
+| Outer message fields | Meaning |
+| --- | --- |
+| `1`, `Alice`, `Bob`, `N1` | Step 1 request; these fields are intentionally public |
+| `2`, Alice envelope, Bob ticket envelope | Step 2 response; two separately encrypted portions |
+| `3`, unchanged Bob ticket envelope | Step 3 forwarding |
+| `4`, challenge envelope | Step 4 |
+| `5`, response envelope | Step 5 |
+| `READY`, acknowledgment envelope | Confirmation that Bob accepted step 5 |
+| `CHAT`, message envelope | Encrypted fields `message`, sequence number, ASCII text |
+
+Each chat direction starts with sequence number 1 after every handshake. Unexpected numbers close the session. Counters reject simple duplicates within a session but do not replace a cryptographic integrity check.
+
+The frame limit is 65536 bytes, with at most 16 fields. Partial reads and writes are handled in loops. Invalid lengths, truncated frames, invalid Hex, unexpected message types, incorrect identity/nonce fields, and invalid padding are rejected. Handshake socket operations have a five-second timeout; connection establishment also has a five-second bound. Established chat has no receive inactivity timeout; sends retain a five-second timeout. Closing a session shuts down its socket to unblock the receive thread.
+
+## Wireshark preparation and demonstration
+
+Install Wireshark and its capture driver before the demo. During development, Wireshark was not found in the default Windows installation folder; installation and capture on the actual demo network remain to be checked.
+
+Capture on Alice's physical Ethernet/Wi-Fi interface carrying her configured LAN IP. Alice participates in both KDC and peer connections, making her device a useful capture location. The correct adapter is the one showing these addresses and ports when `/connect` runs. A bridged guest capture interface and a WSL virtual interface may differ from the host's physical adapter.
+
+Optional capture filter, set **before** starting capture:
+
+```text
+tcp port 9000 or tcp port 9001
+```
+
+Display filter, applied during or after capture:
+
+```text
+tcp.port == 9000 || tcp.port == 9001
+```
+
+To focus on the example endpoints:
+
+```text
+(ip.addr == 192.168.1.10 || ip.addr == 192.168.1.20 || ip.addr == 192.168.1.30) && (tcp.port == 9000 || tcp.port == 9001)
+```
+
+For Alice/Bob payloads only:
+
+```text
+tcp.port == 9001 && tcp.len > 0
+```
+
+Demo procedure:
+
+1. Confirm the three actual IP addresses and both listening services. Start capture before Alice types `/connect`.
+2. Show the Alice/KDC stream: public IDs and `N1` in step 1, followed by two encrypted envelopes in step 2.
+3. Show the Alice/Bob stream: ticket, challenge, response, encrypted acknowledgment, and later chat.
+4. Right-click a packet and select **Follow > TCP Stream**. Use an ASCII view for the serialized fields. The four-byte binary frame headers may appear as nonprintable characters.
+5. Match a terminal `CIPHERTEXT=` value with the Hex text in the reassembled stream. The value before the envelope colon is the IV.
+6. Send a distinctive phrase from Alice and a different phrase from Bob. Show both packet directions and the recovered ASCII text in the receiving terminals. The phrases and keys must not appear as plaintext network payloads.
+7. Use `/rekey`, then send the same phrase again. A fresh session key and fresh IV produce a different ciphertext.
+8. Optionally quit KDC after authentication and exchange another message in each direction. Existing chat continues directly.
+
+TCP segmentation can split a message across packets or combine multiple messages into one segment. Explain the application frame, not a claimed one-packet-per-step mapping. Save a `.pcapng` locally if useful; capture files are ignored by Git.
+
+## Verification report
+
+Verification is split between algorithm tests and running three real processes. Automated integration uses `127.0.0.1` for KDC, `127.0.0.2` for Alice, and `127.0.0.3` for Bob. These are distinct loopback IPs on one computer and **do not replace the required cross-device LAN demonstration**.
+
+The unit executable checks:
+
+- AES encryption and decryption against the FIPS 197 vector (`001122...eeff` under `000102...0f`, producing `69c4e0d86a7b0430d8cdb78070b4c55a`) and an all-zero vector.
+- All four published AES-128-CBC blocks from SP 800-38A; the application adds an extra PKCS#7 block after that reference plaintext.
+- Empty input and padding boundaries at 1, 15, 16, 17, 31, 32, and 4096 bytes; invalid padding and partial blocks.
+- Strict ASCII key lengths, Hex parsing, field framing, malformed lengths, and nonce overflow/wrap behavior.
+- Matching distributed session keys, unchanged tickets, fresh session-key generation, incorrect long-term keys, incorrect identities, incorrect `N1`/`N2`, and out-of-order message types.
+
+The Python standard-library integration harness starts KDC, Alice, and Bob, with recording TCP relays that preserve bytes and source IP expectations. It checks:
+
+- Rejection of chat before authentication at both peers.
+- Malformed, truncated, and oversized network frames, followed by successful service recovery.
+- The complete five-step exchange and independent sends in both directions, including after an idle period longer than the handshake timeout.
+- Empty messages, slash-prefixed messages, delimiter preservation, and a 4096-byte message.
+- Rejection of non-ASCII and oversized messages; refusal to change a peer key while connected.
+- Wrong `Ka`, wrong `Kb`, corrected keys, `/rekey`, and rotation of both long-term keys without restarting any role.
+- Continued direct chat after KDC exits and clean disconnection by either peer.
+- Captured wire data: sample plaintexts and long-term keys absent; encrypted fields have valid IV/Hex lengths; Bob's ticket is unchanged; chat IVs differ; exactly 12 expected chat frames are delivered.
+
+Development verification on 26 October 2026:
+
+| Environment | Result |
+| --- | --- |
+| Windows, MinGW-w64 C++17 | Warning-clean build; 91 unit checks passed; integration passed with 41 captured frames |
+| Ubuntu WSL, GNU C++17 | Warning-clean build; 91 unit checks passed; integration passed with 41 captured frames |
+| Two devices plus bridged VM | Pending: requires the actual devices, IP addresses, firewall settings, and Wireshark capture |
+
+## File map
+
+| File | Responsibility |
+| --- | --- |
+| `include/aes.hpp`, `src/aes.cpp` | Manual AES-128, CBC, PKCS#7, ASCII key validation, Hex conversion |
+| `include/protocol.hpp`, `src/protocol.cpp` | Randomness, field serialization, encrypted envelopes, KDC messages, nonce validation |
+| `include/network.hpp`, `src/network.cpp` | Windows/POSIX sockets, binding, framing, partial I/O, timeouts, shutdown |
+| `src/main.cpp` | Role selection, local secret prompts, KDC registry, handshake lifecycle, interactive full-duplex chat |
+| `tests/unit.cpp` | Published vectors and negative protocol tests |
+| `tests/integration.py` | Three-process socket tests and in-memory wire inspection |
+| `build.ps1`, `Makefile` | Native Windows and Linux builds |
+
+## Understanding the demonstration
+
+Practice explaining the code without reading this README or source comments during assessment. Be able to identify:
+
+- Why KDC needs both long-term keys and why Alice forwards a ticket she cannot decrypt.
+- Why Alice checks `N1`, how Bob uses `N2`, and why possessing a ticket is not enough without knowing `Ks`.
+- How bytes enter the column-major AES state, why the last round omits `MixColumns`, and how decryption reverses encryption.
+- Why CBC needs an IV, why repeating plaintext can produce different ciphertext, and why padding is necessary.
+- Why TCP needs application framing and why sending/receiving concurrently requires coordinated socket ownership.
+- How `/rekey` differs from changing `Ka` or `Kb`, and why the latter must be updated locally at two entities.
+
+## Limits of the supplied scenario
+
+This is an educational implementation of the requested scenario, not a production messaging protocol. CBC provides confidentiality but no authenticated integrity; valid padding is not proof that a ciphertext was untampered. The challenge-response exchange and sequence checks do not turn CBC chat into authenticated encryption.
+
+The supplied ticket contains no timestamp or expiration. The implementation does not provide durable ticket replay prevention. Someone who obtains an old session key and its ticket may impersonate Alice by answering a later challenge. `N1` binds Alice's KDC response to her request; it does not give Bob a ticket lifetime. Compromising a long-term key also exposes recorded sessions encrypted under that key; there is no forward secrecy.
+
+Printable ASCII restricts a random 16-character key to `95^16` possibilities, approximately 105 bits of entropy, even though the cipher is AES-128. Human-chosen keys can be weaker. The manual AES implementation uses table lookups, is not designed for constant-time execution, and does not guarantee secret erasure from memory. Established chat connections are kept in memory; there is no offline message storage or reconnect recovery.
+
+Potential future extensions, outside the approved baseline, include a manually implemented message authentication code and ticket lifetime/replay tracking. They require separate design and tests and are not claimed here.
+
+## Submission
+
+Submit the GitHub repository link through the [provided Google Form](https://forms.gle/eS1wGZJM6yjHScKa7) by **Tuesday, 27 October 2026, 23:59 WIB (UTC+7)**. This is an individual submission. Use the actual contributor identity in Git history; do not add fictitious group members. Demo scheduling will be announced by the instructor.
+
+Before submission, check that source and tests are committed, the repository link is accessible to the assessor, and no keys, binaries, or packet captures are accidentally tracked. Google Form submission and the physical-device demo have not been performed by the development tools.
+
+## References
+
+- [NIST FIPS 197, updated 2023](https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.197-upd1.pdf): AES specification, key expansion, inverse operations, and AES-128 examples.
+- [NIST SP 800-38A](https://nvlpubs.nist.gov/nistpubs/legacy/sp/nistspecialpublication800-38a.pdf): CBC definition, unpredictable IV requirements, and AES-CBC reference vectors.
+- The five-message Key Distribution Scenario image and assignment instructions supplied by the instructor through the task brief.
