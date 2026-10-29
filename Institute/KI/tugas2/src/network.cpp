@@ -101,6 +101,7 @@ Socket::~Socket() {
 }
 
 void Socket::timeout(unsigned milliseconds) {
+    receive_timeout_ = milliseconds;
 #ifdef _WIN32
     DWORD value = milliseconds;
 #else
@@ -119,6 +120,7 @@ void Socket::timeout(unsigned milliseconds) {
 }
 
 void Socket::stop() {
+    stopped_ = true;
 #ifdef _WIN32
     shutdown(native(handle_), SD_BOTH);
 #else
@@ -206,6 +208,8 @@ void Socket::send_bytes(const std::uint8_t* data, std::size_t size) {
 bool Socket::receive_bytes(std::uint8_t* data, std::size_t size) {
     std::size_t received = 0;
     while (received < size) {
+        if (stopped_) throw std::runtime_error("Connection closed locally");
+        if (!receive_timeout_ && !ready(native(handle_), 200, false)) continue;
         const auto result = ::recv(native(handle_), reinterpret_cast<char*>(data + received),
                                    static_cast<int>(size - received), 0);
         if (result < 0 && interrupted()) continue;

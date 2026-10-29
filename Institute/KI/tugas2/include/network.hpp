@@ -2,6 +2,7 @@
 
 #include "protocol.hpp"
 
+#include <atomic>
 #include <cstdint>
 #include <memory>
 #include <mutex>
@@ -33,6 +34,8 @@ public:
     std::shared_ptr<Socket> accept(unsigned wait_ms);
 private:
     std::uintptr_t handle_;
+    unsigned receive_timeout_ = 0;
+    std::atomic<bool> stopped_{false};
     std::mutex send_mutex_;
     void send_bytes(const std::uint8_t* data, std::size_t size);
     bool receive_bytes(std::uint8_t* data, std::size_t size);

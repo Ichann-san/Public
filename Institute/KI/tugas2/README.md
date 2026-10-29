@@ -21,15 +21,15 @@ All project documentation and reports belong in this README. Other files contain
 
 ## Architecture and approved design
 
-Use two physical devices and a VM with a **bridged network adapter**. For example, place the KDC on device 1, Alice on device 2, and Bob in a VM on device 1. The guest must have a distinct LAN address reachable from device 2. A NAT-only guest address or three terminals on one IP does not demonstrate the required three-address communication.
+The demonstration runs on one laptop as three separate machines: the Windows host and two Ubuntu 24.04 virtual machines in VMware Workstation. All three share the VMware `VMnet8` virtual network, so every entity has its own IPv4 address and every packet crosses a real network interface. Three terminals on one IP address do not demonstrate the required three-address communication.
 
-Replace these illustrative addresses with actual addresses from your network:
+| Entity | Machine | IP | TCP role | Local secret |
+| --- | --- | --- | --- | --- |
+| KDC | VM `ki-kdc` | `192.168.178.10` | Listens on port `9000` | `Ka` and `Kb` |
+| Alice | Windows host | `192.168.178.1` | Contacts KDC, then Bob | `Ka` |
+| Bob | VM `ki-bob` | `192.168.178.20` | Listens on port `9001` | `Kb` |
 
-| Entity | Example IP | TCP role | Local secret |
-| --- | --- | --- | --- |
-| KDC | `192.168.1.10` | Listens on port `9000` | `Ka` and `Kb` |
-| Alice | `192.168.1.20` | Contacts KDC, then Bob | `Ka` |
-| Bob | `192.168.1.30` | Listens on port `9001` | `Kb` |
+`192.168.178.1` is the Windows address on the `VMware Network Adapter VMnet8` interface. The VM addresses are static and outside the VMware DHCP range (`.128`-`.254`). Alice is an endpoint of both TCP connections, so one Wireshark capture on the host's `VMnet8` adapter shows the whole exchange. The same commands work across physical devices on a LAN when the addresses are replaced.
 
 Alice explicitly binds outgoing connections to her configured IP. KDC accepts requests from the configured Alice address; Bob accepts connections from the configured Alice address. IP checks support the demo topology; they are not cryptographic authentication. Actual local and remote socket addresses appear in handshake logs.
 
@@ -95,32 +95,53 @@ cd /mnt/c/Users/maula/Documents/Code/Public/Institute/KI/tugas2
 make test
 ```
 
-Native Windows is simpler for the physical-device demo than adding WSL networking to the topology. Use an independently bridged VM for Bob.
+The VMs run a statically linked Linux binary built in WSL, so they need no compiler:
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Wpedantic -Werror -O2 -pthread -Iinclude -static src/aes.cpp src/protocol.cpp src/network.cpp src/main.cpp -o build/ki_chat
+```
+
+WSL itself is not one of the three demo machines. WSL 2 reaches other networks through NAT, so peers would see the Windows address instead of a distinct WSL address.
 
 ## Run the three entities
 
-Start KDC and Bob before Alice initiates a session. On Linux, replace `.\build\ki_chat.exe` with `./build/ki_chat`. Use the actual three IP addresses consistently on all machines.
+### Start the virtual machines
 
-KDC, device 1:
+The VMs `ki-kdc` and `ki-bob` are in `C:\Users\maula\Documents\Virtual Machines`. Each has user `ki`, console password `kidemo`, and the Linux binary at `~/ki_chat`. Start both from VMware Workstation, or from PowerShell:
 
 ```powershell
-.\build\ki_chat.exe kdc --bind 192.168.1.10 --alice 192.168.1.20 --bob 192.168.1.30 --port 9000
+& 'C:\Program Files (x86)\VMware\VMware Workstation\vmrun.exe' -T ws start "C:\Users\maula\Documents\Virtual Machines\ki-kdc\ki-kdc.vmx"
+& 'C:\Program Files (x86)\VMware\VMware Workstation\vmrun.exe' -T ws start "C:\Users\maula\Documents\Virtual Machines\ki-bob\ki-bob.vmx"
+```
+
+Log in on each VM console, or open two Windows terminals with `ssh ki-kdc` and `ssh ki-bob`. Confirm the addresses with `ip -4 addr` on each VM and `ipconfig` on Windows.
+
+After changing the source, rebuild the static binary in WSL and copy it with `scp build/ki_chat ki-kdc:ki_chat` and `scp build/ki_chat ki-bob:ki_chat`. Shut the VMs down with `sudo poweroff` inside each guest or with `vmrun -T ws stop <vmx path>`.
+
+### Start the three entities
+
+Start KDC and Bob before Alice initiates a session.
+
+KDC, VM `ki-kdc`:
+
+```bash
+./ki_chat kdc --bind 192.168.178.10 --alice 192.168.178.1 --bob 192.168.178.20 --port 9000
 ```
 
 Enter `Ka`, then `Kb`. Wait for `KDC READY`.
 
-Bob, bridged VM:
+Bob, VM `ki-bob`:
 
-```powershell
-.\build\ki_chat.exe bob --bind 192.168.1.30 --kdc 192.168.1.10 --peer 192.168.1.20 --port 9001
+```bash
+./ki_chat bob --bind 192.168.178.20 --kdc 192.168.178.10 --peer 192.168.178.1 --port 9001
 ```
 
 Enter the same `Kb` entered at KDC. Wait for `BOB LISTENING`.
 
-Alice, device 2:
+Alice, Windows host, in `tugas2`:
 
 ```powershell
-.\build\ki_chat.exe alice --bind 192.168.1.20 --kdc 192.168.1.10 --peer 192.168.1.30 --port 9001 --kdc-port 9000
+.\build\ki_chat.exe alice --bind 192.168.178.1 --kdc 192.168.178.10 --peer 192.168.178.20 --port 9001 --kdc-port 9000
 ```
 
 Enter the same `Ka` entered at KDC, then type:
@@ -132,9 +153,9 @@ Hello Bob
 
 Once both peers print `SESSION ESTABLISHED`, Bob can type `Hello Alice`. Either peer can send multiple messages without waiting for a reply. Messages arrive while the other peer is waiting for keyboard input.
 
-For a reproducible practice run, `AliceMasterKey16` and `BobMasterKey0016` are valid example keys, each exactly 16 printable ASCII characters. They are test examples, not application defaults; the program always asks for keys. Key entry is hidden on a supported terminal. Keys and decrypted session keys are not printed in logs.
+For a reproducible practice run, `AliceMasterKey16` and `BobMasterKey0016` are valid example keys, each exactly 16 printable ASCII characters. They are test examples, not application defaults; the program always asks for keys. Key entry is hidden on a supported terminal, including the VMware console and an interactive `ssh ki-kdc` session. Input lines ending in a carriage return are accepted. Keys and decrypted session keys are not printed in logs.
 
-If the LAN is not reachable, inspect the guest's IP, bridged adapter, local firewall, and any Wi-Fi client-isolation setting. Permit inbound TCP `9000` on KDC and `9001` on Bob according to local policy. Different ports on the same address do not satisfy the three-IP requirement. The program rejects wildcard, multicast, broadcast, and duplicate role addresses.
+If a connection fails, check that both VMs are running, that `ping 192.168.178.10` and `ping 192.168.178.20` succeed from Windows, and that the VM network adapters are set to NAT (`VMnet8`). Alice needs no inbound Windows firewall rule because she only opens outgoing connections. The Ubuntu VMs have no firewall enabled. Different ports on the same address do not satisfy the three-IP requirement. The program rejects wildcard, multicast, broadcast, and duplicate role addresses.
 
 ## Interactive commands and key changes
 
@@ -217,13 +238,11 @@ The IV is public. The actual ciphertext is the portion after the colon. Encrypte
 
 Each chat direction starts with sequence number 1 after every handshake. Unexpected numbers close the session. Counters reject simple duplicates within a session but do not replace a cryptographic integrity check.
 
-The frame limit is 65536 bytes, with at most 16 fields. Partial reads and writes are handled in loops. Invalid lengths, truncated frames, invalid Hex, unexpected message types, incorrect identity/nonce fields, and invalid padding are rejected. Handshake socket operations have a five-second timeout; connection establishment also has a five-second bound. Established chat has no receive inactivity timeout; sends retain a five-second timeout. Closing a session shuts down its socket to unblock the receive thread.
+The frame limit is 65536 bytes, with at most 16 fields. Partial reads and writes are handled in loops. Invalid lengths, truncated frames, invalid Hex, unexpected message types, incorrect identity/nonce fields, and invalid padding are rejected. Handshake socket operations have a five-second timeout; connection establishment also has a five-second bound. Established chat has no receive inactivity timeout; sends retain a five-second timeout. Closing a session shuts down its socket and sets a local stop flag. The established-chat receive loop checks that flag every 200 ms, because on Windows `shutdown` does not wake a `recv` blocked in another thread. A peer that closes the session locally prints `DISCONNECTED`; the other peer prints `SESSION CLOSED`.
 
 ## Wireshark preparation and demonstration
 
-Install Wireshark and its capture driver before the demo. During development, Wireshark was not found in the default Windows installation folder; installation and capture on the actual demo network remain to be checked.
-
-Capture on Alice's physical Ethernet/Wi-Fi interface carrying her configured LAN IP. Alice participates in both KDC and peer connections, making her device a useful capture location. The correct adapter is the one showing these addresses and ports when `/connect` runs. A bridged guest capture interface and a WSL virtual interface may differ from the host's physical adapter.
+Wireshark runs on the Windows host and captures through Npcap. Select the **VMware Network Adapter VMnet8** interface; it carries Alice's address `192.168.178.1`. Alice participates in both the KDC and the peer connection, so this one interface shows all five steps and the chat. Do not select Wi-Fi or the WSL adapter.
 
 Optional capture filter, set **before** starting capture:
 
@@ -237,10 +256,16 @@ Display filter, applied during or after capture:
 tcp.port == 9000 || tcp.port == 9001
 ```
 
-To focus on the example endpoints:
+To focus on the three demo endpoints:
 
 ```text
-(ip.addr == 192.168.1.10 || ip.addr == 192.168.1.20 || ip.addr == 192.168.1.30) && (tcp.port == 9000 || tcp.port == 9001)
+(ip.addr == 192.168.178.10 || ip.addr == 192.168.178.1 || ip.addr == 192.168.178.20) && (tcp.port == 9000 || tcp.port == 9001)
+```
+
+For Alice/KDC payloads only:
+
+```text
+tcp.port == 9000 && tcp.len > 0
 ```
 
 For Alice/Bob payloads only:
@@ -264,7 +289,7 @@ TCP segmentation can split a message across packets or combine multiple messages
 
 ## Verification report
 
-Verification is split between algorithm tests and running three real processes. Automated integration uses `127.0.0.1` for KDC, `127.0.0.2` for Alice, and `127.0.0.3` for Bob. These are distinct loopback IPs on one computer and **do not replace the required cross-device LAN demonstration**.
+Verification is split between algorithm tests and running three real processes. Automated integration uses `127.0.0.1` for KDC, `127.0.0.2` for Alice, and `127.0.0.3` for Bob. These are distinct loopback IPs on one computer and **do not replace the three-machine VMnet8 demonstration**.
 
 The unit executable checks:
 
@@ -283,15 +308,17 @@ The Python standard-library integration harness starts KDC, Alice, and Bob, with
 - Rejection of non-ASCII and oversized messages; refusal to change a peer key while connected.
 - Wrong `Ka`, wrong `Kb`, corrected keys, `/rekey`, and rotation of both long-term keys without restarting any role.
 - Continued direct chat after KDC exits and clean disconnection by either peer.
+- Keys and commands typed with a trailing carriage return.
+- Alice exits promptly on `/quit` even when Bob never observes the connection close.
 - Captured wire data: sample plaintexts and long-term keys absent; encrypted fields have valid IV/Hex lengths; Bob's ticket is unchanged; chat IVs differ; exactly 12 expected chat frames are delivered.
 
-Development verification on 26 October 2026:
+Development verification on 29 October 2026:
 
 | Environment | Result |
 | --- | --- |
 | Windows, MinGW-w64 C++17 | Warning-clean build; 91 unit checks passed; integration passed with 41 captured frames |
 | Ubuntu WSL, GNU C++17 | Warning-clean build; 91 unit checks passed; integration passed with 41 captured frames |
-| Two devices plus bridged VM | Pending: requires the actual devices, IP addresses, firewall settings, and Wireshark capture |
+| Windows host plus VMs `ki-kdc` and `ki-bob` on VMnet8 | Environment prepared: static VM addresses, Linux binary installed, Wireshark 4.6.9 capturing on VMnet8. The live demonstration is performed and assessed separately and is not recorded here |
 
 ## File map
 
@@ -328,9 +355,11 @@ Potential future extensions, outside the approved baseline, include a manually i
 
 ## Submission
 
-Submit the GitHub repository link through the [provided Google Form](https://forms.gle/eS1wGZJM6yjHScKa7) by **Tuesday, 27 October 2026, 23:59 WIB (UTC+7)**. This is an individual submission. Use the actual contributor identity in Git history; do not add fictitious group members. Demo scheduling will be announced by the instructor.
+The GitHub repository link was due through the [provided Google Form](https://forms.gle/eS1wGZJM6yjHScKa7) by **Tuesday, 27 October 2026, 23:59 WIB (UTC+7)**. This is an individual submission. The Git history uses the actual contributor identity, with no fictitious group members.
 
-Before submission, check that source and tests are committed, the repository link is accessible to the assessor, and no keys, binaries, or packet captures are accidentally tracked. Google Form submission and the physical-device demo have not been performed by the development tools.
+The live demonstration and grading are scheduled for the evening of **Thursday, 29 October 2026**, using the single-laptop topology above. The student performs the demonstration. The development tools did not submit the form and did not perform the assessed demonstration.
+
+Before the demo, check that the repository link is accessible to the assessor and that no keys, binaries, or packet captures are tracked.
 
 ## References
 

@@ -38,6 +38,12 @@ std::string visible(const std::string& text) {
     return result;
 }
 
+bool read_line(std::string& line) {
+    if (!std::getline(std::cin, line)) return false;
+    if (!line.empty() && line.back() == '\r') line.pop_back();
+    return true;
+}
+
 Block read_key(const std::string& prompt) {
     for (;;) {
         log(prompt + " (16 printable ASCII characters; surrounding spaces count):");
@@ -56,7 +62,7 @@ Block read_key(const std::string& prompt) {
         }
 #endif
         std::string value;
-        const bool available = static_cast<bool>(std::getline(std::cin, value));
+        const bool available = read_line(value);
 #ifdef _WIN32
         if (terminal) SetConsoleMode(input, mode);
 #else
@@ -160,7 +166,7 @@ void run_kdc(const Options& options) {
     log("Commands: /key Alice, /key Bob, /status, /help, /quit");
     try {
         std::string line;
-        while (std::getline(std::cin, line)) {
+        while (read_line(line)) {
             if (line == "/quit") break;
             if (line == "/key Alice" || line == "/key Bob") {
                 const Block replacement = read_key("Enter replacement long-term key");
@@ -200,7 +206,7 @@ public:
         log("Commands: /connect, /rekey (Alice), /key, /disconnect, /status, /help, /quit");
         try {
             std::string line;
-            while (std::getline(std::cin, line)) {
+            while (read_line(line)) {
                 if (line == "/quit") break;
                 try { command(line); }
                 catch (const std::exception& error) { log(std::string("ERROR: ") + error.what()); }
@@ -260,11 +266,13 @@ private:
             reason = error.what();
         }
         channel->socket->stop();
+        bool current = false;
         {
             const std::lock_guard<std::mutex> lock(state_mutex_);
-            if (active_ == channel) active_.reset();
+            current = active_ == channel;
+            if (current) active_.reset();
         }
-        if (running_ && !reason.empty()) log("SESSION CLOSED: " + reason);
+        if (running_ && current && !reason.empty()) log("SESSION CLOSED: " + reason);
     }
 
     std::shared_ptr<Channel> install(const std::shared_ptr<Socket>& socket, const Block& session_key) {

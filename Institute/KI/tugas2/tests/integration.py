@@ -73,6 +73,7 @@ class Relay:
         self.listener.settimeout(0.1)
         self.port = self.listener.getsockname()[1]
         self.running = True
+        self.hold = False
         self.connections = []
         self.workers = []
         self.captures = []
@@ -98,8 +99,7 @@ class Relay:
                 self.workers.append(worker)
                 worker.start()
 
-    @staticmethod
-    def _copy(source, destination, capture):
+    def _copy(self, source, destination, capture):
         try:
             while True:
                 data = source.recv(65536)
@@ -111,7 +111,8 @@ class Relay:
             pass
         finally:
             try:
-                destination.shutdown(socket.SHUT_WR)
+                if not self.hold:
+                    destination.shutdown(socket.SHUT_WR)
             except OSError:
                 pass
 
@@ -180,7 +181,7 @@ def run(binary):
         processes.append(kdc)
         kdc.send("short")
         kdc.wait("Key must contain exactly")
-        kdc.send(ka)
+        kdc.send(ka + "\r")
         kdc.send(kb)
         kdc.wait("KDC READY")
         bob = Process(binary, ["bob", "--bind", "127.0.0.3", "--kdc", "127.0.0.1", "--peer", "127.0.0.2", "--port", str(bob_port)])
@@ -189,6 +190,9 @@ def run(binary):
         bob.wait("BOB LISTENING")
         bob.send("before authentication")
         bob.wait("Chat blocked")
+        mark = bob.mark()
+        bob.send("/status\r")
+        bob.wait("STATUS: disconnected", mark)
 
         for payload in [struct.pack("!I", 65537), struct.pack("!I", 10) + b"1:x"]:
             mark = bob.mark()
@@ -271,7 +275,9 @@ def run(binary):
         alice.wait("ERROR:", a)
         change(bob, kb)
         connect()
-        disconnect()
+        a = alice.mark()
+        bob.send("/disconnect")
+        alice.wait("SESSION CLOSED", a)
 
         for peer, identity, key in [(alice, "Alice", new_ka), (bob, "Bob", new_kb)]:
             mark = kdc.mark()
@@ -283,9 +289,7 @@ def run(binary):
         exchange("rotated master keys", "no process restart")
         kdc.quit()
         exchange("KDC is offline", "direct chat still works")
-        a = alice.mark()
-        bob.send("/disconnect")
-        alice.wait("SESSION CLOSED", a)
+        bob_relay.hold = True
         alice.quit()
         bob.quit()
 
