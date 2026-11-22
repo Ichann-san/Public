@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="data:," />
+    <title>Rumah Lamin</title>
+  </head>
+  <body>
+    <div id="app">
+      <div id="hud">
+        <strong>Rumah Lamin — Assembly</strong>
+        <label><input type="checkbox" id="opt-placeholders" checked /> Show placeholders</label>
+        <label><input type="checkbox" id="opt-colliders" /> Show colliders</label>
+        <label><input type="checkbox" id="opt-anchors" /> Show anchors</label>
+        <label><input type="checkbox" id="opt-highlight" /> Highlight placeholders</label>
+        <span id="mode-info">Orbit (F: walk)</span>
+        <div id="check">Loading…</div>
+      </div>
+      <div id="crosshair" hidden></div>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
