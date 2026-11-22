@@ -1,0 +1,28 @@
+{
+  "components": {
+    "tanah": { "src": "components/exterior/tanah.glb" },
+    "lantai": { "src": "components/exterior/lantai.glb" },
+    "tiang": { "src": "components/exterior/tiang.glb" },
+    "dinding": { "src": "components/exterior/dinding.glb" },
+    "pagar": { "src": "components/exterior/pagar.glb" },
+    "tangga": { "src": "components/exterior/tangga.glb" },
+    "atap": { "src": "components/placeholder/atap.glb", "placeholder": true },
+    "interior": { "src": "components/placeholder/interior.glb", "placeholder": true },
+    "patung": { "src": "components/placeholder/patung.glb", "placeholder": true }
+  },
+  "instances": [
+    { "id": "tanah", "component": "tanah" },
+    { "id": "lantai", "component": "lantai", "attach": { "anchor": "anchor_base", "to": "tanah.anchor_house" } },
+    { "id": "tiang", "component": "tiang", "attach": { "anchor": "anchor_top", "to": "lantai.anchor_tiang_*" } },
+    { "id": "dinding", "component": "dinding", "attach": { "anchor": "anchor_base", "to": "lantai.anchor_dinding" } },
+    { "id": "pagar", "component": "pagar", "attach": { "anchor": "anchor_base", "to": "lantai.anchor_pagar" } },
+    { "id": "tangga_kiri", "component": "tangga", "attach": { "anchor": "anchor_top", "to": "lantai.anchor_tangga_kiri" } },
+    { "id": "tangga_tengah", "component": "tangga", "attach": { "anchor": "anchor_top", "to": "lantai.anchor_tangga_tengah" } },
+    { "id": "tangga_kanan", "component": "tangga", "attach": { "anchor": "anchor_top", "to": "lantai.anchor_tangga_kanan" } },
+    { "id": "atap", "component": "atap", "attach": { "anchor": "anchor_base", "to": "dinding.anchor_atap" } },
+    { "id": "interior", "component": "interior", "attach": { "anchor": "anchor_base", "to": "lantai.anchor_interior" } },
+    { "id": "patung_kiri", "component": "patung", "attach": { "anchor": "anchor_ground", "to": "tangga_tengah.anchor_patung_kiri" } },
+    { "id": "patung_kanan", "component": "patung", "attach": { "anchor": "anchor_ground", "to": "tangga_tengah.anchor_patung_kanan" } }
+  ],
+  "allowOverlap": []
+}
