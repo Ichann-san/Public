@@ -1,0 +1,30 @@
+﻿UTS REKAYASA KEBUTUHAN MYITS STUDENTCONNECT
+Penyusun: Maulana
+Versi 1.1 - 23 November 2026
+
+Laporan diperbarui mengikuti canvas dan ketiga diagram revisi pengguna.
+Gaya penulisan mengikuti rup_srs, tab Versi 1.1:
+https://docs.google.com/document/d/18cD5o8rRtJdRvvR7mtbMingNgL2THooyXoAJsUGkpoM/edit?tab=t.oky4x1b1jvmr
+
+Bagian a: A_Value_Proposition_Mahasiswa.docx (6 halaman).
+Bagian b: B_Main_Use_Case_StudentConnect.mdj.
+Bagian c: C_Detail_Use_Case_StudentConnect.mdj dan
+C_Deskripsi_Use_Case.docx (13 halaman).
+
+Laporan gabungan berada pada tab Laporan StudentConnect:
+https://docs.google.com/document/d/1usTni9bZcUAWB2rPpHCBtMDmD43lK1t5kOkQV4fsnsk/edit?tab=t.rfm5825bosif
+
+Penyelarasan isi:
+- Canvas memuat enam komponen, masing-masing tiga butir.
+- Diagram utama memuat UC00-UC09. Katalog dan keterlacakan mengikuti revisi ini.
+- UC01 Mengajukan Portofolio pada detail merupakan bagian dari UC01
+  Mengelola Portofolio pada diagram utama.
+- UC04 Memverifikasi Portofolio pada detail berpadanan dengan UC09 pada
+  diagram utama.
+
+Gambar PNG dan model MDJ revisi pengguna tetap utuh.
+Cadangan laporan sebelumnya serta hasil pemeriksaan tersimpan pada
+_work/revision_1_1. Sumber revisi laporan: _work/revise_report.py.
+
+Alur pada akun belum diuji langsung. Asumsi A01-A05 tetap dinyatakan dalam
+laporan; jobs, pains, dan gains belum divalidasi melalui wawancara.
